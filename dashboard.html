@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Dashboard specific */
+    .greeting-section {
+      background: linear-gradient(135deg, var(--gray-950) 0%, #1e3a5f 100%);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .greeting-section::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(26,86,219,0.3), transparent 70%);
+    }
+    .greeting-section::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: 200px;
+      width: 150px; height: 150px;
+      background: radial-gradient(circle, rgba(14,165,233,0.15), transparent 70%);
+    }
+    .greeting-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .greeting-name {
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+    }
+    .greeting-sub { font-size: 14.5px; color: rgba(255,255,255,0.65); margin-top: 4px; }
+    .greeting-score {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .greeting-score-val { font-size: 28px; font-weight: 900; }
+    .greeting-score-label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; }
+    .greeting-recommended {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .greeting-recommended:hover { background: rgba(255,255,255,0.13); }
+    .greeting-rec-label { font-size: 11px; color: rgba(255,255,255,0.55); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .greeting-rec-text { font-size: 14px; font-weight: 600; color: white; margin-top: 2px; }
+    .greeting-rec-arrow { margin-left: auto; font-size: 18px; color: rgba(255,255,255,0.4); }
+
+    /* Stat cards grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+
+    /* Main content grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+    }
+    @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+    /* Journey progress */
+    .journey-progress {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .journey-step-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 72px;
+      position: relative;
+      z-index: 1;
+    }
+    .journey-step-pill-num {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+    .journey-step-pill-num.done { background: var(--brand-primary); color: white; }
+    .journey-step-pill-num.active { background: white; border: 2px solid var(--brand-primary); color: var(--brand-primary); box-shadow: 0 0 0 4px rgba(26,86,219,0.15); }
+    .journey-step-pill-num.upcoming { background: var(--gray-100); color: var(--gray-400); border: 2px solid var(--gray-200); }
+    .journey-step-pill-label { font-size: 10.5px; font-weight: 600; color: var(--gray-400); white-space: nowrap; }
+    .journey-step-pill-label.done { color: var(--brand-primary); }
+    .journey-step-pill-label.active { color: var(--gray-700); }
+    .journey-connector {
+      flex: 1;
+      min-width: 20px;
+      height: 2px;
+      position: relative;
+      top: -12px;
+    }
+    .journey-connector.done { background: var(--brand-primary); }
+    .journey-connector.upcoming { background: var(--gray-200); }
+
+    /* Upcoming events */
+    .upcoming-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .upcoming-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .upcoming-title { font-size: 13.5px; font-weight: 600; color: var(--gray-800); }
+    .upcoming-date { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+    .upcoming-badge { margin-left: auto; white-space: nowrap; }
+
+    /* Recent activity */
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .activity-title { font-size: 13.5px; font-weight: 600; color: var(--gray-800); }
+    .activity-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+    .activity-time { margin-left: auto; font-size: 12px; color: var(--gray-400); white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-slot"></div>
+
+<div class="app-layout">
+  <div class="main-content" style="margin-left:var(--sidebar-width)">
+    <div id="header-slot"></div>
+    <div class="page-content">
+
+      <!-- Greeting Banner -->
+      <div class="greeting-section">
+        <div class="greeting-top">
+          <div>
+            <div class="greeting-name" id="dashGreetingName">Good evening, Adil 👋</div>
+            <div class="greeting-sub" id="dashGreetingSub">Let's turn today's learning into career progress.</div>
+          </div>
+          <div class="greeting-score">
+            <div>
+              <div class="greeting-score-val" id="dashReadinessScore">72<span style="font-size:16px;font-weight:600">%</span></div>
+              <div class="greeting-score-label">Career Readiness</div>
+            </div>
+            <div style="width:2px;height:36px;background:rgba(255,255,255,0.15)"></div>
+            <div>
+              <div style="font-size:22px;font-weight:800" id="dashStreak">5🔥</div>
+              <div class="greeting-score-label">Day Streak</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="greeting-recommended" id="dashRecBox">
+          <div style="width:40px;height:40px;background:rgba(255,255,255,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚡</div>
+          <div>
+            <div class="greeting-rec-label" id="dashRecBadge">✦ AI Recommended Action</div>
+            <div class="greeting-rec-text" id="dashRecText">Complete your Business Analytics real-world challenge</div>
+          </div>
+          <div class="greeting-rec-arrow">→</div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card" onclick="window.location.href='focus.html'" style="cursor:pointer">
+          <div class="stat-card-icon" style="background:var(--brand-primary-light)">⏱</div>
+          <div class="stat-card-value" id="statFocusMins">45</div>
+          <div class="stat-card-label">Minutes Planned Today</div>
+          <div class="stat-card-change change-up">↑ Focus</div>
+        </div>
+        <div class="stat-card" onclick="window.location.href='tasks.html'" style="cursor:pointer">
+          <div class="stat-card-icon" style="background:var(--warning-light)">✓</div>
+          <div class="stat-card-value" id="statTasksRem">3</div>
+          <div class="stat-card-label">Tasks Remaining</div>
+          <div class="stat-card-change change-down">↓ Due today</div>
+        </div>
+        <div class="stat-card" onclick="window.location.href='notebook.html'" style="cursor:pointer">
+          <div class="stat-card-icon" style="background:var(--success-light)">📊</div>
+          <div class="stat-card-value" id="statLearningProg">68%</div>
+          <div class="stat-card-label">Learning Progress</div>
+          <div class="stat-card-change change-up">↑ +4% this week</div>
+        </div>
+        <div class="stat-card" onclick="window.location.href='portfolio.html'" style="cursor:pointer">
+          <div class="stat-card-icon" style="background:#ede9fe">◈</div>
+          <div class="stat-card-value" id="statPortfolioProj">7</div>
+          <div class="stat-card-label">Portfolio Projects</div>
+          <div class="stat-card-change change-up">↑ +1 this week</div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="dashboard-grid">
+
+        <!-- Left Column -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+          <!-- AFTERCLASS Loop Progress -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="section-title">Your AFTERCLASS Journey</div>
+                <div class="section-sub" id="dashJourneySub">4 of 9 stages active</div>
+              </div>
+              <a href="career.html" class="btn btn-ghost btn-sm">View All →</a>
+            </div>
+            <div class="journey-progress" id="dashJourneyPills">
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num done">✓</div>
+                <div class="journey-step-pill-label done">Learn</div>
+              </div>
+              <div class="journey-connector done"></div>
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num done">✓</div>
+                <div class="journey-step-pill-label done">Focus</div>
+              </div>
+              <div class="journey-connector done"></div>
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num done">✓</div>
+                <div class="journey-step-pill-label done">Plan</div>
+              </div>
+              <div class="journey-connector done"></div>
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num active">4</div>
+                <div class="journey-step-pill-label active">Apply</div>
+              </div>
+              <div class="journey-connector upcoming"></div>
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num upcoming">5</div>
+                <div class="journey-step-pill-label upcoming">Prove</div>
+              </div>
+              <div class="journey-connector upcoming"></div>
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num upcoming">6</div>
+                <div class="journey-step-pill-label upcoming">Build</div>
+              </div>
+              <div class="journey-connector upcoming"></div>
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num upcoming">7</div>
+                <div class="journey-step-pill-label upcoming">Discover</div>
+              </div>
+              <div class="journey-connector upcoming"></div>
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num upcoming">8</div>
+                <div class="journey-step-pill-label upcoming">Match</div>
+              </div>
+              <div class="journey-connector upcoming"></div>
+              <div class="journey-step-pill">
+                <div class="journey-step-pill-num upcoming">9</div>
+                <div class="journey-step-pill-label upcoming">Prepare</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Insight -->
+          <div class="ai-box">
+            <div class="ai-box-header">✦ AI Insight — Based on your activity</div>
+            <div class="ai-box-content" id="dashAiInsightText">
+              You've been studying <strong>Power BI</strong> frequently this week. Consider adding a Business Analytics dashboard project to your portfolio — it'll increase your Business Analyst match score from <strong>86%</strong> to an estimated <strong>91%</strong>.
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" onclick="window.location.href='portfolio.html'">Add Portfolio Project</button>
+              <button class="btn btn-outline btn-sm" onclick="window.location.href='apply.html'">Create Challenge →</button>
+            </div>
+          </div>
+
+          <!-- Learning Progress -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">Learning Progress</div>
+              <a href="notebook.html" class="btn btn-ghost btn-sm">Open Notebook →</a>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px" id="learningProgressList"></div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">Recent Activity</div>
+              <span class="badge badge-success">Active</span>
+            </div>
+            <div id="dashRecentActivity">
+              <div class="activity-item">
+                <div class="activity-icon" style="background:var(--brand-primary-light)">📓</div>
+                <div>
+                  <div class="activity-title">Uploaded: Descriptive Analytics Notes</div>
+                  <div class="activity-sub">AI Summary + 12 flashcards generated</div>
+                </div>
+                <div class="activity-time">2h ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+          <!-- Career Readiness -->
+          <div class="card" style="text-align:center">
+            <div class="section-title" style="margin-bottom:16px">Career Readiness</div>
+            <div style="display:flex;justify-content:center;margin-bottom:16px" id="dashRingWrapper">
+              <div class="circular-progress" id="dashCircularRing" data-value="72" data-size="120" data-stroke="10"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px" id="readinessBars"></div>
+            <button class="btn btn-outline btn-sm btn-full" style="margin-top:14px" onclick="window.location.href='career.html'">View Full Report →</button>
+          </div>
+
+          <!-- Upcoming -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">Upcoming</div>
+              <a href="tasks.html" class="btn btn-ghost btn-sm">All Tasks →</a>
+            </div>
+            <div id="dashUpcomingTasks">
+              <div class="upcoming-item">
+                <div class="upcoming-dot" style="background:var(--error)"></div>
+                <div>
+                  <div class="upcoming-title">Business Analytics Assignment</div>
+                  <div class="upcoming-date">📅 Tomorrow</div>
+                </div>
+                <span class="badge badge-error upcoming-badge">Urgent</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="section-title" style="margin-bottom:14px">Quick Actions</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="btn btn-primary btn-full" onclick="window.location.href='notebook.html'" style="justify-content:flex-start;gap:12px">
+                <span>📓</span> Open AI Notebook
+              </button>
+              <button class="btn btn-outline btn-full" onclick="window.location.href='focus.html'" style="justify-content:flex-start;gap:12px">
+                <span>⏱</span> Start Focus Session
+              </button>
+              <button class="btn btn-outline btn-full" onclick="window.location.href='apply.html'" style="justify-content:flex-start;gap:12px">
+                <span>⚡</span> Apply a Concept
+              </button>
+              <button class="btn btn-outline btn-full" onclick="window.location.href='jobs.html'" style="justify-content:flex-start;gap:12px">
+                <span>💼</span> Analyze a Job
+              </button>
+            </div>
+          </div>
+
+          <!-- Skills Snapshot -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">Your Skills</div>
+              <a href="profile.html" class="btn btn-ghost btn-sm">All →</a>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px" id="dashSkillsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mobile-nav-slot"></div>
+<div id="fab-slot"></div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>
+  mountLayout('dashboard', '');
+
+  function renderDashboard() {
+    const user = userData.getCurrentUser();
+    const dash = user.dashboardData || {};
+
+    // 1. Greeting & Top Score
+    document.getElementById('dashGreetingName').textContent = `Good evening, ${user.firstName || 'Student'} 👋`;
+    document.getElementById('dashGreetingSub').textContent = dash.greetingSub || `Let's turn your learning into career progress.`;
+    document.getElementById('dashReadinessScore').innerHTML = `${user.readinessScore || 70}<span style="font-size:16px;font-weight:600">%</span>`;
+    document.getElementById('dashStreak').textContent = `${user.streak || 1}🔥`;
+    
+    // Recommended action
+    document.getElementById('dashRecBadge').textContent = `✦ AI RECOMMENDED ACTION${dash.recBadge ? ' (' + dash.recBadge + ')' : ''}`;
+    document.getElementById('dashRecText').textContent = dash.recTitle || "Complete your recommended skill challenge";
+    document.getElementById('dashRecBox').onclick = () => window.location.href = dash.recLink || 'apply.html';
+
+    // 2. Stat Cards
+    document.getElementById('statFocusMins').textContent = user.focusMinutes || 45;
+    document.getElementById('statTasksRem').textContent = user.tasksRemaining || 3;
+    document.getElementById('statLearningProg').textContent = `${user.learningProgress || 60}%`;
+    document.getElementById('statPortfolioProj').textContent = user.projects || 5;
+
+    // 3. AI Insight
+    if (dash.aiInsight) {
+      document.getElementById('dashAiInsightText').innerHTML = dash.aiInsight;
+    }
+
+    // 4. Learning Progress
+    const subjects = user.subjects || [
+      { name: 'Core Knowledge', progress: 60, color: 'var(--brand-primary)' }
+    ];
+    document.getElementById('learningProgressList').innerHTML = subjects.map(s => `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:13.5px;font-weight:600;color:var(--gray-700)">${s.name}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--gray-600)">${s.progress}%</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" data-width="${s.progress}" style="background:linear-gradient(90deg,${s.color},${s.color}99)"></div>
+        </div>
+      </div>
+    `).join('');
+
+    // 5. Recent Activity
+    const activity = dash.recentActivity || [];
+    if (activity.length > 0) {
+      document.getElementById('dashRecentActivity').innerHTML = activity.map(a => `
+        <div class="activity-item">
+          <div class="activity-icon" style="background:${a.bg || 'var(--brand-primary-light)'}">${a.icon || '✦'}</div>
+          <div>
+            <div class="activity-title">${a.title}</div>
+            <div class="activity-sub">${a.sub}</div>
+          </div>
+          <div class="activity-time">${a.time}</div>
+        </div>
+      `).join('');
+    }
+
+    // 6. Readiness Breakdown & Circular Ring
+    const ringWrap = document.getElementById('dashRingWrapper');
+    if (ringWrap) {
+      ringWrap.innerHTML = `<div class="circular-progress" data-value="${user.readinessScore || 70}" data-size="120" data-stroke="10"></div>`;
+    }
+    const breakdown = dash.readinessBreakdown || [
+      { label: 'Knowledge', val: 80, color: 'var(--brand-primary)' },
+      { label: 'Skills', val: 70, color: 'var(--brand-accent)' },
+      { label: 'Portfolio', val: 65, color: 'var(--success)' },
+      { label: 'CV Match', val: 75, color: 'var(--warning)' }
+    ];
+    document.getElementById('readinessBars').innerHTML = breakdown.map(b => `
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:12px;color:var(--gray-500);width:96px;flex-shrink:0">${b.label}</div>
+        <div class="progress-bar-wrap" style="flex:1;height:6px">
+          <div class="progress-bar-fill" data-width="${b.val}" style="background:${b.color}"></div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--gray-700);width:32px;text-align:right">${b.val}%</div>
+      </div>
+    `).join('');
+
+    // 7. Upcoming Tasks
+    const tasks = dash.upcomingTasks || [];
+    if (tasks.length > 0) {
+      document.getElementById('dashUpcomingTasks').innerHTML = tasks.map(t => `
+        <div class="upcoming-item">
+          <div class="upcoming-dot" style="background:${t.dotColor || 'var(--brand-primary)'}"></div>
+          <div>
+            <div class="upcoming-title">${t.title}</div>
+            <div class="upcoming-date">📅 ${t.date}</div>
+          </div>
+          <span class="badge ${t.badgeClass || 'badge-primary'} upcoming-badge">${t.badge}</span>
+        </div>
+      `).join('');
+    }
+
+    // 8. Skills Snapshot
+    const skills = user.skills || [];
+    document.getElementById('dashSkillsList').innerHTML = skills.map(sk => `
+      <span class="skill-tag active">${sk}</span>
+    `).join('') + `<span class="skill-tag" style="border-style:dashed;color:var(--gray-400);cursor:pointer" onclick="showToast('Add skills from your Profile page','info')">+ Add</span>`;
+
+    animateProgressBars();
+    initCircularProgress();
+  }
+
+  document.addEventListener('DOMContentLoaded', renderDashboard);
+</script>
+</body>
+</html>

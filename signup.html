@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — AFTERCLASS AI</title>
+  <meta name="description" content="Create your free AFTERCLASS AI account and start your learning-to-career journey." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: var(--gray-50); min-height: 100vh; }
+    .auth-page {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+    @media (max-width: 768px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-panel { display: none; }
+    }
+    .auth-panel {
+      background: linear-gradient(145deg, var(--gray-950) 0%, #1a2840 100%);
+      display: flex;
+      flex-direction: column;
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-panel::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(26,86,219,0.2), transparent 70%);
+      top: -100px; right: -100px;
+    }
+    .auth-panel-logo { display: flex; align-items: center; gap: 12px; z-index: 1; }
+    .auth-panel-logo-icon {
+      width: 40px; height: 40px;
+      background: var(--brand-primary);
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 800; font-size: 17px;
+    }
+    .auth-panel-logo-text { font-size: 20px; font-weight: 900; color: white; letter-spacing: -0.8px; }
+    .auth-panel-logo-text span { color: var(--brand-primary); }
+    .auth-panel-content { flex: 1; display: flex; flex-direction: column; justify-content: center; z-index: 1; }
+    .auth-panel-tagline { font-size: 34px; font-weight: 800; color: white; line-height: 1.2; letter-spacing: -1px; margin-bottom: 16px; }
+    .auth-panel-tagline span { color: var(--brand-accent); }
+    .auth-features { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+    .auth-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .auth-feature-check { color: var(--success); font-size: 14px; font-weight: 700; }
+    .auth-feature-text { font-size: 14px; color: rgba(255,255,255,0.8); font-weight: 500; }
+
+    .auth-form-side {
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      overflow-y: auto;
+    }
+    @media (max-width: 768px) {
+      .auth-form-side { padding: 40px 24px; min-height: 100vh; }
+    }
+    .auth-form-wrapper { width: 100%; max-width: 420px; }
+    .auth-title { font-size: 26px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.8px; margin-bottom: 6px; }
+    .auth-subtitle { font-size: 14.5px; color: var(--gray-500); margin-bottom: 28px; }
+    .auth-form { display: flex; flex-direction: column; gap: 14px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      height: 44px;
+      background: white;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-700);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .google-btn:hover { border-color: var(--gray-400); background: var(--gray-50); }
+    .google-icon {
+      width: 20px; height: 20px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234285F4' d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'/%3E%3Cpath fill='%2334A853' d='M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z'/%3E%3Cpath fill='%23FBBC05' d='M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z'/%3E%3Cpath fill='%23EA4335' d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+    .password-wrapper { position: relative; }
+    .password-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--gray-400); font-size: 16px; }
+    .terms-text { font-size: 12.5px; color: var(--gray-400); line-height: 1.5; }
+    .terms-text a { color: var(--brand-primary); }
+    .auth-footer-text { text-align: center; font-size: 14px; color: var(--gray-500); margin-top: 20px; }
+    .auth-footer-text a { color: var(--brand-primary); font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="auth-page">
+
+  <!-- Left Panel -->
+  <div class="auth-panel">
+    <div class="auth-panel-logo">
+      <div class="auth-panel-logo-icon">AC</div>
+      <div class="auth-panel-logo-text">AFTER<span>CLASS</span> AI</div>
+    </div>
+    <div class="auth-panel-content">
+      <div class="auth-panel-tagline">
+        Your <span>career</span><br>starts in your<br>classroom.
+      </div>
+      <div class="auth-features">
+        <div class="auth-feature">
+          <span class="auth-feature-check">✓</span>
+          <span class="auth-feature-text">AI-powered summaries, flashcards & quizzes</span>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-check">✓</span>
+          <span class="auth-feature-text">Real-world challenges with AI evaluation</span>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-check">✓</span>
+          <span class="auth-feature-text">Professional portfolio & CV builder</span>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-check">✓</span>
+          <span class="auth-feature-text">Career matching & job description analysis</span>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-check">✓</span>
+          <span class="auth-feature-text">14-day AI interview preparation roadmaps</span>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-check">✓</span>
+          <span class="auth-feature-text">Always free for university students</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Form -->
+  <div class="auth-form-side">
+    <div class="auth-form-wrapper">
+      <h1 class="auth-title">Create your account ✨</h1>
+      <p class="auth-subtitle">Start your learning-to-career journey today</p>
+
+      <form class="auth-form" id="signupForm" novalidate>
+
+        <button type="button" class="google-btn" onclick="handleGoogleSignup()">
+          <div class="google-icon"></div>
+          Sign up with Google
+        </button>
+
+        <div class="divider-text">or create with email</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="firstName">First name</label>
+            <input type="text" id="firstName" class="form-input" placeholder="Adil" value="Adil" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lastName">Last name</label>
+            <input type="text" id="lastName" class="form-input" placeholder="Khan" value="Khan" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">University email</label>
+          <input type="email" id="email" class="form-input" placeholder="adil@woxsen.edu.in" value="adil@woxsen.edu.in" autocomplete="email" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" class="form-input" style="width:100%;padding-right:40px" placeholder="Min. 8 characters" value="demo1234" required />
+            <button type="button" class="password-toggle" onclick="togglePw()">👁</button>
+          </div>
+          <div style="margin-top:6px;display:flex;gap:4px">
+            <div id="str1" style="height:3px;flex:1;border-radius:3px;background:var(--gray-200);transition:background 0.3s"></div>
+            <div id="str2" style="height:3px;flex:1;border-radius:3px;background:var(--gray-200);transition:background 0.3s"></div>
+            <div id="str3" style="height:3px;flex:1;border-radius:3px;background:var(--gray-200);transition:background 0.3s"></div>
+            <div id="str4" style="height:3px;flex:1;border-radius:3px;background:var(--gray-200);transition:background 0.3s"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:8px">
+          <input type="checkbox" id="terms" checked style="width:16px;height:16px;accent-color:var(--brand-primary);cursor:pointer;margin-top:2px;flex-shrink:0" />
+          <label for="terms" class="terms-text">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I confirm I'm a university student.</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="signupBtn">
+          Create Free Account →
+        </button>
+
+      </form>
+
+      <div class="auth-footer-text">
+        Already have an account? <a href="login.html">Sign in →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="app.js"></script>
+<script>
+  function togglePw() {
+    const pw = document.getElementById('password');
+    pw.type = pw.type === 'password' ? 'text' : 'password';
+  }
+
+  // Password strength
+  document.getElementById('password').addEventListener('input', function() {
+    const val = this.value;
+    const bars = [document.getElementById('str1'), document.getElementById('str2'), document.getElementById('str3'), document.getElementById('str4')];
+    const colors = { 0: 'var(--gray-200)', 1: 'var(--error)', 2: 'var(--warning)', 3: '#f97316', 4: 'var(--success)' };
+    const strength = Math.min(4, [val.length >= 8, /[A-Z]/.test(val), /[0-9]/.test(val), /[^A-Za-z0-9]/.test(val)].filter(Boolean).length + (val.length >= 8 ? 1 : 0));
+    bars.forEach((bar, i) => {
+      bar.style.background = i < strength ? colors[strength] : 'var(--gray-200)';
+    });
+  });
+
+  function handleGoogleSignup() {
+    authManager.openGoogleModal('onboarding.html');
+  }
+
+  document.getElementById('signupForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const terms = document.getElementById('terms').checked;
+    if (!terms) { showToast('Please accept the Terms of Service', 'error'); return; }
+
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!firstName || !email || !password) {
+      showToast('Please fill in all required fields', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('signupBtn');
+    btn.innerHTML = '<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite"></div> Creating account...';
+    btn.disabled = true;
+
+    setTimeout(() => { 
+      authManager.signUp({
+        firstName,
+        lastName,
+        email,
+        authProvider: 'Email'
+      }, 'onboarding.html'); 
+    }, 800);
+  });
+</script>
+<style>
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>

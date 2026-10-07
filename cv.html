@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Builder — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .cv-layout { display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
+    @media (max-width: 1100px) { .cv-layout { grid-template-columns: 1fr; } }
+
+    /* CV Preview */
+    .cv-preview-wrapper {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .cv-preview-toolbar {
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cv-doc {
+      padding: 32px;
+      background: white;
+      min-height: 800px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* CV Document styles */
+    .cv-name { font-size: 26px; font-weight: 800; color: #111; letter-spacing: -0.8px; }
+    .cv-contact { font-size: 12px; color: #555; margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .cv-contact span { display: flex; align-items: center; gap: 4px; }
+    .cv-section-line {
+      border: none;
+      border-top: 2px solid var(--brand-primary);
+      margin: 14px 0 10px;
+    }
+    .cv-section-title { font-size: 12px; font-weight: 800; color: var(--brand-primary); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+    .cv-entry-title { font-size: 13.5px; font-weight: 700; color: #111; }
+    .cv-entry-subtitle { font-size: 12px; color: #555; margin-top: 1px; }
+    .cv-bullet { font-size: 12.5px; color: #333; line-height: 1.6; padding-left: 14px; position: relative; margin-bottom: 3px; }
+    .cv-bullet::before { content: '•'; position: absolute; left: 0; color: var(--brand-primary); }
+    .cv-skill-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .cv-skill-chip { padding: 3px 10px; background: #f1f5fe; color: var(--brand-primary); border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .cv-entry { margin-bottom: 12px; }
+    .cv-entry-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .cv-date { font-size: 12px; color: #888; white-space: nowrap; }
+
+    /* ATS Score */
+    .ats-score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ats-item {
+      background: var(--gray-50);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+    .ats-val { font-size: 22px; font-weight: 900; }
+    .ats-label { font-size: 11px; color: var(--gray-400); font-weight: 500; margin-top: 3px; }
+
+    /* Tailor modal */
+    .tailor-section { margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-slot"></div>
+
+<div class="app-layout">
+  <div class="main-content" style="margin-left:var(--sidebar-width)">
+    <div id="header-slot"></div>
+    <div class="page-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">AI CV Builder 📄</h1>
+          <p class="page-subtitle">AI-generated, ATS-optimized CV built from your verified AFTERCLASS data</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-outline" onclick="openTailorModal()">✦ Tailor to Job</button>
+          <button class="btn btn-secondary" onclick="showToast('ATS analysis running...','info');setTimeout(()=>showToast('ATS Score: 84% — 3 improvements suggested','success'),1500)">📊 ATS Score</button>
+          <button class="btn btn-primary" onclick="showToast('CV exported as PDF!','success')">⬇ Download PDF</button>
+        </div>
+      </div>
+
+      <div class="cv-layout">
+
+        <!-- CV Preview -->
+        <div>
+          <div class="cv-preview-wrapper">
+            <div class="cv-preview-toolbar">
+              <div style="font-size:13px;font-weight:600;color:var(--gray-600)">📄 CV Preview</div>
+              <span class="badge badge-success">ATS Score: 84%</span>
+              <div style="margin-left:auto;display:flex;gap:6px">
+                <button class="btn btn-sm btn-secondary" onclick="showToast('Template changed!','info')">Change Template</button>
+                <button class="btn btn-sm btn-primary" onclick="showToast('CV exported!','success')">Export PDF</button>
+              </div>
+            </div>
+
+            <div class="cv-doc" id="cvDocument">
+
+              <!-- Header -->
+              <div style="border-bottom:3px solid var(--brand-primary);padding-bottom:16px;margin-bottom:16px">
+                <div class="cv-name">Adil Khan</div>
+                <div style="font-size:13px;font-weight:600;color:var(--brand-primary);margin-top:3px">MBA Candidate · Business Analyst | Data Analyst | Product Analyst</div>
+                <div class="cv-contact" style="margin-top:8px">
+                  <span>📧 adil.khan@woxsen.edu.in</span>
+                  <span>📱 +91 98765 43210</span>
+                  <span>🌐 linkedin.com/in/adilkhan</span>
+                  <span>📍 Hyderabad, India</span>
+                </div>
+              </div>
+
+              <!-- Summary -->
+              <div class="cv-section-title">Professional Summary</div>
+              <div style="font-size:12.5px;color:#333;line-height:1.7;margin-bottom:14px">
+                Results-driven MBA student at Woxsen University specializing in General Management with a strong focus on Business Analytics and Data-Driven Decision Making. Demonstrated ability to apply frameworks such as Porter's Five Forces and Descriptive Analytics to real business problems. Proficient in Power BI, Excel, SQL, and Python. Seeking a Business Analyst role where I can leverage my analytical skills and MBA training to generate actionable business insights.
+              </div>
+
+              <!-- Education -->
+              <div class="cv-section-title">Education</div>
+              <hr class="cv-section-line" />
+              <div class="cv-entry">
+                <div class="cv-entry-header">
+                  <div>
+                    <div class="cv-entry-title">Master of Business Administration (MBA)</div>
+                    <div class="cv-entry-subtitle">Woxsen University · Hyderabad, India · General Management</div>
+                  </div>
+                  <div class="cv-date">2024 – 2026</div>
+                </div>
+                <div style="margin-top:6px">
+                  <div class="cv-bullet">Relevant coursework: Business Analytics, Brand Management, Corporate Finance, Managerial Economics</div>
+                  <div class="cv-bullet">CGPA: 8.4/10 · Dean's List (Semester 1)</div>
+                </div>
+              </div>
+
+              <!-- Projects (Verified from AFTERCLASS) -->
+              <div class="cv-section-title">Projects & Portfolio</div>
+              <hr class="cv-section-line" />
+              <div class="cv-entry">
+                <div class="cv-entry-header">
+                  <div class="cv-entry-title">Competitive Analysis — Food Delivery Industry (Porter's Five Forces)</div>
+                  <div class="cv-date">2025</div>
+                </div>
+                <div class="cv-entry-subtitle" style="margin-bottom:6px">AI-Verified via AFTERCLASS · Score: 83%</div>
+                <div class="cv-bullet">Applied Porter's Five Forces framework to evaluate competitive pressures in the food delivery market, identifying competitive rivalry and new entrant threats</div>
+                <div class="cv-bullet">Developed two targeted strategic recommendations to address 18% market share decline, focusing on loyalty program development and exclusive restaurant partnerships</div>
+                <div class="cv-bullet">Skills demonstrated: Strategic Analysis, Competitive Intelligence, Business Strategy, Market Research</div>
+              </div>
+              <div class="cv-entry">
+                <div class="cv-entry-header">
+                  <div class="cv-entry-title">Retail Analytics Dashboard — Power BI</div>
+                  <div class="cv-date">2025</div>
+                </div>
+                <div class="cv-entry-subtitle" style="margin-bottom:6px">AI-Verified via AFTERCLASS · Score: 91%</div>
+                <div class="cv-bullet">Built interactive Power BI dashboard analyzing 3-year retail sales dataset (50,000+ records), identifying seasonal trends and top-performing SKUs</div>
+                <div class="cv-bullet">Reduced reporting time by 60% through automated refresh and dynamic filters for regional managers</div>
+                <div class="cv-bullet">Skills: Power BI, Excel, Data Visualization, Business Analytics</div>
+              </div>
+              <div class="cv-entry">
+                <div class="cv-entry-header">
+                  <div class="cv-entry-title">Customer Feedback Analysis — Sentiment Analysis</div>
+                  <div class="cv-date">2025</div>
+                </div>
+                <div class="cv-entry-subtitle" style="margin-bottom:6px">In Progress · Python & NLP</div>
+                <div class="cv-bullet">Analyzing 500+ customer reviews using Python (VADER sentiment library) to identify key pain points and satisfaction drivers</div>
+                <div class="cv-bullet">Skills: Python, Data Analysis, NLP, Customer Analytics</div>
+              </div>
+
+              <!-- Skills -->
+              <div class="cv-section-title">Skills</div>
+              <hr class="cv-section-line" />
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;margin-bottom:6px">Analytics & Data</div>
+                  <div class="cv-skill-chips">
+                    <span class="cv-skill-chip">Power BI</span>
+                    <span class="cv-skill-chip">Excel</span>
+                    <span class="cv-skill-chip">Python</span>
+                    <span class="cv-skill-chip">SQL</span>
+                    <span class="cv-skill-chip">Data Visualization</span>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;margin-bottom:6px">Business & Strategy</div>
+                  <div class="cv-skill-chips">
+                    <span class="cv-skill-chip">Business Analysis</span>
+                    <span class="cv-skill-chip">Strategic Frameworks</span>
+                    <span class="cv-skill-chip">Market Research</span>
+                    <span class="cv-skill-chip">Stakeholder Communication</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Certifications -->
+              <div class="cv-section-title">Certifications</div>
+              <hr class="cv-section-line" />
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <div style="display:flex;justify-content:space-between;font-size:12.5px">
+                  <span><strong>Power BI Fundamentals</strong> · Microsoft Learn</span>
+                  <span style="color:#888">2025</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px">
+                  <span><strong>Business Analytics Essentials</strong> · Coursera (Woxsen)</span>
+                  <span style="color:#888">2025</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Sidebar: Editor + ATS -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- ATS Analysis -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">📊 ATS Analysis</div>
+              <span class="badge badge-success">84%</span>
+            </div>
+            <div class="ats-score-grid" style="margin-bottom:14px">
+              <div class="ats-item">
+                <div class="ats-val" style="color:var(--brand-primary)">87%</div>
+                <div class="ats-label">Skills Match</div>
+              </div>
+              <div class="ats-item">
+                <div class="ats-val" style="color:var(--success)">79%</div>
+                <div class="ats-label">Experience Match</div>
+              </div>
+              <div class="ats-item">
+                <div class="ats-val" style="color:var(--brand-accent)">91%</div>
+                <div class="ats-label">Project Relevance</div>
+              </div>
+              <div class="ats-item">
+                <div class="ats-val" style="color:var(--warning)">76%</div>
+                <div class="ats-label">Keywords</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase;margin-bottom:4px">Suggestions</div>
+              <div style="display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--gray-700)">
+                <span style="color:var(--warning)">△</span> Add "requirements gathering" to your summary
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--gray-700)">
+                <span style="color:var(--warning)">△</span> Include "stakeholder management" in project bullets
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--gray-700)">
+                <span style="color:var(--error)">○</span> Missing: BRD/FRD experience
+              </div>
+            </div>
+            <button class="btn btn-outline btn-full btn-sm" style="margin-top:12px" onclick="openTailorModal()">✦ Auto-Fix with AI</button>
+          </div>
+
+          <!-- Tailor to JD -->
+          <div class="card">
+            <div class="section-title" style="margin-bottom:8px">✦ Tailor to Job Description</div>
+            <div style="font-size:13.5px;color:var(--gray-500);margin-bottom:12px">Paste a job description and AI will optimize your CV keywords and bullets.</div>
+            <textarea class="form-textarea" id="tailorJD" style="min-height:120px;font-size:13px" placeholder="Paste job description here..."></textarea>
+            <button class="btn btn-primary btn-full btn-sm" style="margin-top:10px" onclick="tailorCV()">✦ Tailor My CV →</button>
+          </div>
+
+          <!-- AI Improve Bullets -->
+          <div class="card">
+            <div class="section-title" style="margin-bottom:8px">✦ Improve a Bullet Point</div>
+            <div style="font-size:13.5px;color:var(--gray-500);margin-bottom:12px">Paste a weak bullet point and AI will strengthen it.</div>
+            <textarea class="form-textarea" id="improveBullet" style="min-height:80px;font-size:13px" placeholder="e.g. 'Worked on Power BI dashboards'"></textarea>
+            <div id="improvedBulletResult" style="display:none;margin-top:10px;background:var(--success-light);border-radius:8px;padding:12px;font-size:13px;color:var(--success);line-height:1.6"></div>
+            <button class="btn btn-outline btn-full btn-sm" style="margin-top:10px" onclick="improveBulletPoint()">✦ Improve →</button>
+          </div>
+
+          <!-- Quick Sections -->
+          <div class="card">
+            <div class="section-title" style="margin-bottom:12px">Quick Edit</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="btn btn-outline btn-sm" onclick="showToast('Personal info editor opened','info')">👤 Personal Info</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Education section opened','info')">🎓 Education</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Projects pulled from Portfolio','success')">◈ Sync Projects from Portfolio</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Skills synced from Profile','success')">⚡ Sync Skills</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Experience section opened','info')">💼 Experience</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tailor Modal -->
+      <div class="modal-backdrop" id="tailorModal">
+        <div class="modal">
+          <div class="modal-header">
+            <div class="modal-title">✦ Tailor CV to Job Description</div>
+            <button class="modal-close" onclick="document.getElementById('tailorModal').classList.remove('open')">✕</button>
+          </div>
+          <div class="ai-box" style="margin-bottom:16px">
+            <div class="ai-box-header">✦ How it works</div>
+            <div class="ai-box-content">AI will analyze the job description, extract key keywords, and suggest specific changes to your CV bullets, summary, and skills section to maximize ATS compatibility.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Job Title</label>
+            <input type="text" class="form-input" id="tailorJobTitle" value="Business Analyst Intern" />
+          </div>
+          <div class="form-group" style="margin-top:12px">
+            <label class="form-label">Job Description</label>
+            <textarea class="form-textarea" id="tailorJobDesc" style="min-height:160px;font-size:13px" placeholder="Paste the full job description..."></textarea>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:20px">
+            <button class="btn btn-primary btn-full" onclick="runTailorCV()">✦ Tailor My CV Now</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('tailorModal').classList.remove('open')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="mobile-nav-slot"></div>
+<div id="fab-slot"></div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>
+mountLayout('cv', 'CV Builder');
+
+function openTailorModal() {
+  document.getElementById('tailorModal').classList.add('open');
+}
+
+function tailorCV() {
+  const jd = document.getElementById('tailorJD').value.trim();
+  if (jd.length < 30) { showToast('Please paste a job description', 'error'); return; }
+  showToast('✦ AI tailoring your CV...', 'info');
+  setTimeout(() => {
+    showToast('✅ CV tailored! 3 keywords added, 2 bullets improved.', 'success');
+    document.getElementById('tailorJD').value = '';
+  }, 2000);
+}
+
+function runTailorCV() {
+  document.getElementById('tailorModal').classList.remove('open');
+  showToast('✦ AI tailoring your CV...', 'info');
+  setTimeout(() => showToast('✅ CV tailored! ATS score improved from 84% to 91%.', 'success'), 2000);
+}
+
+function improveBulletPoint() {
+  const bullet = document.getElementById('improveBullet').value.trim();
+  if (!bullet) { showToast('Paste a bullet point to improve', 'error'); return; }
+  showToast('✦ AI improving your bullet...', 'info');
+  setTimeout(() => {
+    const improved = 'Developed and maintained interactive Power BI dashboards analyzing 3-year sales data (50,000+ records), resulting in a 60% reduction in manual reporting time and enabling data-driven decisions for regional sales managers.';
+    const result = document.getElementById('improvedBulletResult');
+    result.style.display = 'block';
+    result.innerHTML = '<strong>✓ Improved:</strong><br>' + improved;
+    showToast('Bullet improved! Click to copy.', 'success');
+    result.onclick = () => { navigator.clipboard?.writeText(improved); showToast('Copied!', 'success'); };
+  }, 1500);
+}
+</script>
+</body>
+</html>

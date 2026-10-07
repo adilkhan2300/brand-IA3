@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Notebook — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .notebook-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+    @media (max-width: 900px) { .notebook-layout { grid-template-columns: 1fr; } .sources-panel { display: none; } }
+
+    .sources-panel {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      height: fit-content;
+      position: sticky;
+      top: 80px;
+    }
+    .sources-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .source-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      border-bottom: 1px solid var(--gray-50);
+    }
+    .source-item:hover { background: var(--gray-50); }
+    .source-item.active { background: var(--brand-primary-light); }
+    .source-icon {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .source-name { font-size: 12.5px; font-weight: 600; color: var(--gray-800); line-height: 1.3; }
+    .source-meta { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+    .upload-zone {
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius-lg);
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin: 12px;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--brand-primary);
+      background: var(--brand-primary-light);
+    }
+
+    /* Notebook content */
+    .notebook-content { display: flex; flex-direction: column; gap: 20px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Flashcards */
+    .flashcard-container { perspective: 1000px; }
+    .flashcard {
+      width: 100%;
+      min-height: 200px;
+      cursor: pointer;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+    .flashcard.flipped { transform: rotateY(180deg); }
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      text-align: center;
+    }
+    .flashcard-front {
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+      color: white;
+    }
+    .flashcard-back {
+      background: white;
+      border: 1.5px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+      transform: rotateY(180deg);
+    }
+    .flashcard-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 14px; }
+    .flashcard-text { font-size: 18px; font-weight: 700; line-height: 1.4; }
+    .flashcard-hint { font-size: 12px; opacity: 0.6; margin-top: 16px; }
+    .flashcard-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 14px; }
+
+    /* Quiz */
+    .quiz-question {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .quiz-question-text { font-size: 14.5px; font-weight: 600; color: var(--gray-800); margin-bottom: 14px; }
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 13.5px;
+      color: var(--gray-700);
+      border: 1.5px solid transparent;
+      margin-bottom: 6px;
+      background: var(--gray-50);
+    }
+    .quiz-option:hover { background: var(--brand-primary-light); border-color: var(--brand-primary); color: var(--brand-primary); }
+    .quiz-option.correct { background: var(--success-light); border-color: var(--success); color: var(--success); }
+    .quiz-option.wrong { background: var(--error-light); border-color: var(--error); color: var(--error); }
+    .quiz-option-letter {
+      width: 24px; height: 24px;
+      background: var(--gray-200);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Summary points */
+    .summary-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--brand-primary);
+      margin-bottom: 8px;
+    }
+    .summary-point-icon { color: var(--brand-primary); font-size: 14px; margin-top: 1px; }
+    .summary-point-text { font-size: 14px; color: var(--gray-700); line-height: 1.6; }
+
+    /* AI loading animation */
+    .ai-generating {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--brand-primary-light);
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      color: var(--brand-primary);
+      font-weight: 600;
+    }
+    .ai-dot {
+      width: 6px; height: 6px;
+      background: var(--brand-primary);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .ai-dot:nth-child(2) { animation-delay: 0.2s; }
+    .ai-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-slot"></div>
+
+<div class="app-layout">
+  <div class="main-content" style="margin-left:var(--sidebar-width)">
+    <div id="header-slot"></div>
+    <div class="page-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">AI Notebook 📓</h1>
+          <p class="page-subtitle">Upload your study materials and let AI transform them into learning tools</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">⬆ Upload Material</button>
+          <button class="btn btn-primary" onclick="showAIAsk()">✦ Ask AI</button>
+        </div>
+      </div>
+
+      <div class="notebook-layout">
+
+        <!-- Sources Panel -->
+        <div class="sources-panel">
+          <div class="sources-header">
+            <div style="font-size:13px;font-weight:700;color:var(--gray-700)">📁 Sources (4)</div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('fileInput').click()">+ Add</button>
+          </div>
+          <input type="file" id="fileInput" multiple accept=".pdf,.ppt,.pptx,.docx,.txt" style="display:none" onchange="handleFileUpload(this)" />
+
+          <div class="source-item active" onclick="selectSource(this, 'Business Analytics')" id="src1">
+            <div class="source-icon" style="background:var(--error-light)">PDF</div>
+            <div>
+              <div class="source-name">Business Analytics – Descriptive Analytics.pdf</div>
+              <div class="source-meta">2.4 MB · Uploaded today</div>
+            </div>
+          </div>
+          <div class="source-item" onclick="selectSource(this, 'Brand Management')">
+            <div class="source-icon" style="background:var(--warning-light)">PPT</div>
+            <div>
+              <div class="source-name">Brand Management – Week 3 Lecture.pptx</div>
+              <div class="source-meta">5.1 MB · 2 days ago</div>
+            </div>
+          </div>
+          <div class="source-item" onclick="selectSource(this, 'Corporate Finance')">
+            <div class="source-icon" style="background:var(--success-light)">DOC</div>
+            <div>
+              <div class="source-name">Corporate Finance Notes.docx</div>
+              <div class="source-meta">1.1 MB · 3 days ago</div>
+            </div>
+          </div>
+          <div class="source-item" onclick="selectSource(this, 'Porter Five Forces')">
+            <div class="source-icon" style="background:var(--brand-primary-light)">TXT</div>
+            <div>
+              <div class="source-name">Porter's Five Forces Framework.txt</div>
+              <div class="source-meta">48 KB · 1 week ago</div>
+            </div>
+          </div>
+
+          <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <div style="font-size:28px;margin-bottom:8px">⬆</div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--gray-600)">Upload PDF, PPT, DOCX, TXT</div>
+            <div style="font-size:11.5px;color:var(--gray-400);margin-top:4px">Drag & drop or click</div>
+          </div>
+        </div>
+
+        <!-- Main Notebook Area -->
+        <div class="notebook-content">
+
+          <!-- Source Header -->
+          <div class="card" style="background:linear-gradient(135deg,var(--gray-950),#1e3a5f);color:white;border:none">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+              <div>
+                <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Current Source</div>
+                <div style="font-size:18px;font-weight:800;letter-spacing:-0.4px" id="currentSourceTitle">Business Analytics – Descriptive Analytics</div>
+                <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px">PDF · 2.4 MB · Uploaded today · 12 pages</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span class="badge" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">12 flashcards</span>
+                <span class="badge" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">5 quiz Qs</span>
+                <span class="badge" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">AI Summary ✓</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Toolbar -->
+          <div class="card" style="padding:14px 16px">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <span style="font-size:12px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-right:4px">✦ Generate:</span>
+              <button class="btn btn-sm btn-outline" onclick="showTab('summary')">📝 Summary</button>
+              <button class="btn btn-sm btn-outline" onclick="showTab('flashcards')">🗂 Flashcards</button>
+              <button class="btn btn-sm btn-outline" onclick="showTab('quiz')">❓ Quiz</button>
+              <button class="btn btn-sm btn-outline" onclick="showTab('keypoints')">🎯 Key Points</button>
+              <button class="btn btn-sm btn-primary" onclick="showAIAsk()">✦ Ask AI</button>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tab-nav" data-panels="notebook" style="margin-bottom:4px">
+            <button class="tab-btn active" onclick="showTab('summary')">Summary</button>
+            <button class="tab-btn" onclick="showTab('flashcards')">Flashcards</button>
+            <button class="tab-btn" onclick="showTab('quiz')">Quiz</button>
+            <button class="tab-btn" onclick="showTab('keypoints')">Key Points</button>
+            <button class="tab-btn" onclick="showTab('ask')">Ask AI</button>
+          </div>
+
+          <!-- Summary Tab -->
+          <div id="tab-summary" class="tab-content active">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="section-title">✦ AI Summary</div>
+                  <div class="section-sub">Generated from Business Analytics – Descriptive Analytics.pdf</div>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-sm btn-secondary" onclick="showToast('Summary copied!','success')">📋 Copy</button>
+                  <button class="btn btn-sm btn-outline">⬇ Export</button>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:8px" id="summaryPoints">
+                <div class="summary-point">
+                  <span class="summary-point-icon">▸</span>
+                  <span class="summary-point-text"><strong>Descriptive analytics</strong> summarizes historical data to understand what has happened in the past — it is the foundation of all analytics disciplines.</span>
+                </div>
+                <div class="summary-point">
+                  <span class="summary-point-icon">▸</span>
+                  <span class="summary-point-text">Common measures of central tendency include <strong>mean, median and mode</strong>, each appropriate for different data distributions.</span>
+                </div>
+                <div class="summary-point">
+                  <span class="summary-point-icon">▸</span>
+                  <span class="summary-point-text"><strong>Data visualization</strong> techniques — charts, dashboards, and heatmaps — are critical for identifying trends, patterns, and outliers in large datasets.</span>
+                </div>
+                <div class="summary-point">
+                  <span class="summary-point-icon">▸</span>
+                  <span class="summary-point-text"><strong>Frequency distributions</strong> and <strong>cross-tabulations</strong> help segment data by categories to reveal group-level insights.</span>
+                </div>
+                <div class="summary-point">
+                  <span class="summary-point-icon">▸</span>
+                  <span class="summary-point-text">Tools such as <strong>Excel, Power BI, and Tableau</strong> are industry-standard platforms for performing and presenting descriptive analytics.</span>
+                </div>
+                <div class="summary-point">
+                  <span class="summary-point-icon">▸</span>
+                  <span class="summary-point-text">Descriptive analytics answers the question <strong>"What happened?"</strong> — as opposed to diagnostic (why?), predictive (what will?), and prescriptive (what should?) analytics.</span>
+                </div>
+              </div>
+
+              <div class="ai-box" style="margin-top:16px">
+                <div class="ai-box-header">✦ Ready to apply this concept?</div>
+                <div class="ai-box-content">You've reviewed Descriptive Analytics. Can you apply it to a real business scenario? AFTERCLASS will create a custom challenge and evaluate your response with AI.</div>
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <button class="btn btn-primary btn-sm" onclick="window.location.href='apply.html'">⚡ Create Real-World Challenge</button>
+                  <button class="btn btn-outline btn-sm" onclick="showTab('flashcards')">🗂 Study Flashcards First</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Flashcards Tab -->
+          <div id="tab-flashcards" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="section-title">🗂 Flashcards</div>
+                  <div class="section-sub">Card <span id="cardNum">1</span> of <span id="cardTotal">12</span> — click card to reveal answer</div>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-sm btn-secondary" onclick="shuffleCards()">🔀 Shuffle</button>
+                  <button class="btn btn-sm btn-primary" onclick="showToast('All 12 flashcards added to spaced repetition!','success')">+ Add to Review</button>
+                </div>
+              </div>
+
+              <div class="flashcard-container" style="min-height:220px;margin-bottom:14px">
+                <div class="flashcard" id="mainFlashcard" onclick="flipCard()">
+                  <div class="flashcard-face flashcard-front">
+                    <div class="flashcard-label">Question</div>
+                    <div class="flashcard-text" id="cardQuestion">What is descriptive analytics?</div>
+                    <div class="flashcard-hint">Tap to reveal answer →</div>
+                  </div>
+                  <div class="flashcard-face flashcard-back">
+                    <div class="flashcard-label" style="color:var(--brand-primary)">Answer</div>
+                    <div class="flashcard-text" style="color:var(--gray-800)" id="cardAnswer">A branch of analytics focused on <strong>summarizing historical data</strong> to understand what happened in the past, using measures of central tendency and data visualization.</div>
+                    <div class="flashcard-hint" style="color:var(--gray-400)">Rate your knowledge below</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flashcard-nav">
+                <button class="btn btn-secondary btn-sm" onclick="prevCard()">← Prev</button>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-sm" style="background:var(--error-light);color:var(--error)" onclick="rateCard('hard')">😓 Hard</button>
+                  <button class="btn btn-sm" style="background:var(--warning-light);color:var(--warning)" onclick="rateCard('ok')">🤔 OK</button>
+                  <button class="btn btn-sm" style="background:var(--success-light);color:var(--success)" onclick="rateCard('easy')">😊 Easy</button>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="nextCard()">Next →</button>
+              </div>
+
+              <!-- Mini card list -->
+              <div style="margin-top:20px;display:flex;flex-direction:column;gap:6px" id="flashcardList">
+                <div style="font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">All Flashcards</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz Tab -->
+          <div id="tab-quiz" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="section-title">❓ AI Quiz</div>
+                  <div class="section-sub">5 questions · Business Analytics — Descriptive Analytics</div>
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="submitQuiz()">Submit Quiz →</button>
+              </div>
+
+              <div id="quizContainer">
+                <!-- Quiz will be rendered by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Points Tab -->
+          <div id="tab-keypoints" class="tab-content">
+            <div class="card">
+              <div class="card-header">
+                <div class="section-title">🎯 Key Concepts Map</div>
+                <button class="btn btn-sm btn-secondary" onclick="showToast('Study plan created for next 7 days','success')">📅 Create Study Plan</button>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px" id="keyPointsGrid">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Ask AI Tab -->
+          <div id="tab-ask" class="tab-content">
+            <div class="card">
+              <div class="section-title" style="margin-bottom:16px">✦ Ask AI About This Material</div>
+              <div id="aiConversation" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;min-height:120px">
+                <div class="ai-box">
+                  <div class="ai-box-header">✦ AFTERCLASS AI</div>
+                  <div class="ai-box-content">I've read <strong>Business Analytics – Descriptive Analytics.pdf</strong>. Ask me anything about this material — I can explain concepts, give examples, create mini-challenges, or quiz you on any section.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <input type="text" class="form-input" id="aiAskInput" placeholder="e.g. Explain the difference between mean and median with an example..." style="flex:1" />
+                <button class="btn btn-primary" onclick="askAIAboutMaterial()">Ask →</button>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+                <button class="btn btn-sm btn-secondary" onclick="quickAsk('Explain descriptive analytics simply')">Explain simply</button>
+                <button class="btn btn-sm btn-secondary" onclick="quickAsk('Give a real-world business example')">Real example</button>
+                <button class="btn btn-sm btn-secondary" onclick="quickAsk('What are the key exam points?')">Exam tips</button>
+                <button class="btn btn-sm btn-secondary" onclick="quickAsk('How does this connect to my career goals?')">Career connection</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mobile-nav-slot"></div>
+<div id="fab-slot"></div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>
+mountLayout('notebook', 'AI Notebook');
+
+const flashcards = [
+  { q: 'What is descriptive analytics?', a: 'A branch of analytics focused on summarizing historical data to understand what happened in the past.' },
+  { q: 'Name three measures of central tendency.', a: 'Mean (average), Median (middle value), and Mode (most frequent value).' },
+  { q: 'What is the difference between mean and median?', a: 'Mean is the arithmetic average of all values. Median is the middle value when data is sorted. Median is better for skewed data.' },
+  { q: 'What does data visualization help identify?', a: 'Trends, patterns, outliers, and anomalies in large datasets more quickly than raw numbers.' },
+  { q: 'Name three industry-standard descriptive analytics tools.', a: 'Microsoft Excel, Power BI, and Tableau are the most widely used tools.' },
+  { q: 'What question does descriptive analytics answer?', a: '"What happened?" — it looks backward at historical data.' },
+  { q: 'What is a frequency distribution?', a: 'A table or chart showing how often each value or range of values occurs in a dataset.' },
+  { q: 'What is a cross-tabulation (crosstab)?', a: 'A table that shows the relationship between two categorical variables by displaying their joint frequency distributions.' },
+  { q: 'How does descriptive analytics differ from predictive analytics?', a: 'Descriptive looks at what happened (past). Predictive forecasts what will happen (future).' },
+  { q: 'What is variance in descriptive analytics?', a: 'A measure of how spread out data points are from the mean. High variance means data is more dispersed.' },
+  { q: 'What is a KPI dashboard?', a: 'A visual display of key performance indicators using charts and metrics to quickly communicate business performance.' },
+  { q: 'What is the interquartile range (IQR)?', a: 'The range between the 25th and 75th percentile — used to measure the spread of the middle 50% of data.' },
+];
+
+let currentCard = 0;
+let cardRatings = {};
+
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  // Update tab buttons
+  const tabs = document.querySelectorAll('.tab-btn');
+  const tabNames = ['summary', 'flashcards', 'quiz', 'keypoints', 'ask'];
+  tabs.forEach((btn, i) => btn.classList.toggle('active', tabNames[i] === name));
+
+  if (name === 'flashcards') renderFlashcardList();
+  if (name === 'quiz') renderQuiz();
+  if (name === 'keypoints') renderKeyPoints();
+}
+
+function flipCard() {
+  document.getElementById('mainFlashcard').classList.toggle('flipped');
+}
+function updateCardDisplay() {
+  const card = flashcards[currentCard];
+  document.getElementById('cardQuestion').textContent = card.q;
+  document.getElementById('cardAnswer').innerHTML = card.a;
+  document.getElementById('cardNum').textContent = currentCard + 1;
+  document.getElementById('mainFlashcard').classList.remove('flipped');
+}
+function nextCard() { currentCard = (currentCard + 1) % flashcards.length; updateCardDisplay(); }
+function prevCard() { currentCard = (currentCard - 1 + flashcards.length) % flashcards.length; updateCardDisplay(); }
+function shuffleCards() { flashcards.sort(() => Math.random() - 0.5); currentCard = 0; updateCardDisplay(); showToast('Cards shuffled!', 'success'); }
+function rateCard(rating) { cardRatings[currentCard] = rating; showToast({ easy: '✓ Marked as Easy', ok: '🤔 Will revisit soon', hard: '📌 Added for more practice' }[rating], 'info'); nextCard(); }
+
+function renderFlashcardList() {
+  const list = document.getElementById('flashcardList');
+  list.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">All Flashcards</div>' +
+    flashcards.map((c, i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--gray-50);border-radius:8px;cursor:pointer;border:1px solid ${i===currentCard?'var(--brand-primary)':'var(--gray-100)'}" onclick="currentCard=${i};updateCardDisplay();window.scrollTo(0,0)">
+        <span style="font-size:12px;font-weight:700;color:var(--gray-400);width:18px">${i+1}.</span>
+        <span style="font-size:13px;color:var(--gray-700);flex:1">${c.q}</span>
+        ${cardRatings[i] ? `<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${{easy:'var(--success-light)',ok:'var(--warning-light)',hard:'var(--error-light)'}[cardRatings[i]]};color:${{easy:'var(--success)',ok:'var(--warning)',hard:'var(--error)'}[cardRatings[i]]}">${{easy:'Easy',ok:'OK',hard:'Hard'}[cardRatings[i]]}</span>` : ''}
+      </div>
+    `).join('');
+}
+
+const quizData = [
+  { q: 'What type of analytics focuses on summarizing historical data?', options: ['Predictive Analytics', 'Descriptive Analytics', 'Prescriptive Analytics', 'Diagnostic Analytics'], correct: 1 },
+  { q: 'Which measure of central tendency is LEAST affected by outliers?', options: ['Mean', 'Variance', 'Median', 'Standard Deviation'], correct: 2 },
+  { q: 'Which tool is NOT typically used for descriptive analytics?', options: ['Microsoft Excel', 'Power BI', 'TensorFlow', 'Tableau'], correct: 2 },
+  { q: 'What question does descriptive analytics primarily answer?', options: ['What will happen?', 'Why did it happen?', 'What happened?', 'What should we do?'], correct: 2 },
+  { q: 'A dashboard showing monthly sales KPIs is an example of:', options: ['Predictive modeling', 'Machine learning', 'Descriptive analytics', 'Prescriptive analytics'], correct: 2 },
+];
+
+let quizAnswers = {};
+function renderQuiz() {
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = quizData.map((q, qi) => `
+    <div class="quiz-question">
+      <div style="font-size:11px;font-weight:700;color:var(--brand-primary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Question ${qi+1}</div>
+      <div class="quiz-question-text">${q.q}</div>
+      ${q.options.map((opt, oi) => `
+        <div class="quiz-option" id="opt-${qi}-${oi}" onclick="selectOption(${qi},${oi},${q.correct})">
+          <div class="quiz-option-letter">${['A','B','C','D'][oi]}</div>
+          ${opt}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function selectOption(qi, oi, correct) {
+  if (quizAnswers[qi] !== undefined) return;
+  quizAnswers[qi] = oi;
+  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach((el, i) => {
+    if (i === oi) el.classList.add(oi === correct ? 'correct' : 'wrong');
+    if (i === correct && oi !== correct) el.classList.add('correct');
+  });
+}
+
+function submitQuiz() {
+  const answered = Object.keys(quizAnswers).length;
+  if (answered < quizData.length) { showToast(`Please answer all ${quizData.length} questions first`, 'error'); return; }
+  const score = Object.entries(quizAnswers).filter(([qi, oi]) => oi === quizData[qi].correct).length;
+  const pct = Math.round(score / quizData.length * 100);
+  showToast(`Quiz complete! Score: ${score}/${quizData.length} (${pct}%)`, pct >= 70 ? 'success' : 'info');
+}
+
+const keyPoints = [
+  { title: 'What is Descriptive Analytics?', desc: 'Summarizes historical data to understand past performance', icon: '📊', color: 'var(--brand-primary-light)' },
+  { title: 'Central Tendency Measures', desc: 'Mean, Median, Mode — each serves different data types', icon: '📐', color: 'var(--success-light)' },
+  { title: 'Data Visualization', desc: 'Charts, dashboards & heatmaps reveal hidden patterns', icon: '📈', color: 'var(--warning-light)' },
+  { title: 'Frequency Distributions', desc: 'Shows how often values occur in a dataset', icon: '🔢', color: 'var(--info-light)' },
+  { title: 'Analytics Tools', desc: 'Excel, Power BI, Tableau — industry standard platforms', icon: '🛠', color: '#f0fdf4' },
+  { title: 'The 4 Types of Analytics', desc: 'Descriptive → Diagnostic → Predictive → Prescriptive', icon: '🗺', color: '#fdf4ff' },
+];
+
+function renderKeyPoints() {
+  document.getElementById('keyPointsGrid').innerHTML = keyPoints.map(k => `
+    <div style="background:${k.color};border-radius:12px;padding:16px;border:1px solid rgba(0,0,0,0.06)">
+      <div style="font-size:24px;margin-bottom:8px">${k.icon}</div>
+      <div style="font-size:13.5px;font-weight:700;color:var(--gray-900);margin-bottom:4px">${k.title}</div>
+      <div style="font-size:12.5px;color:var(--gray-600);line-height:1.5">${k.desc}</div>
+    </div>
+  `).join('');
+}
+
+const aiReplies = [
+  'Based on the lecture material, descriptive analytics is the foundation of all data-driven decision making. It answers "what happened?" using statistical summaries and visual tools.',
+  'Great question! In a real business, a retail manager might use descriptive analytics to understand which products sold the most last quarter, which regions underperformed, and what the average transaction value was.',
+  'Key exam points: (1) Definition of descriptive analytics, (2) Central tendency — mean, median, mode, (3) Types of analytics — descriptive, diagnostic, predictive, prescriptive, (4) Tools — Excel, Power BI, Tableau.',
+  'This connects directly to your Business Analyst career interest! BAs use descriptive analytics daily — creating dashboards, tracking KPIs, and summarizing data for stakeholders. Strengthening Power BI will make this practical.',
+];
+let aiReplyIdx = 0;
+
+function quickAsk(q) { document.getElementById('aiAskInput').value = q; askAIAboutMaterial(); }
+
+function askAIAboutMaterial() {
+  const input = document.getElementById('aiAskInput');
+  const q = input.value.trim();
+  if (!q) return;
+  const conv = document.getElementById('aiConversation');
+
+  const userMsg = document.createElement('div');
+  userMsg.style.cssText = 'display:flex;justify-content:flex-end';
+  userMsg.innerHTML = `<div style="background:var(--brand-primary);color:white;padding:10px 14px;border-radius:12px;border-bottom-right-radius:4px;font-size:13.5px;max-width:80%">${q}</div>`;
+  conv.appendChild(userMsg);
+
+  const typing = document.createElement('div');
+  typing.className = 'ai-generating';
+  typing.innerHTML = '<div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div> AI is reading the material...';
+  conv.appendChild(typing);
+  input.value = '';
+
+  setTimeout(() => {
+    typing.remove();
+    const reply = document.createElement('div');
+    reply.className = 'ai-box';
+    reply.innerHTML = `<div class="ai-box-header">✦ AFTERCLASS AI</div><div class="ai-box-content">${aiReplies[aiReplyIdx % aiReplies.length]}</div>`;
+    conv.appendChild(reply);
+    aiReplyIdx++;
+    conv.scrollTop = conv.scrollHeight;
+  }, 1400);
+  conv.scrollTop = conv.scrollHeight;
+}
+
+function selectSource(el, name) {
+  document.querySelectorAll('.source-item').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('currentSourceTitle').textContent = name;
+  showToast('Source loaded: ' + name, 'success');
+}
+
+function handleFileUpload(input) {
+  const files = Array.from(input.files);
+  files.forEach(f => showToast(`Uploaded: ${f.name} — AI processing...`, 'info'));
+  setTimeout(() => showToast('AI Summary generated! Open to view.', 'success'), 2000);
+}
+
+function showAIAsk() { showTab('ask'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Set Up Your Profile — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: var(--gray-50); min-height: 100vh; display: flex; flex-direction: column; }
+    .onboarding-page {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px 60px;
+      min-height: 100vh;
+    }
+    .onboarding-wrapper { width: 100%; max-width: 680px; }
+    .onboarding-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .onboarding-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 32px;
+      text-decoration: none;
+    }
+    .onboarding-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--brand-primary);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 800; font-size: 15px;
+    }
+    .onboarding-logo-text { font-size: 17px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.5px; }
+    .onboarding-logo-text span { color: var(--brand-primary); }
+
+    /* Progress Steps */
+    .step-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 40px;
+    }
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-circle {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-400);
+      transition: all 0.3s ease;
+    }
+    .step-circle.active { background: var(--brand-primary); color: white; box-shadow: 0 4px 12px rgba(26,86,219,0.3); }
+    .step-circle.done { background: var(--success); color: white; }
+    .step-label { font-size: 11px; font-weight: 600; color: var(--gray-400); white-space: nowrap; }
+    .step-label.active { color: var(--brand-primary); }
+    .step-connector { width: 48px; height: 2px; background: var(--gray-200); position: relative; top: -13px; }
+    .step-connector.filled { background: var(--brand-primary); }
+    @media (max-width: 480px) {
+      .step-connector { width: 24px; }
+      .step-label { font-size: 10px; }
+    }
+
+    /* Steps Container */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; animation: pageEnter 0.3s ease; }
+
+    .onboarding-card {
+      background: white;
+      border-radius: 20px;
+      padding: 36px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-lg);
+    }
+    @media (max-width: 480px) {
+      .onboarding-card { padding: 24px 20px; }
+    }
+    .step-title { font-size: 22px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.6px; margin-bottom: 4px; }
+    .step-desc { font-size: 14.5px; color: var(--gray-500); margin-bottom: 28px; }
+
+    /* Multi-select chips */
+    .chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--gray-100);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-700);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      user-select: none;
+    }
+    .chip:hover { border-color: var(--brand-primary); color: var(--brand-primary); background: var(--brand-primary-light); }
+    .chip.selected { background: var(--brand-primary-light); border-color: var(--brand-primary); color: var(--brand-primary); font-weight: 600; }
+    .chip.selected::before { content: '✓ '; }
+
+    .step-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gray-100);
+    }
+    .step-nav-text { font-size: 13px; color: var(--gray-400); }
+
+    /* Career Interests */
+    .interest-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--gray-50);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .interest-card:hover { border-color: var(--brand-primary); background: var(--brand-primary-light); }
+    .interest-card.selected { border-color: var(--brand-primary); background: var(--brand-primary-light); }
+    .interest-icon { font-size: 22px; }
+    .interest-title { font-size: 14.5px; font-weight: 600; color: var(--gray-800); }
+    .interest-sub { font-size: 12.5px; color: var(--gray-400); }
+    .interest-check {
+      margin-left: auto;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--gray-300);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      transition: all var(--transition-fast);
+    }
+    .interest-card.selected .interest-check { background: var(--brand-primary); border-color: var(--brand-primary); color: white; }
+
+    /* Profile Preview */
+    .profile-preview {
+      background: var(--gray-50);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      border: 1px solid var(--gray-200);
+    }
+    .preview-avatar {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .preview-name { font-size: 18px; font-weight: 800; color: var(--gray-900); }
+    .preview-role { font-size: 13.5px; color: var(--gray-500); margin-top: 2px; }
+    .preview-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .preview-tag {
+      padding: 4px 12px;
+      background: var(--brand-primary-light);
+      color: var(--brand-primary);
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div class="onboarding-page">
+  <div class="onboarding-wrapper">
+
+    <!-- Logo -->
+    <a class="onboarding-logo" href="index.html">
+      <div class="onboarding-logo-icon">AC</div>
+      <div class="onboarding-logo-text">AFTER<span>CLASS</span> AI</div>
+    </a>
+
+    <!-- Step Progress -->
+    <div class="step-progress" id="stepProgress">
+      <div class="step-item">
+        <div class="step-circle active" id="sc1">1</div>
+        <div class="step-label active" id="sl1">Basic Info</div>
+      </div>
+      <div class="step-connector" id="conn1"></div>
+      <div class="step-item">
+        <div class="step-circle" id="sc2">2</div>
+        <div class="step-label" id="sl2">Education</div>
+      </div>
+      <div class="step-connector" id="conn2"></div>
+      <div class="step-item">
+        <div class="step-circle" id="sc3">3</div>
+        <div class="step-label" id="sl3">Interests</div>
+      </div>
+      <div class="step-connector" id="conn3"></div>
+      <div class="step-item">
+        <div class="step-circle" id="sc4">4</div>
+        <div class="step-label" id="sl4">Skills</div>
+      </div>
+      <div class="step-connector" id="conn4"></div>
+      <div class="step-item">
+        <div class="step-circle" id="sc5">5</div>
+        <div class="step-label" id="sl5">Preview</div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="onboarding-card">
+
+      <!-- Step 1: Basic Info -->
+      <div class="step-panel active" id="step1">
+        <div class="step-title">Let's personalize your experience 👋</div>
+        <div class="step-desc">Tell us a bit about yourself to set up your AI-powered profile.</div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-input" id="ob_firstName" value="Adil" placeholder="First name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-input" id="ob_lastName" value="Khan" placeholder="Last name" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone (Optional)</label>
+            <input type="tel" class="form-input" id="ob_phone" placeholder="+91 98765 43210" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Experience Level</label>
+            <select class="form-select" id="ob_exp">
+              <option value="student">Current Student</option>
+              <option value="fresher">Fresh Graduate (0-1 yr)</option>
+              <option value="junior">Early Career (1-2 yrs)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <div class="step-nav-text">Step 1 of 5</div>
+          <button class="btn btn-primary" onclick="goToStep(2)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Education -->
+      <div class="step-panel" id="step2">
+        <div class="step-title">Your education 🎓</div>
+        <div class="step-desc">Help AFTERCLASS understand your academic background.</div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="form-group">
+            <label class="form-label">University / Institution</label>
+            <input type="text" class="form-input" id="ob_university" value="Woxsen University" placeholder="University name" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Degree</label>
+              <select class="form-select" id="ob_degree">
+                <option value="MBA" selected>MBA</option>
+                <option value="BBA">BBA</option>
+                <option value="BTech">B.Tech</option>
+                <option value="BCA">BCA</option>
+                <option value="BCom">B.Com</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Year</label>
+              <select class="form-select" id="ob_year">
+                <option>1st Year</option>
+                <option selected>2nd Year</option>
+                <option>3rd Year</option>
+                <option>4th Year</option>
+                <option>Final Year</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Specialization / Major</label>
+            <input type="text" class="form-input" id="ob_spec" value="General Management" placeholder="e.g. General Management, Computer Science" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Current Subjects (comma separated)</label>
+            <input type="text" class="form-input" id="ob_subjects" value="Business Analytics, Brand Management, Corporate Finance, Managerial Economics" placeholder="e.g. Marketing, Finance, Data Science" />
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+          <div class="step-nav-text">Step 2 of 5</div>
+          <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Career Interests -->
+      <div class="step-panel" id="step3">
+        <div class="step-title">What are your career interests? 🎯</div>
+        <div class="step-desc">Select all the career paths you're interested in exploring.</div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="interest-card selected" onclick="toggleInterest(this)">
+            <div class="interest-icon">💼</div>
+            <div>
+              <div class="interest-title">Business Analyst</div>
+              <div class="interest-sub">Analyzing data to drive business decisions</div>
+            </div>
+            <div class="interest-check">✓</div>
+          </div>
+          <div class="interest-card selected" onclick="toggleInterest(this)">
+            <div class="interest-icon">📊</div>
+            <div>
+              <div class="interest-title">Data Analyst</div>
+              <div class="interest-sub">Working with data, visualization & insights</div>
+            </div>
+            <div class="interest-check">✓</div>
+          </div>
+          <div class="interest-card selected" onclick="toggleInterest(this)">
+            <div class="interest-icon">🚀</div>
+            <div>
+              <div class="interest-title">Product Analyst</div>
+              <div class="interest-sub">Analyzing product metrics & user behavior</div>
+            </div>
+            <div class="interest-check">✓</div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)">
+            <div class="interest-icon">📈</div>
+            <div>
+              <div class="interest-title">Marketing Analyst</div>
+              <div class="interest-sub">Marketing data, campaigns & consumer insights</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)">
+            <div class="interest-icon">🏦</div>
+            <div>
+              <div class="interest-title">Financial Analyst</div>
+              <div class="interest-sub">Financial modeling, forecasting & investment</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)">
+            <div class="interest-icon">⚙️</div>
+            <div>
+              <div class="interest-title">Operations Analyst</div>
+              <div class="interest-sub">Process optimization & supply chain</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)">
+            <div class="interest-icon">🤝</div>
+            <div>
+              <div class="interest-title">Management Consultant</div>
+              <div class="interest-sub">Strategy consulting & business transformation</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)">
+            <div class="interest-icon">💡</div>
+            <div>
+              <div class="interest-title">Product Manager</div>
+              <div class="interest-sub">Product strategy, roadmap & cross-functional</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+          <div class="step-nav-text">Step 3 of 5</div>
+          <button class="btn btn-primary" onclick="goToStep(4)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Current Skills -->
+      <div class="step-panel" id="step4">
+        <div class="step-title">What skills do you have? ⚡</div>
+        <div class="step-desc">Select all skills you currently have. Be honest — this helps AFTERCLASS identify your gaps.</div>
+
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label">Category</label>
+          <div class="tab-nav" style="margin-top:4px">
+            <button class="tab-btn active">Analytics</button>
+            <button class="tab-btn">Tech</button>
+            <button class="tab-btn">Business</button>
+            <button class="tab-btn">Soft Skills</button>
+          </div>
+        </div>
+
+        <div id="skillsGrid">
+          <div class="chip-grid" id="analyticsSkills">
+            <div class="chip selected" onclick="this.classList.toggle('selected')">Excel</div>
+            <div class="chip selected" onclick="this.classList.toggle('selected')">Power BI</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Tableau</div>
+            <div class="chip selected" onclick="this.classList.toggle('selected')">SQL</div>
+            <div class="chip selected" onclick="this.classList.toggle('selected')">Python</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">R</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">SPSS</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Google Analytics</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Data Visualization</div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <label class="form-label">Add custom skill</label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <input type="text" class="form-input" id="customSkill" placeholder="e.g. Figma, Notion..." style="flex:1" />
+            <button class="btn btn-outline" onclick="addCustomSkill()">+ Add</button>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+          <div class="step-nav-text">Step 4 of 5</div>
+          <button class="btn btn-primary" onclick="goToStep(5)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Preview -->
+      <div class="step-panel" id="step5">
+        <div class="step-title">Your AFTERCLASS profile is ready! 🎉</div>
+        <div class="step-desc">Here's what we'll use to personalize your entire experience.</div>
+
+        <div class="profile-preview">
+          <div class="preview-avatar" id="previewAvatar">AK</div>
+          <div class="preview-name" id="previewName">Adil Khan</div>
+          <div class="preview-role" id="previewRole">MBA · General Management · Woxsen University</div>
+          <div class="preview-tags" id="previewTags">
+            <span class="preview-tag">Business Analyst</span>
+            <span class="preview-tag">Data Analyst</span>
+            <span class="preview-tag">Product Analyst</span>
+            <span class="preview-tag">Excel</span>
+            <span class="preview-tag">Power BI</span>
+            <span class="preview-tag">Python</span>
+            <span class="preview-tag">SQL</span>
+          </div>
+        </div>
+
+        <div class="ai-box" style="margin-top:20px">
+          <div class="ai-box-header">✦ AI First Look</div>
+          <div class="ai-box-content" id="aiFirstLook">
+            Based on your MBA background and interest in Business Analytics, you're a strong match for <strong>Business Analyst</strong> roles. Your key strengths are Excel and Power BI. I've noticed SQL is a common requirement — let's plan to strengthen that together.
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200)">
+            <div style="font-size:13.5px;font-weight:600;color:var(--gray-700)">📊 Career Readiness Score</div>
+            <div style="font-size:20px;font-weight:800;color:var(--brand-primary)">72%</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200)">
+            <div style="font-size:13.5px;font-weight:600;color:var(--gray-700)">🎯 Best Match Role</div>
+            <div style="font-size:14px;font-weight:700;color:var(--success)">Business Analyst · 86%</div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(4)">← Back</button>
+          <button class="btn btn-primary btn-lg" onclick="completeOnboarding()">
+            🚀 Launch My Dashboard
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="app.js"></script>
+<script>
+  let currentStep = 1;
+  const totalSteps = 5;
+
+  function goToStep(n) {
+    document.getElementById('step' + currentStep).classList.remove('active');
+    // Update circles
+    const sc = document.getElementById('sc' + currentStep);
+    sc.classList.remove('active');
+    sc.classList.add('done');
+    sc.textContent = '✓';
+    const sl = document.getElementById('sl' + currentStep);
+    sl.classList.remove('active');
+
+    currentStep = n;
+    document.getElementById('step' + n).classList.add('active');
+    const sc2 = document.getElementById('sc' + n);
+    sc2.classList.remove('done');
+    sc2.classList.add('active');
+    sc2.textContent = n;
+    const sl2 = document.getElementById('sl' + n);
+    sl2.classList.add('active');
+
+    // Fill connectors
+    for (let i = 1; i < n; i++) {
+      const conn = document.getElementById('conn' + i);
+      if (conn) conn.classList.add('filled');
+    }
+
+    // Update preview on step 5
+    if (n === 5) updatePreview();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleInterest(card) {
+    card.classList.toggle('selected');
+    const check = card.querySelector('.interest-check');
+    check.textContent = card.classList.contains('selected') ? '✓' : '';
+  }
+
+  function addCustomSkill() {
+    const input = document.getElementById('customSkill');
+    const val = input.value.trim();
+    if (!val) return;
+    const chip = document.createElement('div');
+    chip.className = 'chip selected';
+    chip.textContent = val;
+    chip.onclick = function() { this.classList.toggle('selected'); };
+    document.getElementById('analyticsSkills').appendChild(chip);
+    input.value = '';
+    showToast(val + ' added!', 'success');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const user = userData.getCurrentUser();
+    if (user) {
+      if (user.firstName && document.getElementById('ob_firstName')) document.getElementById('ob_firstName').value = user.firstName;
+      if (user.lastName && document.getElementById('ob_lastName')) document.getElementById('ob_lastName').value = user.lastName;
+      if (user.degree && document.getElementById('ob_degree')) document.getElementById('ob_degree').value = user.degree;
+      if (user.specialization && document.getElementById('ob_spec')) document.getElementById('ob_spec').value = user.specialization;
+      if (user.university && document.getElementById('ob_university')) document.getElementById('ob_university').value = user.university;
+    }
+  });
+
+  function completeOnboarding() {
+    const fn = document.getElementById('ob_firstName').value || 'Adil';
+    const ln = document.getElementById('ob_lastName').value || 'Khan';
+    const degree = document.getElementById('ob_degree')?.value || 'MBA';
+    const spec = document.getElementById('ob_spec')?.value || 'General Management';
+    const uni = document.getElementById('ob_university')?.value || 'Woxsen University';
+
+    const user = userData.getCurrentUser();
+    user.firstName = fn;
+    user.lastName = ln;
+    user.name = (fn + ' ' + ln).trim();
+    user.initials = ((fn[0] || 'A') + (ln[0] || 'K')).toUpperCase();
+    user.degree = degree;
+    user.specialization = spec;
+    user.university = uni;
+
+    userData.setCurrentUser(user);
+
+    const btn = event.target;
+    btn.innerHTML = '<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite"></div> Setting up…';
+    btn.disabled = true;
+    showToast('Profile created! Welcome to AFTERCLASS AI 🎉', 'success');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+  }
+</script>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+</body>
+</html>

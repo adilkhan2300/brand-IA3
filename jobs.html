@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Analyzer — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .jobs-layout { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
+    @media (max-width: 1100px) { .jobs-layout { grid-template-columns: 1fr; } }
+
+    .jd-input-zone {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .jd-input-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .jd-input-body { padding: 20px 24px 24px; }
+
+    .match-ring-section {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .skill-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+    .skill-row.has { background: var(--success-light); color: var(--success); }
+    .skill-row.missing { background: var(--error-light); color: var(--error); }
+    .skill-row.partial { background: var(--warning-light); color: var(--warning); }
+
+    .improvement-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .improvement-step:last-child { border-bottom: none; }
+    .improvement-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--brand-primary);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .jd-result { display: none; }
+    .jd-result.show { display: block; animation: pageEnter 0.4s ease; }
+
+    .saved-job {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin-bottom: 8px;
+    }
+    .saved-job:hover { border-color: var(--brand-primary); background: var(--brand-primary-light); }
+    .saved-job-icon { font-size: 20px; }
+    .saved-job-title { font-size: 13.5px; font-weight: 600; color: var(--gray-800); }
+    .saved-job-company { font-size: 12px; color: var(--gray-400); }
+    .saved-job-match { margin-left: auto; font-size: 14px; font-weight: 800; }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-slot"></div>
+
+<div class="app-layout">
+  <div class="main-content" style="margin-left:var(--sidebar-width)">
+    <div id="header-slot"></div>
+    <div class="page-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Job Description Analyzer 💼</h1>
+          <p class="page-subtitle">Paste any job description and instantly see how your profile matches up</p>
+        </div>
+      </div>
+
+      <div class="jobs-layout">
+
+        <!-- Main Analysis Area -->
+        <div>
+
+          <!-- Input Card -->
+          <div class="jd-input-zone" style="margin-bottom:20px">
+            <div class="jd-input-header">
+              <div style="font-size:18px;font-weight:800;color:var(--gray-900);margin-bottom:3px">Does this job fit your profile?</div>
+              <div style="font-size:14px;color:var(--gray-500)">Paste a job description below — AI will compare it against your AFTERCLASS profile.</div>
+            </div>
+            <div class="jd-input-body">
+              <div class="form-group" style="margin-bottom:14px">
+                <label class="form-label">Job Title (optional)</label>
+                <input type="text" class="form-input" id="jobTitle" value="Business Analyst Intern" placeholder="e.g. Business Analyst Intern" />
+              </div>
+              <div class="form-group" style="margin-bottom:14px">
+                <label class="form-label">Company (optional)</label>
+                <input type="text" class="form-input" id="jobCompany" value="Accenture" placeholder="e.g. Accenture, Deloitte..." />
+              </div>
+              <div class="form-group" style="margin-bottom:16px">
+                <label class="form-label">Paste Job Description</label>
+                <textarea class="form-textarea" id="jobDescription" style="min-height:200px;font-size:13.5px" placeholder="Paste the full job description here...">Business Analyst Intern — Accenture
+
+We are looking for a motivated Business Analyst Intern to join our Strategy & Consulting team.
+
+Responsibilities:
+• Gather and document business requirements
+• Create BRD/FRD documentation
+• Analyze business processes and identify improvement opportunities
+• Collaborate with stakeholders to understand business needs
+• Create dashboards and reports using Power BI and Excel
+• Conduct market research and competitor analysis
+• Support project management activities
+
+Requirements:
+• Currently enrolled in MBA/BBA or related program
+• Proficiency in Excel and Power BI
+• Basic SQL knowledge
+• Excellent communication and presentation skills
+• Understanding of business analysis methodologies
+• Experience with requirements gathering (preferred)
+• Familiarity with Agile/Scrum methodology (preferred)
+• Strong analytical and problem-solving abilities
+
+Preferred Skills:
+• Business Analysis certification
+• Experience with JIRA or similar tools
+• Understanding of BRD/FRD documentation
+• Data visualization experience</textarea>
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-lg" onclick="analyzeJob()">
+                  ✦ Analyze This Job
+                </button>
+                <button class="btn btn-outline" onclick="clearJD()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Load Sample JD</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results (hidden until analysis) -->
+          <div class="jd-result" id="jdResult">
+
+            <!-- Match Summary -->
+            <div class="card" style="margin-bottom:16px">
+              <div class="match-ring-section">
+                <div class="circular-progress" data-value="72" data-size="110" data-stroke="10"></div>
+                <div>
+                  <div style="font-size:22px;font-weight:800;color:var(--gray-900);letter-spacing:-0.5px">Profile Match</div>
+                  <div style="font-size:14px;color:var(--gray-500);margin-top:4px" id="matchedJobTitle">Business Analyst Intern · Accenture</div>
+                  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+                    <span class="badge badge-success">✓ 4 skills matched</span>
+                    <span class="badge badge-error">○ 2 gaps</span>
+                    <span class="badge badge-warning">△ 1 in progress</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skills Breakdown -->
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header">
+                <div class="section-title">Skills Analysis</div>
+              </div>
+
+              <div style="margin-bottom:16px">
+                <div style="font-size:12px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">✓ You Have</div>
+                <div class="skill-row has"><span>✓</span> Microsoft Excel</div>
+                <div class="skill-row has"><span>✓</span> Power BI</div>
+                <div class="skill-row has"><span>✓</span> Communication & Presentation</div>
+                <div class="skill-row has"><span>✓</span> Business Analysis Methodology</div>
+                <div class="skill-row partial"><span>△</span> SQL — Basic level, needs strengthening</div>
+              </div>
+
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--error);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">○ Needs Work</div>
+                <div class="skill-row missing"><span>○</span> Requirements Gathering</div>
+                <div class="skill-row missing"><span>○</span> BRD/FRD Documentation</div>
+                <div class="skill-row missing"><span>○</span> Agile/Scrum Methodology</div>
+              </div>
+
+              <div style="margin-top:16px">
+                <div style="font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">⊕ Missing Evidence</div>
+                <div style="padding:12px;background:var(--error-light);border-radius:var(--radius-sm);font-size:13.5px;color:var(--error)">
+                  No Business Analyst project in your portfolio. Add a requirements documentation case study to demonstrate BRD/FRD skills.
+                </div>
+              </div>
+            </div>
+
+            <!-- Improvement Roadmap -->
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header">
+                <div class="section-title">How to Improve Your Match</div>
+                <span class="badge badge-primary">From 72% → ~91%</span>
+              </div>
+              <div>
+                <div class="improvement-step">
+                  <div class="improvement-num">1</div>
+                  <div>
+                    <div style="font-size:14px;font-weight:600;color:var(--gray-800)">Complete SQL Fundamentals</div>
+                    <div style="font-size:13px;color:var(--gray-400);margin-top:3px">⏱ ~1 week · Covers WHERE, JOIN, GROUP BY basics</div>
+                  </div>
+                  <button class="btn btn-sm btn-outline" style="margin-left:auto" onclick="window.location.href='apply.html'">Start →</button>
+                </div>
+                <div class="improvement-step">
+                  <div class="improvement-num">2</div>
+                  <div>
+                    <div style="font-size:14px;font-weight:600;color:var(--gray-800)">Complete BA Case Study Challenge</div>
+                    <div style="font-size:13px;color:var(--gray-400);margin-top:3px">⏱ ~2 hours · Build a portfolio project with BRD</div>
+                  </div>
+                  <button class="btn btn-sm btn-outline" style="margin-left:auto" onclick="window.location.href='apply.html'">Start →</button>
+                </div>
+                <div class="improvement-step">
+                  <div class="improvement-num">3</div>
+                  <div>
+                    <div style="font-size:14px;font-weight:600;color:var(--gray-800)">Requirements Documentation Exercise</div>
+                    <div style="font-size:13px;color:var(--gray-400);margin-top:3px">⏱ ~3 hours · Practice writing BRD & FRD documents</div>
+                  </div>
+                  <button class="btn btn-sm btn-outline" style="margin-left:auto" onclick="showToast('Challenge coming soon!','info')">Soon</button>
+                </div>
+                <div class="improvement-step">
+                  <div class="improvement-num">4</div>
+                  <div>
+                    <div style="font-size:14px;font-weight:600;color:var(--gray-800)">Practice BA Interview Questions</div>
+                    <div style="font-size:13px;color:var(--gray-400);margin-top:3px">⏱ ~2 days · Mock interview with AI feedback</div>
+                  </div>
+                  <button class="btn btn-sm btn-primary" style="margin-left:auto" onclick="window.location.href='interview.html'">Prep →</button>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-full" style="margin-top:16px" onclick="window.location.href='interview.html'">
+                🚀 Create Full Preparation Roadmap
+              </button>
+            </div>
+
+            <!-- Tailor CV -->
+            <div class="ai-box">
+              <div class="ai-box-header">✦ AI Suggestion — Tailor Your CV</div>
+              <div class="ai-box-content">
+                Your CV is missing keywords that ATS systems look for in this role. Consider adding: <strong>"business requirements," "process improvement," "stakeholder management,"</strong> and <strong>"data-driven insights."</strong>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <button class="btn btn-primary btn-sm" onclick="window.location.href='cv.html'">✦ Tailor My CV →</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- Profile Summary -->
+          <div class="card">
+            <div class="section-title" style="margin-bottom:12px">Your Profile</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <div class="avatar avatar-md">AK</div>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--gray-800)">Adil Khan</div>
+                <div style="font-size:12.5px;color:var(--gray-400)">MBA · Woxsen University</div>
+              </div>
+            </div>
+            <div style="margin-bottom:12px">
+              <div style="font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase;margin-bottom:6px">Your Skills</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px">
+                <span class="skill-tag active">Excel</span>
+                <span class="skill-tag active">Power BI</span>
+                <span class="skill-tag active">Python</span>
+                <span class="skill-tag active">SQL</span>
+                <span class="skill-tag active">Business Analysis</span>
+                <span class="skill-tag active">Figma</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase;margin-bottom:6px">Career Readiness</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="progress-bar-wrap" style="flex:1"><div class="progress-bar-fill" data-width="72"></div></div>
+                <span style="font-size:14px;font-weight:800;color:var(--brand-primary)">72%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Saved Jobs -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">Analyzed Jobs</div>
+            </div>
+            <div>
+              <div class="saved-job" onclick="loadPreviousJob(this)">
+                <div class="saved-job-icon">💼</div>
+                <div>
+                  <div class="saved-job-title">Business Analyst Intern</div>
+                  <div class="saved-job-company">Accenture</div>
+                </div>
+                <div class="saved-job-match" style="color:var(--brand-primary)">72%</div>
+              </div>
+              <div class="saved-job" onclick="loadPreviousJob(this)">
+                <div class="saved-job-icon">📊</div>
+                <div>
+                  <div class="saved-job-title">Data Analyst</div>
+                  <div class="saved-job-company">Deloitte</div>
+                </div>
+                <div class="saved-job-match" style="color:var(--warning)">68%</div>
+              </div>
+              <div class="saved-job" onclick="loadPreviousJob(this)">
+                <div class="saved-job-icon">🚀</div>
+                <div>
+                  <div class="saved-job-title">Product Analyst</div>
+                  <div class="saved-job-company">Flipkart</div>
+                </div>
+                <div class="saved-job-match" style="color:var(--success)">74%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tips -->
+          <div class="card" style="background:var(--brand-primary);color:white;border:none">
+            <div style="font-size:14px;font-weight:800;margin-bottom:10px">💡 Pro Tip</div>
+            <div style="font-size:13.5px;color:rgba(255,255,255,0.8);line-height:1.6">
+              Tailor your CV for each specific job. Even small adjustments to match keywords from the job description can significantly improve your ATS score and interview callback rate.
+            </div>
+            <button class="btn" style="margin-top:14px;background:white;color:var(--brand-primary);font-weight:700;width:100%" onclick="window.location.href='cv.html'">
+              Open CV Builder →
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="mobile-nav-slot"></div>
+<div id="fab-slot"></div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>
+mountLayout('jobs', 'Job Analyzer');
+
+function analyzeJob() {
+  const jd = document.getElementById('jobDescription').value.trim();
+  if (jd.length < 50) { showToast('Please paste a job description first', 'error'); return; }
+  const btn = event.target;
+  btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;display:inline-block"></div> Analyzing...';
+  btn.disabled = true;
+  showToast('✦ AI is comparing JD against your profile...', 'info');
+
+  setTimeout(() => {
+    btn.innerHTML = '✦ Analyze This Job';
+    btn.disabled = false;
+    const title = document.getElementById('jobTitle').value || 'Job';
+    const company = document.getElementById('jobCompany').value || 'Company';
+    document.getElementById('matchedJobTitle').textContent = title + ' · ' + company;
+    const result = document.getElementById('jdResult');
+    result.classList.add('show');
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    initCircularProgress();
+    animateProgressBars();
+    showToast('✅ Analysis complete! 72% match found.', 'success');
+  }, 2000);
+}
+
+function clearJD() {
+  document.getElementById('jobDescription').value = '';
+  document.getElementById('jobTitle').value = '';
+  document.getElementById('jobCompany').value = '';
+  document.getElementById('jdResult').classList.remove('show');
+}
+
+function loadSample() {
+  showToast('Sample JD loaded', 'info');
+}
+
+function loadPreviousJob(el) {
+  document.querySelectorAll('.saved-job').forEach(j => j.style.background = '');
+  el.style.background = 'var(--brand-primary-light)';
+  showToast('Job loaded — click Analyze to see your match', 'info');
+}
+</script>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+</body>
+</html>

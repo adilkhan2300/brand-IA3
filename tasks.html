@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tasks — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .tasks-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+    @media (max-width: 1100px) { .tasks-layout { grid-template-columns: 1fr; } }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+    .task-item:hover { box-shadow: var(--shadow-md); border-color: var(--gray-300); }
+    .task-item.completed { opacity: 0.55; }
+    .task-item.completed .task-title { text-decoration: line-through; }
+    .task-item.priority-high { border-left: 3px solid var(--error); }
+    .task-item.priority-medium { border-left: 3px solid var(--warning); }
+    .task-item.priority-low { border-left: 3px solid var(--success); }
+
+    .task-checkbox {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--gray-300);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: all var(--transition-fast);
+    }
+    .task-checkbox.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+      font-size: 12px;
+    }
+    .task-checkbox:hover { border-color: var(--brand-primary); }
+    .task-title { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+    .task-meta { display: flex; gap: 8px; align-items: center; margin-top: 5px; flex-wrap: wrap; }
+    .task-actions { margin-left: auto; display: flex; gap: 6px; opacity: 0; transition: opacity var(--transition-fast); }
+    .task-item:hover .task-actions { opacity: 1; }
+    .task-action-btn {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: var(--gray-100);
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background var(--transition-fast);
+    }
+    .task-action-btn:hover { background: var(--gray-200); }
+
+    /* Day Plan */
+    .plan-block {
+      display: flex;
+      gap: 12px;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--brand-primary);
+      background: var(--brand-primary-light);
+      margin-bottom: 8px;
+    }
+    .plan-time {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--brand-primary);
+      white-space: nowrap;
+      min-width: 80px;
+    }
+    .plan-task { font-size: 13.5px; font-weight: 600; color: var(--gray-800); }
+    .plan-sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+    .plan-break {
+      background: var(--gray-50);
+      border-left-color: var(--gray-300);
+    }
+    .plan-break .plan-task { color: var(--gray-400); }
+
+    /* Add task modal */
+    .add-task-form { display: flex; flex-direction: column; gap: 12px; }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-slot"></div>
+
+<div class="app-layout">
+  <div class="main-content" style="margin-left:var(--sidebar-width)">
+    <div id="header-slot"></div>
+    <div class="page-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Tasks ✓</h1>
+          <p class="page-subtitle">3 tasks remaining · AI prioritized for your day</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-outline" onclick="openPlanModal()">🤖 Plan My Day</button>
+          <button class="btn btn-primary" onclick="openAddTask()">+ Add Task</button>
+        </div>
+      </div>
+
+      <div class="tasks-layout">
+
+        <!-- Tasks List -->
+        <div>
+          <!-- Filter Tabs -->
+          <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+            <div class="tab-nav">
+              <button class="tab-btn active" onclick="filterTasks('all',this)">All (7)</button>
+              <button class="tab-btn" onclick="filterTasks('pending',this)">Pending (3)</button>
+              <button class="tab-btn" onclick="filterTasks('done',this)">Done (4)</button>
+            </div>
+            <select class="form-select" style="height:36px;width:auto;font-size:13px" onchange="sortTasks(this.value)">
+              <option value="ai">✦ AI Priority</option>
+              <option value="deadline">Deadline</option>
+              <option value="subject">Subject</option>
+            </select>
+          </div>
+
+          <!-- AI Priority Banner -->
+          <div class="ai-box" style="margin-bottom:16px">
+            <div class="ai-box-header">✦ AI Task Priority</div>
+            <div class="ai-box-content">Based on your deadlines and career goals, I've prioritized your tasks. Start with the <strong>Business Analytics Assignment</strong> — it's due tomorrow and connects to your top career match.</div>
+          </div>
+
+          <!-- Task Items -->
+          <div id="taskList">
+
+            <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin-bottom:6px">🔴 High Priority</div>
+
+            <div class="task-item priority-high" id="task1">
+              <div class="task-checkbox" id="chk1" onclick="toggleTask(1)"></div>
+              <div style="flex:1;min-width:0">
+                <div class="task-title">Complete Business Analytics Assignment</div>
+                <div class="task-meta">
+                  <span class="badge badge-error">Due Tomorrow</span>
+                  <span class="badge badge-gray">Business Analytics</span>
+                  <span style="font-size:12px;color:var(--gray-400)">⏱ ~90 min</span>
+                </div>
+              </div>
+              <div class="task-actions">
+                <button class="task-action-btn" onclick="window.location.href='focus.html'" data-tooltip="Start Focus Session">⏱</button>
+                <button class="task-action-btn" onclick="deleteTask(1)" data-tooltip="Delete">🗑</button>
+              </div>
+            </div>
+
+            <div class="task-item priority-high" id="task2">
+              <div class="task-checkbox" id="chk2" onclick="toggleTask(2)"></div>
+              <div style="flex:1;min-width:0">
+                <div class="task-title">Revise for Corporate Finance mid-term</div>
+                <div class="task-meta">
+                  <span class="badge badge-error">Due in 2 days</span>
+                  <span class="badge badge-gray">Corporate Finance</span>
+                  <span style="font-size:12px;color:var(--gray-400)">⏱ ~60 min</span>
+                </div>
+              </div>
+              <div class="task-actions">
+                <button class="task-action-btn" onclick="window.location.href='focus.html'">⏱</button>
+                <button class="task-action-btn" onclick="deleteTask(2)">🗑</button>
+              </div>
+            </div>
+
+            <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin:12px 0 6px">🟡 Medium Priority</div>
+
+            <div class="task-item priority-medium" id="task3">
+              <div class="task-checkbox" id="chk3" onclick="toggleTask(3)"></div>
+              <div style="flex:1;min-width:0">
+                <div class="task-title">Prepare Brand Management presentation</div>
+                <div class="task-meta">
+                  <span class="badge badge-warning">In 3 days</span>
+                  <span class="badge badge-gray">Brand Management</span>
+                  <span style="font-size:12px;color:var(--gray-400)">⏱ ~2 hrs</span>
+                </div>
+              </div>
+              <div class="task-actions">
+                <button class="task-action-btn" onclick="window.location.href='focus.html'">⏱</button>
+                <button class="task-action-btn" onclick="deleteTask(3)">🗑</button>
+              </div>
+            </div>
+
+            <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin:12px 0 6px">🟢 Completed</div>
+
+            <div class="task-item priority-low completed" id="task4">
+              <div class="task-checkbox checked" id="chk4" onclick="toggleTask(4)">✓</div>
+              <div style="flex:1">
+                <div class="task-title">Upload Business Analytics lecture notes</div>
+                <div class="task-meta">
+                  <span class="badge badge-success">Completed</span>
+                  <span class="badge badge-gray">Business Analytics</span>
+                </div>
+              </div>
+            </div>
+            <div class="task-item priority-low completed" id="task5">
+              <div class="task-checkbox checked" id="chk5" onclick="toggleTask(5)">✓</div>
+              <div style="flex:1">
+                <div class="task-title">Complete Porter's Five Forces challenge</div>
+                <div class="task-meta">
+                  <span class="badge badge-success">Completed</span>
+                  <span class="badge badge-gray">Strategy</span>
+                </div>
+              </div>
+            </div>
+            <div class="task-item priority-low completed" id="task6">
+              <div class="task-checkbox checked" id="chk6" onclick="toggleTask(6)">✓</div>
+              <div style="flex:1">
+                <div class="task-title">Review flashcards — Descriptive Analytics</div>
+                <div class="task-meta">
+                  <span class="badge badge-success">Completed</span>
+                  <span class="badge badge-gray">Business Analytics</span>
+                </div>
+              </div>
+            </div>
+            <div class="task-item priority-low completed" id="task7">
+              <div class="task-checkbox checked" id="chk7" onclick="toggleTask(7)">✓</div>
+              <div style="flex:1">
+                <div class="task-title">Analyze Business Analyst Intern job description</div>
+                <div class="task-meta">
+                  <span class="badge badge-success">Completed</span>
+                  <span class="badge badge-gray">Career</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Day Plan -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">📅 Today's Schedule</div>
+              <button class="btn btn-ghost btn-sm" onclick="openPlanModal()">Re-plan</button>
+            </div>
+            <div id="dayPlan">
+              <div class="plan-block">
+                <div class="plan-time">6:00–6:45</div>
+                <div>
+                  <div class="plan-task">Business Analytics Assignment</div>
+                  <div class="plan-sub">45 min deep work · High priority</div>
+                </div>
+              </div>
+              <div class="plan-block plan-break">
+                <div class="plan-time">6:45–7:00</div>
+                <div>
+                  <div class="plan-task">Break ☕</div>
+                  <div class="plan-sub">Rest &amp; recharge</div>
+                </div>
+              </div>
+              <div class="plan-block">
+                <div class="plan-time">7:00–7:40</div>
+                <div>
+                  <div class="plan-task">Brand Management Prep</div>
+                  <div class="plan-sub">40 min · Slides &amp; content</div>
+                </div>
+              </div>
+              <div class="plan-block plan-break">
+                <div class="plan-time">7:40–8:00</div>
+                <div>
+                  <div class="plan-task">Flashcard Revision ⚡</div>
+                  <div class="plan-sub">20 min · Business Analytics deck</div>
+                </div>
+              </div>
+              <div class="plan-block">
+                <div class="plan-time">8:00–8:45</div>
+                <div>
+                  <div class="plan-task">Corporate Finance Revision</div>
+                  <div class="plan-sub">45 min · Key formulas &amp; concepts</div>
+                </div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div style="font-size:12px;color:var(--gray-400);text-align:center">✦ AI generated this plan based on your deadlines and energy patterns</div>
+          </div>
+
+          <div class="card">
+            <div class="section-title" style="margin-bottom:14px">📊 Task Stats</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--gray-600);margin-bottom:6px">
+                  <span>Completion Rate</span><span>57%</span>
+                </div>
+                <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="57"></div></div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1;text-align:center;background:var(--success-light);border-radius:10px;padding:12px">
+                  <div style="font-size:22px;font-weight:800;color:var(--success)">4</div>
+                  <div style="font-size:11px;color:var(--success);font-weight:600">Completed</div>
+                </div>
+                <div style="flex:1;text-align:center;background:var(--error-light);border-radius:10px;padding:12px">
+                  <div style="font-size:22px;font-weight:800;color:var(--error)">3</div>
+                  <div style="font-size:11px;color:var(--error);font-weight:600">Pending</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Plan My Day Modal -->
+      <div class="modal-backdrop" id="planModal">
+        <div class="modal">
+          <div class="modal-header">
+            <div class="modal-title">🤖 AI Day Planner</div>
+            <button class="modal-close" onclick="closePlanModal()">✕</button>
+          </div>
+          <div class="ai-box" style="margin-bottom:16px">
+            <div class="ai-box-header">✦ Generating your personalized plan...</div>
+            <div class="ai-box-content">I'll arrange your tasks based on deadline urgency, estimated duration, difficulty, and your best focus times.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="form-group">
+              <label class="form-label">Start Time</label>
+              <input type="time" class="form-input" value="06:00" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Available Hours</label>
+              <select class="form-select">
+                <option>2 hours</option>
+                <option selected>3 hours</option>
+                <option>4 hours</option>
+                <option>6 hours</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Break preference</label>
+              <select class="form-select">
+                <option>Short breaks (5 min)</option>
+                <option selected>Moderate breaks (10-15 min)</option>
+                <option>Long breaks (30 min)</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:20px">
+            <button class="btn btn-primary btn-full" onclick="generatePlan()">✦ Generate My Plan</button>
+            <button class="btn btn-secondary" onclick="closePlanModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Task Modal -->
+      <div class="modal-backdrop" id="addTaskModal">
+        <div class="modal">
+          <div class="modal-header">
+            <div class="modal-title">+ Add New Task</div>
+            <button class="modal-close" onclick="closeAddTask()">✕</button>
+          </div>
+          <div class="add-task-form">
+            <div class="form-group">
+              <label class="form-label">Task Name</label>
+              <input type="text" class="form-input" id="newTaskName" placeholder="e.g. Complete Business Analytics assignment" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <select class="form-select" id="newTaskSubject">
+                  <option>Business Analytics</option>
+                  <option>Brand Management</option>
+                  <option>Corporate Finance</option>
+                  <option>Managerial Economics</option>
+                  <option>Career</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select class="form-select" id="newTaskPriority">
+                  <option value="high">High</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-input" id="newTaskDate" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Est. Time</label>
+                <select class="form-select" id="newTaskTime">
+                  <option>15 min</option>
+                  <option>30 min</option>
+                  <option>45 min</option>
+                  <option selected>60 min</option>
+                  <option>90 min</option>
+                  <option>2+ hours</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes (optional)</label>
+              <textarea class="form-textarea" style="min-height:70px" placeholder="Any additional notes..."></textarea>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:20px">
+            <button class="btn btn-primary btn-full" onclick="addTask()">Add Task</button>
+            <button class="btn btn-secondary" onclick="closeAddTask()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="mobile-nav-slot"></div>
+<div id="fab-slot"></div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>
+mountLayout('tasks', 'Tasks');
+
+function toggleTask(id) {
+  const item = document.getElementById('task' + id);
+  const chk = document.getElementById('chk' + id);
+  const isCompleted = item.classList.contains('completed');
+  item.classList.toggle('completed');
+  if (!isCompleted) {
+    chk.classList.add('checked');
+    chk.textContent = '✓';
+    showToast('Task completed! Great work 🎉', 'success');
+  } else {
+    chk.classList.remove('checked');
+    chk.textContent = '';
+    showToast('Task marked as pending', 'info');
+  }
+}
+
+function deleteTask(id) {
+  const item = document.getElementById('task' + id);
+  item.style.animation = 'slideOutRight 0.3s ease forwards';
+  setTimeout(() => item.remove(), 300);
+  showToast('Task removed', 'info');
+}
+
+function filterTasks(filter, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const items = document.querySelectorAll('.task-item');
+  items.forEach(item => {
+    if (filter === 'all') item.style.display = '';
+    else if (filter === 'pending') item.style.display = item.classList.contains('completed') ? 'none' : '';
+    else item.style.display = item.classList.contains('completed') ? '' : 'none';
+  });
+}
+
+function sortTasks(by) { showToast('Sorted by ' + by, 'info'); }
+
+function openPlanModal() { document.getElementById('planModal').classList.add('open'); }
+function closePlanModal() { document.getElementById('planModal').classList.remove('open'); }
+function generatePlan() {
+  closePlanModal();
+  showToast('✦ AI plan generated for your day!', 'success');
+}
+
+function openAddTask() { document.getElementById('addTaskModal').classList.add('open'); }
+function closeAddTask() { document.getElementById('addTaskModal').classList.remove('open'); }
+function addTask() {
+  const name = document.getElementById('newTaskName').value.trim();
+  if (!name) { showToast('Please enter a task name', 'error'); return; }
+  const priority = document.getElementById('newTaskPriority').value;
+  const subj = document.getElementById('newTaskSubject').value;
+  
+  const list = document.getElementById('taskList');
+  const newTask = document.createElement('div');
+  newTask.className = `task-item priority-${priority}`;
+  newTask.innerHTML = `
+    <div class="task-checkbox" onclick="this.classList.toggle('checked');this.textContent=this.classList.contains('checked')?'✓':''"></div>
+    <div style="flex:1">
+      <div class="task-title">${name}</div>
+      <div class="task-meta">
+        <span class="badge badge-${priority==='high'?'error':priority==='medium'?'warning':'success'}">${priority}</span>
+        <span class="badge badge-gray">${subj}</span>
+      </div>
+    </div>
+  `;
+  list.insertBefore(newTask, list.querySelector('[style*="Completed"]') || null);
+  closeAddTask();
+  showToast('Task added!', 'success');
+}
+</script>
+</body>
+</html>

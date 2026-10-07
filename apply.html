@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .apply-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+    @media (max-width: 1100px) { .apply-layout { grid-template-columns: 1fr; } }
+
+    .challenge-header {
+      background: linear-gradient(135deg, var(--gray-950), #1e3a5f);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      color: white;
+      margin-bottom: 20px;
+    }
+    .challenge-headline {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      margin-bottom: 6px;
+    }
+    .challenge-headline span { color: var(--brand-accent); }
+
+    .challenge-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .challenge-meta-bar {
+      background: var(--gray-50);
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .challenge-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--gray-600); }
+    .challenge-body { padding: 28px; }
+
+    .challenge-section {
+      margin-bottom: 20px;
+    }
+    .challenge-section-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--brand-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .challenge-section-content {
+      font-size: 15px;
+      color: var(--gray-800);
+      line-height: 1.7;
+      padding: 14px 18px;
+      background: var(--gray-50);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gray-200);
+    }
+    .challenge-task-box {
+      background: linear-gradient(135deg, var(--brand-primary-light), #e8f0fe);
+      border: 1.5px solid rgba(26,86,219,0.2);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+    }
+    .challenge-task-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--brand-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .challenge-task-text { font-size: 15px; color: var(--gray-900); line-height: 1.7; font-weight: 500; }
+
+    /* Evaluation Results */
+    .eval-panel { display: none; }
+    .eval-panel.show { display: block; animation: pageEnter 0.4s ease; }
+
+    .score-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    @media (max-width: 640px) { .score-grid { grid-template-columns: repeat(2,1fr); } }
+
+    .score-bar-item { text-align: center; }
+    .score-bar-label { font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px; }
+    .score-bar-value { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+
+    .skills-demonstrated { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* Challenge Library */
+    .challenge-library-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin-bottom: 10px;
+    }
+    .challenge-library-item:hover { border-color: var(--brand-primary); background: var(--brand-primary-light); }
+    .challenge-library-item.active { border-color: var(--brand-primary); background: var(--brand-primary-light); }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-slot"></div>
+
+<div class="app-layout">
+  <div class="main-content" style="margin-left:var(--sidebar-width)">
+    <div id="header-slot"></div>
+    <div class="page-content">
+
+      <!-- Header -->
+      <div class="challenge-header">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <span class="badge" style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9)">⚡ Apply Engine</span>
+          <span class="badge" style="background:rgba(16,185,129,0.2);color:#6ee7b7">Core Differentiator</span>
+        </div>
+        <div class="challenge-headline">Can you use <span>what you learned?</span></div>
+        <div style="font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6;max-width:580px">
+          AFTERCLASS takes what you've studied and challenges you to apply it to real business scenarios. Your responses are evaluated by AI and can be added directly to your portfolio.
+        </div>
+      </div>
+
+      <div class="apply-layout">
+
+        <!-- Challenge Area -->
+        <div>
+
+          <!-- Active Challenge -->
+          <div class="challenge-card" id="challengeCard">
+            <div class="challenge-meta-bar">
+              <div class="challenge-meta-item">📚 <span>Concept: <strong>Porter's Five Forces</strong></span></div>
+              <div class="challenge-meta-item">🏢 <span>Industry: <strong>Food Delivery</strong></span></div>
+              <div class="challenge-meta-item">⏱ <span>Est: <strong>20–30 min</strong></span></div>
+              <div class="challenge-meta-item">🎯 <span>Difficulty: <strong>Intermediate</strong></span></div>
+              <button class="btn btn-ghost btn-sm" onclick="newChallenge()" style="margin-left:auto">↺ New Challenge</button>
+            </div>
+
+            <div class="challenge-body">
+              <div class="challenge-section">
+                <div class="challenge-section-label">📖 Concept</div>
+                <div class="challenge-section-content">
+                  <strong>Porter's Five Forces</strong> is a strategic framework developed by Michael Porter to analyze the competitive forces that shape an industry and determine its profitability. The five forces are: Competitive Rivalry, Threat of New Entrants, Bargaining Power of Suppliers, Bargaining Power of Buyers, and Threat of Substitutes.
+                </div>
+              </div>
+
+              <div class="challenge-section">
+                <div class="challenge-section-label">🏢 Business Context</div>
+                <div class="challenge-section-content">
+                  <strong>Industry:</strong> Food Delivery (e.g., Swiggy, Zomato, Uber Eats)<br><br>
+                  A food delivery company is <strong>losing market share</strong> in a highly competitive market. Customer retention rates have dropped by 18% over the last two quarters, and a new international competitor has recently entered the market with aggressive pricing.
+                </div>
+              </div>
+
+              <div class="challenge-task-box">
+                <div class="challenge-task-label">🎯 Your Task</div>
+                <div class="challenge-task-text">
+                  Using <strong>Porter's Five Forces framework</strong>, analyze the food delivery industry:<br><br>
+                  1. Identify the <strong>two biggest competitive threats</strong> this company faces<br>
+                  2. Explain <strong>why</strong> each threat is significant with evidence<br>
+                  3. Recommend <strong>one strategic response</strong> for each threat
+                </div>
+              </div>
+
+              <div style="margin-top:20px">
+                <label class="form-label" style="font-size:14px;margin-bottom:8px;display:block">📝 Your Analysis</label>
+                <textarea class="form-textarea" id="userAnswer" style="min-height:240px;font-size:14px;line-height:1.7"
+                  placeholder="Structure your answer clearly:
+
+THREAT 1: [Name the force]
+Why significant: [Evidence and reasoning]
+Strategic Response: [Your recommendation]
+
+THREAT 2: [Name the force]  
+Why significant: [Evidence and reasoning]
+Strategic Response: [Your recommendation]"></textarea>
+              </div>
+
+              <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-lg" onclick="submitChallenge()">
+                  ✦ Submit for AI Evaluation
+                </button>
+                <button class="btn btn-outline" onclick="showFramework()">📖 Show Framework</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('fileUpload').click()">⬆ Upload Document</button>
+                <input type="file" id="fileUpload" style="display:none" onchange="showToast('Document uploaded for evaluation','success')" />
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Evaluation (hidden until submit) -->
+          <div class="eval-panel" id="evalPanel">
+            <div class="card" style="margin-top:20px;border:2px solid var(--success)">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+                <div style="font-size:32px">✦</div>
+                <div>
+                  <div style="font-size:18px;font-weight:800;color:var(--gray-900)">AI Evaluation Complete</div>
+                  <div style="font-size:14px;color:var(--gray-500)">Porter's Five Forces — Food Delivery Industry</div>
+                </div>
+                <div style="margin-left:auto;text-align:center">
+                  <div style="font-size:32px;font-weight:900;color:var(--brand-primary)">83<span style="font-size:20px">%</span></div>
+                  <div style="font-size:12px;color:var(--gray-400)">Overall Score</div>
+                </div>
+              </div>
+
+              <div class="score-grid">
+                <div class="score-bar-item">
+                  <div class="score-bar-label">Concept Understanding</div>
+                  <div class="score-bar-value" style="color:var(--brand-primary)">85%</div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" data-width="85" style="background:var(--brand-primary)"></div>
+                  </div>
+                </div>
+                <div class="score-bar-item">
+                  <div class="score-bar-label">Application</div>
+                  <div class="score-bar-value" style="color:var(--brand-accent)">78%</div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" data-width="78" style="background:var(--brand-accent)"></div>
+                  </div>
+                </div>
+                <div class="score-bar-item">
+                  <div class="score-bar-label">Business Reasoning</div>
+                  <div class="score-bar-value" style="color:var(--success)">82%</div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" data-width="82" style="background:var(--success)"></div>
+                  </div>
+                </div>
+                <div class="score-bar-item">
+                  <div class="score-bar-label">Clarity & Structure</div>
+                  <div class="score-bar-value" style="color:var(--warning)">88%</div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" data-width="88" style="background:var(--warning)"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="ai-box" style="margin-bottom:16px">
+                <div class="ai-box-header">✦ AI Feedback</div>
+                <div class="ai-box-content">
+                  <strong>What you did well:</strong> You correctly identified <em>Competitive Rivalry</em> as the primary threat and provided solid reasoning around new entrant pricing pressure. Your recommendation on loyalty programs is strategically sound.<br><br>
+                  <strong>Areas to strengthen:</strong> Your analysis of <em>Supplier Power</em> needs more supporting evidence — specifically around restaurant partner leverage and commission rate negotiations. Consider including data or industry examples.<br><br>
+                  <strong>Business Reasoning:</strong> Strong logical flow overall. Try to quantify your strategic recommendations more precisely (e.g., "reduce churn by X%" or "invest ₹Y in loyalty infrastructure").
+                </div>
+              </div>
+
+              <div style="margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:8px">✓ Skills Demonstrated</div>
+                <div class="skills-demonstrated">
+                  <span class="skill-tag active">Strategic Analysis</span>
+                  <span class="skill-tag active">Competitive Analysis</span>
+                  <span class="skill-tag active">Business Frameworks</span>
+                  <span class="skill-tag active">Market Research</span>
+                  <span class="skill-tag active">Business Strategy</span>
+                </div>
+              </div>
+
+              <div style="margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:8px">📈 Recommended Next Steps</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--gray-700)">
+                    <span>1.</span> Strengthen supplier power analysis with real industry data
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--gray-700)">
+                    <span>2.</span> Practice a second framework challenge (SWOT or PESTLE)
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--gray-700)">
+                    <span>3.</span> Add this case study to your portfolio
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-primary" onclick="addToPortfolio()">◈ Add to Portfolio</button>
+                <button class="btn btn-outline" onclick="window.location.href='portfolio.html'">View Portfolio →</button>
+                <button class="btn btn-secondary" onclick="newChallenge()">Try Another Challenge</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sidebar: Challenge Library -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+          <div class="card">
+            <div class="section-title" style="margin-bottom:14px">📚 Challenge Library</div>
+            <div>
+              <div class="challenge-library-item active" onclick="selectChallenge(this, 'porters')">
+                <div style="font-size:20px">⚡</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--gray-800)">Porter's Five Forces</div>
+                  <div style="font-size:12px;color:var(--gray-400)">Food Delivery · Intermediate</div>
+                </div>
+                <span class="badge badge-primary" style="margin-left:auto;flex-shrink:0">Active</span>
+              </div>
+              <div class="challenge-library-item" onclick="selectChallenge(this, 'swot')">
+                <div style="font-size:20px">📊</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--gray-800)">SWOT Analysis</div>
+                  <div style="font-size:12px;color:var(--gray-400)">E-commerce · Beginner</div>
+                </div>
+              </div>
+              <div class="challenge-library-item" onclick="selectChallenge(this, 'descriptive')">
+                <div style="font-size:20px">📈</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--gray-800)">Descriptive Analytics</div>
+                  <div style="font-size:12px;color:var(--gray-400)">Retail Sales · Intermediate</div>
+                </div>
+              </div>
+              <div class="challenge-library-item" onclick="selectChallenge(this, 'branding')">
+                <div style="font-size:20px">🎨</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--gray-800)">Brand Positioning</div>
+                  <div style="font-size:12px;color:var(--gray-400)">FMCG · Advanced</div>
+                </div>
+              </div>
+              <div class="challenge-library-item" onclick="selectChallenge(this, 'npv')">
+                <div style="font-size:20px">💰</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--gray-800)">NPV / Capital Budgeting</div>
+                  <div style="font-size:12px;color:var(--gray-400)">Manufacturing · Hard</div>
+                </div>
+              </div>
+              <button class="btn btn-outline btn-full btn-sm" style="margin-top:8px" onclick="showToast('Loading more challenges...','info')">Load More Challenges</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title" style="margin-bottom:12px">✦ Generate Challenge</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="form-group">
+                <label class="form-label">Topic / Concept</label>
+                <input type="text" class="form-input" id="genConcept" placeholder="e.g. Supply & Demand" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Industry</label>
+                <input type="text" class="form-input" id="genIndustry" placeholder="e.g. Healthcare" />
+              </div>
+              <button class="btn btn-primary btn-full btn-sm" onclick="generateCustomChallenge()">✦ Generate Challenge</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title" style="margin-bottom:12px">📊 Your Progress</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:5px">
+                  <span>Challenges Completed</span><span style="color:var(--brand-primary)">8</span>
+                </div>
+                <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="53"></div></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div style="text-align:center;background:var(--brand-primary-light);padding:10px;border-radius:10px">
+                  <div style="font-size:20px;font-weight:800;color:var(--brand-primary)">83%</div>
+                  <div style="font-size:11px;color:var(--brand-primary);font-weight:600">Avg Score</div>
+                </div>
+                <div style="text-align:center;background:var(--success-light);padding:10px;border-radius:10px">
+                  <div style="font-size:20px;font-weight:800;color:var(--success)">5</div>
+                  <div style="font-size:11px;color:var(--success);font-weight:600">Skills Added</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Framework Modal -->
+      <div class="modal-backdrop" id="frameworkModal">
+        <div class="modal">
+          <div class="modal-header">
+            <div class="modal-title">📖 Porter's Five Forces Framework</div>
+            <button class="modal-close" onclick="document.getElementById('frameworkModal').classList.remove('open')">✕</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px">
+              <span style="font-size:20px">⚔️</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--gray-900)">Competitive Rivalry</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:3px">Intensity of competition between existing firms in the industry.</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px">
+              <span style="font-size:20px">🚀</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--gray-900)">Threat of New Entrants</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:3px">How easy is it for new competitors to enter the market?</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px">
+              <span style="font-size:20px">🤝</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--gray-900)">Bargaining Power of Suppliers</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:3px">How much power do suppliers have over pricing and terms?</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px">
+              <span style="font-size:20px">👥</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--gray-900)">Bargaining Power of Buyers</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:3px">How much power do customers have to negotiate?</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px">
+              <span style="font-size:20px">🔄</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--gray-900)">Threat of Substitutes</div>
+                <div style="font-size:13px;color:var(--gray-500);margin-top:3px">Can customers easily switch to alternative products/services?</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-full" style="margin-top:16px" onclick="document.getElementById('frameworkModal').classList.remove('open')">Got it, back to challenge →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="mobile-nav-slot"></div>
+<div id="fab-slot"></div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>
+mountLayout('apply', 'Apply');
+
+function submitChallenge() {
+  const ans = document.getElementById('userAnswer').value.trim();
+  if (ans.length < 100) {
+    showToast('Please write a more detailed answer (at least 100 characters)', 'error');
+    return;
+  }
+  const btn = event.target;
+  btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;display:inline-block"></div> AI Evaluating...';
+  btn.disabled = true;
+  showToast('✦ AI is evaluating your response...', 'info');
+
+  setTimeout(() => {
+    btn.innerHTML = '✦ Submit for AI Evaluation';
+    btn.disabled = false;
+    document.getElementById('evalPanel').classList.add('show');
+    document.getElementById('evalPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    animateProgressBars();
+    showToast('✅ Evaluation complete! Score: 83%', 'success');
+  }, 2500);
+}
+
+function addToPortfolio() {
+  showToast("✓ Added to Portfolio: Porter's Five Forces — Food Delivery", 'success');
+  setTimeout(() => window.location.href = 'portfolio.html', 1500);
+}
+
+function showFramework() {
+  document.getElementById('frameworkModal').classList.add('open');
+}
+
+function newChallenge() {
+  document.getElementById('userAnswer').value = '';
+  document.getElementById('evalPanel').classList.remove('show');
+  showToast('New challenge loaded!', 'info');
+}
+
+function selectChallenge(el, id) {
+  document.querySelectorAll('.challenge-library-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('evalPanel').classList.remove('show');
+  document.getElementById('userAnswer').value = '';
+  showToast('Challenge loaded! Read the brief and start writing.', 'info');
+}
+
+function generateCustomChallenge() {
+  const concept = document.getElementById('genConcept').value.trim();
+  const industry = document.getElementById('genIndustry').value.trim();
+  if (!concept || !industry) { showToast('Enter both concept and industry', 'error'); return; }
+  showToast(`✦ Generating challenge: ${concept} × ${industry}...`, 'info');
+  setTimeout(() => showToast('Challenge ready! Check the main area.', 'success'), 2000);
+}
+</script>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+</body>
+</html>

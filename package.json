@@ -1,0 +1,18 @@
+{
+  "name": "afterclass-ai",
+  "version": "1.0.0",
+  "description": "AFTERCLASS AI — Turn what students learn into what they can prove.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": [
+    "edtech",
+    "careertech",
+    "ai",
+    "learning-to-career"
+  ],
+  "author": "AFTERCLASS AI Team",
+  "license": "MIT"
+}

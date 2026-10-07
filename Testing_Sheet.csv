@@ -1,0 +1,32 @@
+AFTERCLASS AI — Master Test Execution Sheet & Verification Log
+"Testing Status: COMPLETED FOR INDEX.HTML, AUTHENTICATION & DYNAMIC DASHBOARDS | Overall Result: 100% PASSED"
+
+Test ID,Module / Page,Test Case Description,Pre-conditions,Steps to Execute,Expected Result,Actual Result,Status,Tested Date,Tested By
+TC-IND-01,index.html (Landing Page),Verify Hero Section & Navigation Bar Layout,Browser opens http://localhost:3000/index.html,"1. Open index.html
+2. Inspect top header logo, nav links & main hero text","Hero header displays AFTERCLASS AI logo, title 'Your career starts in your classroom', and CTA buttons.",Hero section rendered cleanly with smooth animations and visible CTAs.,PASSED,2026-10-07,QA Team
+TC-IND-02,index.html (Landing Page),Google Sign Up CTA button click from Landing Page,Landing page loaded,1. Click 'Sign up with Google' CTA button on hero panel,Google OAuth modal pops up allowing choice of Google accounts.,"Modal opened successfully with account options for Adil, Priya, Sam, and custom email.",PASSED,2026-10-07,QA Team
+TC-IND-03,index.html (Landing Page),Interactive Feature Preview Tabs,Landing page loaded,"1. Scroll to 'Platform Features' section
+2. Click on 'AI Notebook', 'Apply', and 'Portfolio' tabs",Tab content switches dynamically with corresponding feature previews and UI mockups.,Tabs responded instantly; mock content and feature badges toggled correctly.,PASSED,2026-10-07,QA Team
+TC-IND-04,index.html (Landing Page),Animated Metrics & Counters,Landing page loaded,"1. Scroll down to impact stats section (10k+ Students, 94% Career Match, etc.)",Counters animate smoothly from 0 to target numbers upon scroll.,Intersection Observer triggered smooth counting animations as expected.,PASSED,2026-10-07,QA Team
+TC-IND-05,index.html (Landing Page),Student Testimonials & Reviews Grid,Landing page loaded,"1. Scroll to 'What Students Say' section
+2. Verify student cards, avatars, and university badges","Cards display student names, universities (Woxsen, IIT, Design Academy), and ratings.","Testimonial cards rendered with proper styling, star ratings, and student quotes.",PASSED,2026-10-07,QA Team
+TC-IND-06,index.html (Landing Page),Footer Links Navigation,Landing page loaded,"1. Scroll to footer
+2. Click on 'Features', 'Login', 'Sign Up', 'Privacy Policy'",Links navigate to corresponding pages without 404 errors.,All footer links routed cleanly to target HTML pages.,PASSED,2026-10-07,QA Team
+TC-IND-07,index.html (Landing Page),Mobile Responsiveness (<= 768px),Viewport set to mobile width (375px / 768px),"1. Resize browser viewport to 375px
+2. Test hamburger menu and hero stacked layout",Mobile sidebar overlay toggles on menu click; elements stack vertically.,Layout adjusted fluidly with zero horizontal overflow.,PASSED,2026-10-07,QA Team
+TC-AUTH-01,Authentication / Google OAuth,Google Sign In Account Selection,Google Modal open,"1. Click 'Continue with Google' on login.html
+2. Select 'Priya Sharma (priya.tech@gmail.com)'",Authenticates as Priya Sharma (CS & AI persona) and redirects to dashboard.html.,Logged in as Priya Sharma with Tech persona active.,PASSED,2026-10-07,QA Team
+TC-AUTH-02,Authentication / Google OAuth,Custom Google Account Sign Up,Google Modal open,"1. Enter custom name 'Alex Tech' and email 'alex.google@gmail.com'
+2. Click Submit",Creates custom Google account for Alex Tech and routes to onboarding.html.,New account created with Google provider badge verified.,PASSED,2026-10-07,QA Team
+TC-AUTH-03,Authentication / Email Sign Up,Normal Email Registration (signup.html),signup.html loaded,"1. Enter First Name, Last Name, Email, Password
+2. Check Terms
+3. Click 'Create Free Account'",User account created in local storage and redirected to onboarding wizard.,Registration succeeded; new user stored in ac_users.,PASSED,2026-10-07,QA Team
+TC-AUTH-04,Authentication / Email Sign In,Normal Email Login (login.html),login.html loaded,"1. Enter valid email & password
+2. Click 'Sign In'",User authenticated; redirected to dashboard.html with active session.,Sign in successful with toast notification displayed.,PASSED,2026-10-07,QA Team
+TC-ONB-01,Onboarding Wizard (onboarding.html),5-Step Profile Customization,"User logged in, onboarding.html loaded","1. Complete Step 1 (Basic Info), Step 2 (Education), Step 3 (Interests), Step 4 (Skills)
+2. Click 'Launch My Dashboard'",Form choices saved to active user profile; redirected to customized dashboard.,"User profile updated with degree, university, and skill preferences.",PASSED,2026-10-07,QA Team
+TC-DASH-01,Dashboard (dashboard.html),MBA Business Dashboard Persona Rendering,Adil Khan active session,1. Navigate to dashboard.html,"Displays MBA greeting, Business Analytics challenge, Porter's 5 Forces, and 72% Readiness Score.","Dashboard rendered MBA specific metrics, tasks, and recommendations.",PASSED,2026-10-07,QA Team
+TC-DASH-02,Dashboard (dashboard.html),Tech & AI Dashboard Persona Rendering,Priya Sharma active session,1. Switch persona to 'Priya (Tech & AI)' via Header Persona Switcher,"Displays CS B.Tech greeting, Distributed Database Sharding challenge, PyTorch benchmarks, 88% Readiness.",Dashboard updated dynamically to Tech persona layout and widgets.,PASSED,2026-10-07,QA Team
+TC-DASH-03,Dashboard (dashboard.html),UI/UX Design Dashboard Persona Rendering,Sam Jordan active session,1. Switch persona to 'Sam (UI/UX Design)',"Displays B.Des greeting, Mobile Checkout Figma challenge, HCI focus, 65% Readiness Score.",Dashboard rendered Design persona components and case study tasks.,PASSED,2026-10-07,QA Team
+TC-DASH-04,Header / Sidebar,Interactive Dashboard Switcher Dropdown,Any dashboard page,1. Select different user from header dropdown,"Page reloads with newly selected user profile, updating sidebar avatar, name, and role.",Header switcher switched active profile instantly.,PASSED,2026-10-07,QA Team
+TC-PROF-01,Profile Page (profile.html),Dynamic Profile Details & Auth Method,"User logged in, profile.html loaded",1. Open profile.html,"Displays active user avatar initials, degree, university, contact email, and Auth Provider badge (Google vs Email).",Profile fields reflected logged in user's exact details.,PASSED,2026-10-07,QA Team

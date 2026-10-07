@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .profile-layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
+    @media (max-width: 1000px) { .profile-layout { grid-template-columns: 1fr; } }
+
+    .profile-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      height: fit-content;
+      position: sticky;
+      top: 80px;
+    }
+    .profile-card-banner {
+      height: 80px;
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+    }
+    .profile-card-body { padding: 0 24px 24px; }
+    .profile-avatar-wrap { margin-top: -32px; margin-bottom: 12px; }
+    .profile-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 26px; font-weight: 800;
+      border: 3px solid white;
+      box-shadow: var(--shadow-md);
+    }
+    .profile-name { font-size: 20px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.5px; }
+    .profile-role { font-size: 13.5px; color: var(--gray-500); margin-top: 2px; }
+    .profile-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      background: var(--brand-primary-light);
+      color: var(--brand-primary);
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .profile-stat-row {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .profile-stat {
+      text-align: center;
+      padding: 10px 6px;
+      background: var(--gray-50);
+      border-radius: var(--radius-md);
+    }
+    .profile-stat-val { font-size: 20px; font-weight: 800; color: var(--gray-900); }
+    .profile-stat-label { font-size: 11px; color: var(--gray-400); font-weight: 500; margin-top: 1px; }
+
+    /* Interest cards */
+    .interest-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-full);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--gray-700);
+      margin: 3px;
+    }
+
+    /* Activity timeline */
+    .timeline-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-left: 2px solid var(--gray-200);
+      margin-left: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -6px;
+      top: 18px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+    .timeline-content { flex: 1; }
+    .timeline-title { font-size: 13.5px; font-weight: 600; color: var(--gray-800); }
+    .timeline-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+    .timeline-time { font-size: 11.5px; color: var(--gray-400); margin-left: auto; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-slot"></div>
+
+<div class="app-layout">
+  <div class="main-content" style="margin-left:var(--sidebar-width)">
+    <div id="header-slot"></div>
+    <div class="page-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Profile ◉</h1>
+          <p class="page-subtitle">Your AFTERCLASS AI learning and career profile</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-outline" onclick="showToast('Profile exported','success')">⬇ Export Profile</button>
+          <button class="btn btn-primary" onclick="showToast('Edit mode enabled','info')">✏ Edit Profile</button>
+        </div>
+      </div>
+
+      <div class="profile-layout">
+
+        <!-- Profile Card -->
+        <div>
+          <div class="profile-card">
+            <div class="profile-card-banner"></div>
+            <div class="profile-card-body">
+              <div class="profile-avatar-wrap">
+                <div class="profile-avatar" id="profAvatar">AK</div>
+              </div>
+              <div class="profile-name" id="profName">Adil Khan</div>
+              <div class="profile-role" id="profRole">MBA · General Management</div>
+              <div class="profile-badge" id="profAuthBadge">✦ Active Student</div>
+
+              <div class="profile-stat-row">
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="profStatHours">124</div>
+                  <div class="profile-stat-label">Study Hours</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="profStatProjects">7</div>
+                  <div class="profile-stat-label">Projects</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="profStatChallenges">8</div>
+                  <div class="profile-stat-label">Challenges</div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div style="margin-bottom:14px">
+                <div style="font-size:12px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Institution</div>
+                <div style="font-size:14px;font-weight:600;color:var(--gray-800)" id="profUni">🏛 Woxsen University</div>
+                <div style="font-size:13px;color:var(--gray-500)" id="profDegreeSub">MBA · 2nd Year · General Management</div>
+              </div>
+
+              <div style="margin-bottom:14px">
+                <div style="font-size:12px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Contact & Auth Method</div>
+                <div style="font-size:13.5px;color:var(--gray-700)" id="profEmail">📧 adil.khan@woxsen.edu.in</div>
+                <div style="font-size:13.5px;color:var(--gray-700);margin-top:3px" id="profMethod">🌐 Auth: Email Password</div>
+              </div>
+
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Career Readiness</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="progress-bar-wrap" style="flex:1;height:10px"><div class="progress-bar-fill" id="profReadinessFill" data-width="72"></div></div>
+                  <span style="font-size:18px;font-weight:900;color:var(--brand-primary)" id="profReadinessVal">72%</span>
+                </div>
+              </div>
+
+              <div style="margin-top:16px">
+                <button class="btn btn-outline btn-full btn-sm" onclick="window.location.href='career.html'">View Career Report →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Content -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+          <!-- Skills -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">⚡ Skills</div>
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Add skill dialog opened','info')">+ Add Skill</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:12px"><div style="font-size:13.5px;font-weight:600;color:var(--gray-800);min-width:130px">Excel</div><div class="progress-bar-wrap" style="flex:1"><div class="progress-bar-fill" data-width="91" style="background:var(--success)"></div></div><div style="font-size:12.5px;font-weight:700;color:var(--success);min-width:32px;text-align:right">91%</div><div style="font-size:11.5px;color:var(--gray-400);min-width:60px;text-align:right">3 projects</div></div>
+              <div style="display:flex;align-items:center;gap:12px"><div style="font-size:13.5px;font-weight:600;color:var(--gray-800);min-width:130px">Power BI</div><div class="progress-bar-wrap" style="flex:1"><div class="progress-bar-fill" data-width="88" style="background:var(--brand-primary)"></div></div><div style="font-size:12.5px;font-weight:700;color:var(--brand-primary);min-width:32px;text-align:right">88%</div><div style="font-size:11.5px;color:var(--gray-400);min-width:60px;text-align:right">2 projects</div></div>
+              <div style="display:flex;align-items:center;gap:12px"><div style="font-size:13.5px;font-weight:600;color:var(--gray-800);min-width:130px">Business Analysis</div><div class="progress-bar-wrap" style="flex:1"><div class="progress-bar-fill" data-width="84" style="background:var(--brand-accent)"></div></div><div style="font-size:12.5px;font-weight:700;color:var(--brand-accent);min-width:32px;text-align:right">84%</div><div style="font-size:11.5px;color:var(--gray-400);min-width:60px;text-align:right">4 projects</div></div>
+              <div style="display:flex;align-items:center;gap:12px"><div style="font-size:13.5px;font-weight:600;color:var(--gray-800);min-width:130px">Python</div><div class="progress-bar-wrap" style="flex:1"><div class="progress-bar-fill" data-width="72" style="background:#8b5cf6"></div></div><div style="font-size:12.5px;font-weight:700;color:#8b5cf6;min-width:32px;text-align:right">72%</div><div style="font-size:11.5px;color:var(--gray-400);min-width:60px;text-align:right">1 project</div></div>
+              <div style="display:flex;align-items:center;gap:12px"><div style="font-size:13.5px;font-weight:600;color:var(--gray-800);min-width:130px">SQL</div><div class="progress-bar-wrap" style="flex:1"><div class="progress-bar-fill" data-width="61" style="background:var(--warning)"></div></div><div style="font-size:12.5px;font-weight:700;color:var(--warning);min-width:32px;text-align:right">61%</div><div style="font-size:11.5px;color:var(--gray-400);min-width:60px;text-align:right">1 project</div></div>
+              <div style="display:flex;align-items:center;gap:12px"><div style="font-size:13.5px;font-weight:600;color:var(--gray-800);min-width:130px">Figma</div><div class="progress-bar-wrap" style="flex:1"><div class="progress-bar-fill" data-width="55" style="background:#ec4899"></div></div><div style="font-size:12.5px;font-weight:700;color:#ec4899;min-width:32px;text-align:right">55%</div><div style="font-size:11.5px;color:var(--gray-400);min-width:60px;text-align:right">1 project</div></div>
+            </div>
+          </div>
+
+          <!-- Current Subjects -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">📚 Current Subjects</div>
+              <span class="badge badge-gray">Semester 3</span>
+            </div>
+            <div class="grid grid-2">
+              <div style="padding:14px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:20px">📊</span><div style="font-size:13px;font-weight:700;color:var(--gray-800)">Business Analytics</div></div><div class="progress-bar-wrap" style="margin-bottom:4px"><div class="progress-bar-fill" data-width="72" style="background:var(--brand-primary)"></div></div><div style="font-size:12px;color:var(--brand-primary);font-weight:700">72% complete</div></div>
+              <div style="padding:14px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:20px">🎨</span><div style="font-size:13px;font-weight:700;color:var(--gray-800)">Brand Management</div></div><div class="progress-bar-wrap" style="margin-bottom:4px"><div class="progress-bar-fill" data-width="58" style="background:var(--brand-accent)"></div></div><div style="font-size:12px;color:var(--brand-accent);font-weight:700">58% complete</div></div>
+              <div style="padding:14px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:20px">💰</span><div style="font-size:13px;font-weight:700;color:var(--gray-800)">Corporate Finance</div></div><div class="progress-bar-wrap" style="margin-bottom:4px"><div class="progress-bar-fill" data-width="45" style="background:var(--warning)"></div></div><div style="font-size:12px;color:var(--warning);font-weight:700">45% complete</div></div>
+              <div style="padding:14px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:20px">📈</span><div style="font-size:13px;font-weight:700;color:var(--gray-800)">Managerial Economics</div></div><div class="progress-bar-wrap" style="margin-bottom:4px"><div class="progress-bar-fill" data-width="38" style="background:var(--success)"></div></div><div style="font-size:12px;color:var(--success);font-weight:700">38% complete</div></div>
+            </div>
+          </div>
+
+          <!-- Career Interests -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">🎯 Career Interests</div>
+              <a class="btn btn-ghost btn-sm" href="career.html">View Matches →</a>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-md);flex:1;min-width:200px;cursor:pointer" onclick="window.location.href='career.html'"><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--gray-800)">💼 Business Analyst</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">Match score</div></div><div style="font-size:18px;font-weight:900;color:var(--brand-primary)">86%</div></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-md);flex:1;min-width:200px;cursor:pointer" onclick="window.location.href='career.html'"><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--gray-800)">📊 Data Analyst</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">Match score</div></div><div style="font-size:18px;font-weight:900;color:var(--brand-accent)">78%</div></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-md);flex:1;min-width:200px;cursor:pointer" onclick="window.location.href='career.html'"><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--gray-800)">🚀 Product Analyst</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">Match score</div></div><div style="font-size:18px;font-weight:900;color:#8b5cf6">74%</div></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-md);flex:1;min-width:200px;cursor:pointer" onclick="window.location.href='career.html'"><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--gray-800)">📈 Marketing Analyst</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">Match score</div></div><div style="font-size:18px;font-weight:900;color:var(--warning)">69%</div></div>
+            </div>
+          </div>
+
+          <!-- Portfolio Projects -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">◈ Portfolio Highlights</div>
+              <a class="btn btn-ghost btn-sm" href="portfolio.html">All Projects →</a>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200);cursor:pointer" onclick="window.location.href='portfolio.html'"><div style="width:36px;height:36px;border-radius:10px;background:rgba(26,86,219,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚡</div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--gray-800)">Porter's Five Forces — Food Delivery</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">83% · Strategic Analysis · Competitive Intelligence</div></div><span style="font-size:16px;color:var(--gray-300)">→</span></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200);cursor:pointer" onclick="window.location.href='portfolio.html'"><div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📊</div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--gray-800)">Retail Analytics Dashboard</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">91% · Power BI · Data Visualization · Excel</div></div><span style="font-size:16px;color:var(--gray-300)">→</span></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200);cursor:pointer" onclick="window.location.href='portfolio.html'"><div style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">💬</div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--gray-800)">Customer Feedback Analysis</div><div style="font-size:12px;color:var(--gray-400);margin-top:2px">In Progress · Python · NLP · Sentiment Analysis</div></div><span style="font-size:16px;color:var(--gray-300)">→</span></div>
+            </div>
+          </div>
+
+          <!-- Activity Timeline -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">🕐 Recent Activity</div>
+            </div>
+            <div>
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:var(--brand-primary)"></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Uploaded Business Analytics lecture notes</div>
+                  <div class="timeline-sub">AI generated summary + 12 flashcards</div>
+                </div>
+                <div class="timeline-time">2h ago</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:var(--success)"></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Completed Porter's Five Forces challenge</div>
+                  <div class="timeline-sub">Score: 83% · Added to Portfolio</div>
+                </div>
+                <div class="timeline-time">Yesterday</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:var(--warning)"></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Focus Session — Business Analytics</div>
+                  <div class="timeline-sub">42 minutes · Descriptive analytics notes</div>
+                </div>
+                <div class="timeline-time">Yesterday</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:#8b5cf6"></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Job Description Analyzed — BA Intern (Accenture)</div>
+                  <div class="timeline-sub">72% profile match · Interview roadmap created</div>
+                </div>
+                <div class="timeline-time">2 days ago</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Achievements -->
+          <div class="card">
+            <div class="card-header">
+              <div class="section-title">🏆 Achievements</div>
+              <a class="btn btn-ghost btn-sm" href="portfolio.html">All →</a>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;background:var(--gray-50);border-radius:12px;min-width:72px;text-align:center;border:1px solid var(--gray-200)">
+                <div style="font-size:24px">🔥</div>
+                <div style="font-size:11.5px;font-weight:600;color:var(--gray-600)">5-Day Streak</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;background:var(--gray-50);border-radius:12px;min-width:72px;text-align:center;border:1px solid var(--gray-200)">
+                <div style="font-size:24px">⚡</div>
+                <div style="font-size:11.5px;font-weight:600;color:var(--gray-600)">First Challenge</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;background:var(--gray-50);border-radius:12px;min-width:72px;text-align:center;border:1px solid var(--gray-200)">
+                <div style="font-size:24px">◈</div>
+                <div style="font-size:11.5px;font-weight:600;color:var(--gray-600)">Portfolio Builder</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;background:var(--gray-50);border-radius:12px;min-width:72px;text-align:center;border:1px solid var(--gray-200)">
+                <div style="font-size:24px">🎯</div>
+                <div style="font-size:11.5px;font-weight:600;color:var(--gray-600)">80%+ Score</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;background:var(--gray-50);border-radius:12px;min-width:72px;text-align:center;border:1px solid var(--gray-200)">
+                <div style="font-size:24px">📓</div>
+                <div style="font-size:11.5px;font-weight:600;color:var(--gray-600)">Note Taker</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px;background:var(--gray-50);border-radius:12px;min-width:72px;text-align:center;border:2px dashed var(--gray-200);cursor:pointer;opacity:0.5" onclick="showToast('Keep completing challenges to unlock more!','info')">
+                <div style="font-size:24px">🔒</div>
+                <div style="font-size:11.5px;font-weight:600;color:var(--gray-400)">Locked</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings / Sign Out -->
+          <div class="card">
+            <div class="section-title" style="margin-bottom:14px">Account</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm" onclick="showToast('Settings opened','info')">⚙ Settings</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Notification preferences opened','info')">🔔 Notifications</button>
+              <button class="btn btn-outline btn-sm" onclick="if(confirm('Reset your profile to blank? All customized data will be reset.')) userData.createBlankProfile()">✨ Reset to Blank Profile</button>
+              <button class="btn btn-danger btn-sm" onclick="if(confirm('Sign out of AFTERCLASS AI?')) authManager.signOut()">Sign Out</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="mobile-nav-slot"></div>
+<div id="fab-slot"></div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>
+mountLayout('profile', 'Profile');
+
+document.addEventListener('DOMContentLoaded', () => {
+  const user = userData.getCurrentUser();
+  if (!user) return;
+
+  if (document.getElementById('profAvatar')) document.getElementById('profAvatar').textContent = user.initials || 'AK';
+  if (document.getElementById('profName')) document.getElementById('profName').textContent = user.name || 'Student';
+  if (document.getElementById('profRole')) document.getElementById('profRole').textContent = `${user.degree || 'Degree'} · ${user.specialization || 'General'}`;
+  if (document.getElementById('profAuthBadge')) document.getElementById('profAuthBadge').textContent = user.authProvider === 'Google' ? '🌐 Google Verified' : '📧 Email Verified';
+  if (document.getElementById('profStatHours')) document.getElementById('profStatHours').textContent = (user.focusMinutes ? Math.round(user.focusMinutes * 2.5) : 124);
+  if (document.getElementById('profStatProjects')) document.getElementById('profStatProjects').textContent = user.projects || 7;
+  if (document.getElementById('profStatChallenges')) document.getElementById('profStatChallenges').textContent = Math.round((user.projects || 7) * 1.2);
+  if (document.getElementById('profUni')) document.getElementById('profUni').textContent = `🏛 ${user.university || 'University'}`;
+  if (document.getElementById('profDegreeSub')) document.getElementById('profDegreeSub').textContent = `${user.degree || 'Degree'} · ${user.year || '2nd Year'} · ${user.specialization || 'General'}`;
+  if (document.getElementById('profEmail')) document.getElementById('profEmail').textContent = `📧 ${user.email}`;
+  if (document.getElementById('profMethod')) document.getElementById('profMethod').textContent = `🔑 Signed in via ${user.authProvider || 'Email'}`;
+  if (document.getElementById('profReadinessVal')) document.getElementById('profReadinessVal').textContent = `${user.readinessScore || 72}%`;
+});
+</script>
+</body>
+</html>

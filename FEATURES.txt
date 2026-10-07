@@ -1,0 +1,153 @@
+================================================================================
+                         AFTERCLASS AI — PLATFORM FEATURES
+================================================================================
+TAGLINE:     "Learn it. Apply it. Prove it."
+PLATFORM:    AI-Powered Learning-to-Career Platform for University Students
+WEBSITE:     AFTERCLASS AI Prototype
+
+CORE BRAND IDEA & POINT OF DIFFERENCE (POD):
+--------------------------------------------------------------------------------
+Most EdTech tools only offer AI summaries, flashcards, or basic resume builders.
+AFTERCLASS AI is fundamentally different.
+
+CORE POD: "AFTERCLASS turns what students learn into what they can prove."
+
+THE COMPLETE STUDENT JOURNEY:
+LEARN ---> FOCUS ---> PLAN ---> APPLY ---> PROVE ---> BUILD ---> DISCOVER ---> MATCH ---> PREPARE
+
+================================================================================
+                            DETAILED FEATURE BREAKDOWN
+================================================================================
+
+1. AI NOTEBOOK & STUDY ASSISTANT (notebook.html)
+--------------------------------------------------------------------------------
+• Lecture Note Processing: Upload slides, PDFs, or raw notes.
+• AI Summary Generation: Automatically extracts core concepts and key points.
+• Interactive 3D Flashcards: 
+  - Flip animation to reveal answers.
+  - Rating system (Easy, Revisit Soon, Hard Practice) with progress tracking.
+  - Shuffle and card navigation controls.
+• Self-Grading Quizzes: Auto-generated multiple-choice questions with instant 
+  feedback, answer keys, and score calculation.
+• AI Document Assistant: Ask specific questions about your course material with 
+  instant context-aware responses.
+
+2. FOCUS SESSION & STUDY TIMER (focus.html)
+--------------------------------------------------------------------------------
+• Pomodoro & Custom Study Timer: Countdown timer with start, pause, resume, and 
+  end-session controls.
+• Session Presets: Quick start for 25-minute, 45-minute, or 60-minute study blocks.
+• Streak Tracker: Visual weekly study streak counter (Mon-Sun).
+• Session History: Tracks total time focused, subject tags, and completion rates.
+• AI Session Recap: Generates key study insights and performance feedback 
+  after every session.
+
+3. SMART TASK MANAGER & AI DAILY PLANNER (tasks.html)
+--------------------------------------------------------------------------------
+• Priority Categorization: Group tasks by High (Red), Medium (Yellow), and 
+  Low/Completed (Green) priority levels.
+• Instant Task Toggling & Deletion: Check off completed items or remove tasks.
+• Filter Tabs: Toggle views between All Tasks, Pending Tasks, and Completed Tasks.
+• + Add Task Modal: Create custom tasks with priority, subject tags, and time estimates.
+• AI Daily Planner ("Plan My Day"): Automatically structures your study and 
+  assignment schedule for maximum efficiency.
+
+4. APPLY ENGINE & BUSINESS SCENARIO EVALUATOR (apply.html)
+--------------------------------------------------------------------------------
+• Real-World Business Challenges: Solve actual business problems based on 
+  university concepts (e.g., Porter's Five Forces analysis for food delivery apps).
+• Framework Reference Modals: Pop-up guide cards explaining strategic business 
+  frameworks while you work.
+• AI Response Evaluator: Submits your written business analysis to AI for 
+  instant scoring across 4 pillars:
+  1. Concept Understanding
+  2. Practical Application
+  3. Business Reasoning
+  4. Clarity & Structure
+• Portfolio Export: Directly convert completed high-scoring challenges into 
+  verified portfolio projects.
+
+5. VERIFIED PORTFOLIO BUILDER (portfolio.html)
+--------------------------------------------------------------------------------
+• Verified Projects Showcase: Displays completed challenges and student projects 
+  with AI-verified quality scores.
+• Skills Evidence Matrix: Maps specific skills (Excel, Power BI, SQL, Python, 
+  Business Analysis) directly to evidence from completed projects.
+• Certificate Vault: Store and link certificates from Microsoft Learn, Coursera, 
+  and university courses.
+• Achievement Badges: Earn unlockable badges (e.g. 5-Day Streak, Portfolio Builder, 
+  80%+ Challenge Score).
+
+6. ATS CV OPTIMIZER & GAP ANALYZER (cv.html)
+--------------------------------------------------------------------------------
+• ATS Compatibility Score: Live ATS score calculator evaluating your resume 
+  against target job roles.
+• Skill Gap Identification: Highlights missing keywords (e.g. SQL, Requirements 
+  Documentation) required by top employers.
+• Section Customization: Toggle visibility and edit Summary, Work Experience, 
+  Projects, and Education.
+• PDF Export Simulation: 1-click download of ATS-formatted resume.
+
+7. CAREER DISCOVERY & ROLE MATCH RADAR (career.html)
+--------------------------------------------------------------------------------
+• Target Role Match Scores: Calculates AI fit percentages for top career paths:
+  - Business Analyst (86% Match)
+  - Data Analyst (78% Match)
+  - Product Analyst (74% Match)
+  - Marketing Analyst (69% Match)
+• Skill Breakdown: Detailed view of strong matching skills vs gaps to fill for 
+  each career path.
+• Career Readiness Meter: Measures overall readiness for your target industry.
+
+8. SMART JOB MATCHING ENGINE (jobs.html)
+--------------------------------------------------------------------------------
+• AI Job Match Index: Ranks student job listings by personal skill compatibility.
+• Job Filtering: Filter by match percentage, role category, and experience level.
+• Job Details Breakdown: View company info, required skills vs your current skills, 
+  and application deadlines.
+• Quick Application: 1-click apply submitting your verified portfolio and CV.
+
+9. 14-DAY INTERVIEW PREP & MOCK SIMULATOR (interview.html)
+--------------------------------------------------------------------------------
+• 14-Day Structured Roadmap: Step-by-step preparation plan covering:
+  - Days 1–3: Technical Foundations
+  - Days 4–6: Core BA & Analytics Skills
+  - Days 7–9: Real-World Case Studies
+  - Days 10–11: Company & Industry Research
+  - Days 12–13: Mock Interview Practice
+  - Day 14: Final Interview Simulation
+• Question Bank: Practice top behavioral and technical interview questions.
+• Practice Modal: Simulated audio/text interview response recorder with AI feedback.
+
+10. GUIDED STUDENT ONBOARDING WIZARD (onboarding.html)
+--------------------------------------------------------------------------------
+• 5-Step Guided Wizard:
+  - Step 1: University & Degree Info (MBA, B.Tech, BBA, etc.)
+  - Step 2: Specialization & Academic Year
+  - Step 3: Target Career Paths Selection
+  - Step 4: Current Skills Matrix Selection
+  - Step 5: Summary Preview & Dashboard Initialization
+
+11. AUTHENTICATION & SESSION ENGINE (login.html, signup.html, profile.html)
+--------------------------------------------------------------------------------
+• Session Management (authManager): Persistent login states via localStorage.
+• Flexible Sign In: Sign in via email/password, Google auth, or 1-click Demo Account.
+• Blank Profile Generator (userData.createBlankProfile()):
+  - Allows starting fresh with a completely clean student profile ("New Student", 0% readiness, 0 skills).
+  - Available from both the Login page ("Start with Blank Profile") and Profile page ("Reset to Blank Profile").
+• Header & Sidebar Sign Out: Direct 1-click Sign Out triggers with user confirmation.
+
+================================================================================
+                            RUN & DEPLOYMENT COMMANDS
+================================================================================
+
+• RUN LOCALLY:
+  Open terminal in project folder and run:
+  npx serve . -p 3000
+  (Or open http://localhost:3000 in your browser)
+
+• DEPLOY TO VERCEL:
+  Run in terminal:
+  cmd /c "npx vercel --prod"
+
+================================================================================

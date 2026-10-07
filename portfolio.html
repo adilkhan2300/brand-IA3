@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — AFTERCLASS AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .portfolio-header {
+      background: linear-gradient(135deg,#0f172a,#1e3a5f);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      color: white;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .portfolio-header-stats { display: flex; gap: 28px; flex-wrap: wrap; }
+    .portfolio-stat { text-align: center; }
+    .portfolio-stat-val { font-size: 32px; font-weight: 900; line-height: 1; }
+    .portfolio-stat-label { font-size: 12px; color: rgba(255,255,255,0.55); font-weight: 500; margin-top: 3px; }
+
+    .project-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow-sm);
+    }
+    .project-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .project-card-header {
+      height: 8px;
+    }
+    .project-card-body { padding: 20px; }
+    .project-title { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 6px; }
+    .project-desc { font-size: 13px; color: var(--gray-500); line-height: 1.6; margin-bottom: 12px; }
+    .project-skills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+    .project-skill {
+      padding: 3px 10px;
+      background: var(--gray-100);
+      color: var(--gray-600);
+      border-radius: var(--radius-full);
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+    .project-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--gray-100);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .project-meta { font-size: 12px; color: var(--gray-400); }
+    .project-actions { display: flex; gap: 6px; }
+
+    /* AI Convert panel */
+    .convert-panel {
+      background: linear-gradient(135deg, #eff6ff, #e8f0fe);
+      border: 1.5px solid rgba(26,86,219,0.15);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .convert-result {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-size: 13.5px;
+      color: var(--gray-800);
+      line-height: 1.7;
+      margin-top: 12px;
+      display: none;
+    }
+    .convert-result.show { display: block; animation: pageEnter 0.3s ease; }
+
+    /* Skills matrix */
+    .skill-matrix-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .skill-matrix-item:last-child { border-bottom: none; }
+    .skill-name { font-size: 13.5px; font-weight: 600; color: var(--gray-800); min-width: 120px; }
+    .skill-evidence { font-size: 12px; color: var(--gray-400); margin-left: auto; }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-slot"></div>
+
+<div class="app-layout">
+  <div class="main-content" style="margin-left:var(--sidebar-width)">
+    <div id="header-slot"></div>
+    <div class="page-content">
+
+      <!-- Portfolio Header -->
+      <div class="portfolio-header">
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">◈ Portfolio</div>
+          <div style="font-size:26px;font-weight:900;letter-spacing:-0.8px;margin-bottom:4px">Adil Khan</div>
+          <div style="font-size:15px;color:rgba(255,255,255,0.6)">MBA · General Management · Woxsen University</div>
+          <div style="margin-top:14px">
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:6px">Portfolio Completeness</div>
+            <div style="background:rgba(255,255,255,0.1);border-radius:10px;height:8px;overflow:hidden">
+              <div style="width:72%;height:100%;background:linear-gradient(90deg,var(--brand-primary),var(--brand-accent));border-radius:10px;transition:width 1s ease"></div>
+            </div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:6px">72% complete · <span style="color:var(--brand-accent)">Add 2 more projects to reach 85%</span></div>
+          </div>
+        </div>
+        <div class="portfolio-header-stats">
+          <div class="portfolio-stat">
+            <div class="portfolio-stat-val">7</div>
+            <div class="portfolio-stat-label">Projects</div>
+          </div>
+          <div class="portfolio-stat">
+            <div class="portfolio-stat-val">6</div>
+            <div class="portfolio-stat-label">Skills</div>
+          </div>
+          <div class="portfolio-stat">
+            <div class="portfolio-stat-val">8</div>
+            <div class="portfolio-stat-label">Challenges</div>
+          </div>
+          <div class="portfolio-stat">
+            <div class="portfolio-stat-val">83%</div>
+            <div class="portfolio-stat-label">Avg Score</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-self:flex-end">
+          <button class="btn" style="background:white;color:var(--brand-primary);font-weight:700" onclick="showToast('Portfolio exported as PDF','success')">⬇ Export PDF</button>
+          <button class="btn" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2)" onclick="showToast('Portfolio link copied!','success')">🔗 Share Link</button>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div style="margin-bottom:20px">
+        <div class="tab-nav">
+          <button class="tab-btn active" onclick="switchPortfolioTab('projects',this)">Projects (7)</button>
+          <button class="tab-btn" onclick="switchPortfolioTab('skills',this)">Skills (6)</button>
+          <button class="tab-btn" onclick="switchPortfolioTab('certificates',this)">Certificates (2)</button>
+          <button class="tab-btn" onclick="switchPortfolioTab('achievements',this)">Achievements (4)</button>
+        </div>
+      </div>
+
+      <!-- Projects Tab -->
+      <div id="tab-projects">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div style="font-size:14px;color:var(--gray-500)">7 projects · Sorted by date</div>
+          <div style="display:flex;gap:8px">
+            <select class="form-select" style="height:36px;width:auto;font-size:13px">
+              <option>All Categories</option>
+              <option>Analytics</option>
+              <option>Strategy</option>
+              <option>Finance</option>
+            </select>
+            <button class="btn btn-primary" onclick="window.location.href='apply.html'">+ Add Project</button>
+          </div>
+        </div>
+
+        <div class="grid grid-3" id="projectsGrid">
+
+          <!-- Project 1 -->
+          <div class="project-card">
+            <div class="project-card-header" style="background:linear-gradient(90deg,var(--brand-primary),var(--brand-accent))"></div>
+            <div class="project-card-body">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
+                <div class="project-title">Porter's Five Forces — Food Delivery</div>
+                <span class="badge badge-success" style="flex-shrink:0">Verified</span>
+              </div>
+              <div class="project-desc">Strategic competitive analysis of the food delivery industry, identifying key threats and recommending actionable strategic responses.</div>
+              <div class="project-skills">
+                <span class="project-skill">Strategic Analysis</span>
+                <span class="project-skill">Competitive Analysis</span>
+                <span class="project-skill">Business Strategy</span>
+              </div>
+              <div style="margin-bottom:10px">
+                <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px">AI Score</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress-bar-wrap" style="flex:1;height:6px"><div class="progress-bar-fill" data-width="83"></div></div>
+                  <span style="font-size:13px;font-weight:700;color:var(--brand-primary)">83%</span>
+                </div>
+              </div>
+              <div class="project-footer">
+                <div class="project-meta">📅 Added today · ⚡ via Apply</div>
+                <div class="project-actions">
+                  <button class="btn btn-sm btn-secondary" onclick="convertProject(this)">✦ AI Convert</button>
+                  <button class="btn btn-sm btn-outline" onclick="editProject()">Edit</button>
+                </div>
+              </div>
+              <div class="convert-panel" style="display:none" id="convertPanel1">
+                <div style="font-size:12px;font-weight:700;color:var(--brand-primary);margin-bottom:8px">Convert to:</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+                  <button class="btn btn-sm btn-outline" onclick="generateContent('resume')">📄 Resume Bullet</button>
+                  <button class="btn btn-sm btn-outline" onclick="generateContent('linkedin')">💼 LinkedIn Post</button>
+                  <button class="btn btn-sm btn-outline" onclick="generateContent('casestudy')">📋 Case Study</button>
+                </div>
+                <div class="convert-result" id="convertResult1"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project 2 -->
+          <div class="project-card">
+            <div class="project-card-header" style="background:linear-gradient(90deg,#10b981,#059669)"></div>
+            <div class="project-card-body">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
+                <div class="project-title">Retail Analytics Dashboard</div>
+                <span class="badge badge-success">Verified</span>
+              </div>
+              <div class="project-desc">Built an interactive Power BI dashboard analyzing 3-year retail sales data, identifying seasonal trends and top-performing SKUs.</div>
+              <div class="project-skills">
+                <span class="project-skill">Power BI</span>
+                <span class="project-skill">Data Visualization</span>
+                <span class="project-skill">Excel</span>
+                <span class="project-skill">Business Analytics</span>
+              </div>
+              <div style="margin-bottom:10px">
+                <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px">AI Score</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress-bar-wrap" style="flex:1;height:6px"><div class="progress-bar-fill" data-width="91" style="background:var(--success)"></div></div>
+                  <span style="font-size:13px;font-weight:700;color:var(--success)">91%</span>
+                </div>
+              </div>
+              <div class="project-footer">
+                <div class="project-meta">📅 1 week ago · ◈ Portfolio</div>
+                <div class="project-actions">
+                  <button class="btn btn-sm btn-secondary" onclick="toggleConvert(2)">✦ AI Convert</button>
+                  <button class="btn btn-sm btn-outline">Edit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project 3 -->
+          <div class="project-card">
+            <div class="project-card-header" style="background:linear-gradient(90deg,#f59e0b,#d97706)"></div>
+            <div class="project-card-body">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
+                <div class="project-title">Customer Feedback Analysis</div>
+                <span class="badge badge-primary">In Progress</span>
+              </div>
+              <div class="project-desc">Sentiment analysis of 500+ customer reviews using Python, identifying key pain points and satisfaction drivers for a SaaS product.</div>
+              <div class="project-skills">
+                <span class="project-skill">Python</span>
+                <span class="project-skill">Sentiment Analysis</span>
+                <span class="project-skill">Data Analysis</span>
+              </div>
+              <div style="margin-bottom:10px">
+                <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px">Progress</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress-bar-wrap" style="flex:1;height:6px"><div class="progress-bar-fill" data-width="65" style="background:var(--warning)"></div></div>
+                  <span style="font-size:13px;font-weight:700;color:var(--warning)">65%</span>
+                </div>
+              </div>
+              <div class="project-footer">
+                <div class="project-meta">📅 2 weeks ago</div>
+                <div class="project-actions">
+                  <button class="btn btn-sm btn-primary">Continue →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project 4 -->
+          <div class="project-card">
+            <div class="project-card-header" style="background:linear-gradient(90deg,#8b5cf6,#7c3aed)"></div>
+            <div class="project-card-body">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
+                <div class="project-title">Business Analytics Dashboard</div>
+                <span class="badge badge-success">Verified</span>
+              </div>
+              <div class="project-desc">Comprehensive analytics dashboard tracking KPIs across sales, operations, and marketing for a mid-sized manufacturing firm.</div>
+              <div class="project-skills">
+                <span class="project-skill">Power BI</span>
+                <span class="project-skill">SQL</span>
+                <span class="project-skill">KPI Design</span>
+              </div>
+              <div style="margin-bottom:10px">
+                <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px">AI Score</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress-bar-wrap" style="flex:1;height:6px"><div class="progress-bar-fill" data-width="88" style="background:#8b5cf6"></div></div>
+                  <span style="font-size:13px;font-weight:700;color:#8b5cf6">88%</span>
+                </div>
+              </div>
+              <div class="project-footer">
+                <div class="project-meta">📅 3 weeks ago · ⚡ via Apply</div>
+                <div class="project-actions">
+                  <button class="btn btn-sm btn-secondary" onclick="toggleConvert(4)">✦ AI Convert</button>
+                  <button class="btn btn-sm btn-outline">Edit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project 5 -->
+          <div class="project-card">
+            <div class="project-card-header" style="background:linear-gradient(90deg,#ec4899,#db2777)"></div>
+            <div class="project-card-body">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
+                <div class="project-title">Brand Audit — FMCG Company</div>
+                <span class="badge badge-success">Verified</span>
+              </div>
+              <div class="project-desc">Comprehensive brand audit analyzing brand identity, positioning, and consumer perception for a leading FMCG player.</div>
+              <div class="project-skills">
+                <span class="project-skill">Brand Analysis</span>
+                <span class="project-skill">Consumer Research</span>
+                <span class="project-skill">Strategic Planning</span>
+              </div>
+              <div style="margin-bottom:10px">
+                <div style="font-size:12px;color:var(--gray-400);margin-bottom:4px">AI Score</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress-bar-wrap" style="flex:1;height:6px"><div class="progress-bar-fill" data-width="79" style="background:#ec4899"></div></div>
+                  <span style="font-size:13px;font-weight:700;color:#ec4899">79%</span>
+                </div>
+              </div>
+              <div class="project-footer">
+                <div class="project-meta">📅 1 month ago</div>
+                <div class="project-actions">
+                  <button class="btn btn-sm btn-secondary">✦ AI Convert</button>
+                  <button class="btn btn-sm btn-outline">Edit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add New Card -->
+          <div class="project-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;cursor:pointer;border:2px dashed var(--gray-300);background:var(--gray-50)" onclick="window.location.href='apply.html'">
+            <div style="font-size:36px;margin-bottom:12px;opacity:0.4">+</div>
+            <div style="font-size:14px;font-weight:700;color:var(--gray-500)">Add New Project</div>
+            <div style="font-size:12.5px;color:var(--gray-400);margin-top:4px;text-align:center;padding:0 20px">Complete a challenge to automatically add verified projects</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Skills Tab -->
+      <div id="tab-skills" style="display:none">
+        <div class="card">
+          <div class="section-title" style="margin-bottom:16px">Skills with Evidence</div>
+          <div class="skill-matrix-item">
+            <div class="skill-name">Excel</div>
+            <div style="flex:1;padding:0 16px">
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="91" style="background:var(--success)"></div></div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--success);width:36px">91%</div>
+            <div class="skill-evidence">3 projects</div>
+          </div>
+          <div class="skill-matrix-item">
+            <div class="skill-name">Power BI</div>
+            <div style="flex:1;padding:0 16px">
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="88" style="background:var(--brand-primary)"></div></div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--brand-primary);width:36px">88%</div>
+            <div class="skill-evidence">2 projects</div>
+          </div>
+          <div class="skill-matrix-item">
+            <div class="skill-name">Business Analysis</div>
+            <div style="flex:1;padding:0 16px">
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="84" style="background:var(--brand-accent)"></div></div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--brand-accent);width:36px">84%</div>
+            <div class="skill-evidence">4 projects</div>
+          </div>
+          <div class="skill-matrix-item">
+            <div class="skill-name">Python</div>
+            <div style="flex:1;padding:0 16px">
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="72" style="background:#8b5cf6"></div></div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:#8b5cf6;width:36px">72%</div>
+            <div class="skill-evidence">1 project</div>
+          </div>
+          <div class="skill-matrix-item">
+            <div class="skill-name">SQL</div>
+            <div style="flex:1;padding:0 16px">
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="61" style="background:var(--warning)"></div></div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--warning);width:36px">61%</div>
+            <div class="skill-evidence">1 project</div>
+          </div>
+          <div class="skill-matrix-item">
+            <div class="skill-name">Figma</div>
+            <div style="flex:1;padding:0 16px">
+              <div class="progress-bar-wrap"><div class="progress-bar-fill" data-width="55" style="background:#ec4899"></div></div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:#ec4899;width:36px">55%</div>
+            <div class="skill-evidence">1 project</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certificates Tab -->
+      <div id="tab-certificates" style="display:none">
+        <div class="grid grid-2">
+          <div class="card" style="display:flex;align-items:center;gap:16px">
+            <div style="font-size:36px">🏆</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--gray-900)">Power BI Fundamentals</div>
+              <div style="font-size:13px;color:var(--gray-500);margin-top:2px">Microsoft Learn · 2025</div>
+            </div>
+            <button class="btn btn-sm btn-outline" style="margin-left:auto;flex-shrink:0">View</button>
+          </div>
+          <div class="card" style="display:flex;align-items:center;gap:16px">
+            <div style="font-size:36px">🎓</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--gray-900)">Business Analytics Essentials</div>
+              <div style="font-size:13px;color:var(--gray-500);margin-top:2px">Coursera · Woxsen · 2025</div>
+            </div>
+            <button class="btn btn-sm btn-outline" style="margin-left:auto;flex-shrink:0">View</button>
+          </div>
+          <div class="card" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;min-height:120px;border:2px dashed var(--gray-300);background:var(--gray-50);cursor:pointer" onclick="showToast('Connect with Coursera, LinkedIn Learning, etc.','info')">
+            <div style="font-size:28px;opacity:0.3">+</div>
+            <div style="font-size:13px;color:var(--gray-400);font-weight:600">Add Certificate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements Tab -->
+      <div id="tab-achievements" style="display:none">
+        <div class="grid grid-2">
+          <div class="card" style="display:flex;align-items:flex-start;gap:16px">
+            <div style="width:50px;height:50px;background:var(--success-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🔥</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--gray-900)">5-Day Streak</div>
+              <div style="font-size:13px;color:var(--gray-500);margin-top:3px">Studied consistently for 5 days</div>
+              <span class="badge badge-success" style="margin-top:8px">Earned</span>
+            </div>
+          </div>
+          <div class="card" style="display:flex;align-items:flex-start;gap:16px">
+            <div style="width:50px;height:50px;background:var(--primary-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">⚡</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--gray-900)">First Challenge</div>
+              <div style="font-size:13px;color:var(--gray-500);margin-top:3px">Completed your first real-world challenge</div>
+              <span class="badge badge-primary" style="margin-top:8px">Earned</span>
+            </div>
+          </div>
+          <div class="card" style="display:flex;align-items:flex-start;gap:16px">
+            <div style="width:50px;height:50px;background:var(--warning-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">◈</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--gray-900)">Portfolio Builder</div>
+              <div style="font-size:13px;color:var(--gray-500);margin-top:3px">Added 5+ projects to your portfolio</div>
+              <span class="badge badge-warning" style="margin-top:8px">Earned</span>
+            </div>
+          </div>
+          <div class="card" style="display:flex;align-items:flex-start;gap:16px">
+            <div style="width:50px;height:50px;background:var(--success-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🎯</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--gray-900)">80%+ Score</div>
+              <div style="font-size:13px;color:var(--gray-500);margin-top:3px">Scored above 80% on a challenge</div>
+              <span class="badge badge-success" style="margin-top:8px">Earned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="mobile-nav-slot"></div>
+<div id="fab-slot"></div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>
+mountLayout('portfolio', 'Portfolio');
+
+function switchPortfolioTab(name, btn) {
+  ['projects','skills','certificates','achievements'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  animateProgressBars();
+}
+
+function convertProject(btn) {
+  const panel = btn.closest('.project-card').querySelector('.convert-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleConvert(id) {
+  showToast('AI Convert panel coming soon!', 'info');
+}
+
+function editProject() { showToast('Edit mode enabled', 'info'); }
+
+const convertContent = {
+  resume: "Applied Porter's Five Forces framework to evaluate competitive pressures in the food delivery industry, identifying competitive rivalry and new entrant threats, and developed targeted strategic recommendations to address market share decline.",
+  linkedin: "🎯 Just completed a strategic analysis of the food delivery industry using Porter's Five Forces!\n\nKey findings:\n• Competitive rivalry is the #1 threat (intense price wars)\n• New international entrants are disrupting the market\n• Strategic response: Build loyalty programs to reduce churn by 25%\n\nThis was a real-world business challenge from AFTERCLASS AI. #BusinessStrategy #MBA",
+  casestudy: "CASE STUDY: Competitive Analysis — Food Delivery Industry\n\nFramework: Porter's Five Forces\nObjective: Identify key competitive threats and strategic responses\n\nFindings:\n1. COMPETITIVE RIVALRY (High) — Multiple established players competing on price, delivery speed, and restaurant selection\n2. THREAT OF NEW ENTRANTS (High) — International players entering with funded aggressive pricing strategies\n\nRecommendation: Implement tiered loyalty program and exclusive restaurant partnerships to increase switching costs."
+};
+
+function generateContent(type) {
+  const result = document.getElementById('convertResult1');
+  result.textContent = convertContent[type] || 'Content generated!';
+  result.classList.add('show');
+  showToast('✓ AI content generated! Copy and use.', 'success');
+}
+</script>
+</body>
+</html>
