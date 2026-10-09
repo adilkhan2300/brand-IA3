@@ -316,50 +316,122 @@
       <!-- Step 3: Career Interests -->
       <div class="step-panel" id="step3">
         <div class="step-title">What are your career interests? 🎯</div>
-        <div class="step-desc">Select all the career paths you're interested in exploring.</div>
+        <div class="step-desc">Select all the career paths you're interested in exploring. Choose as many as you like!</div>
 
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div class="interest-card selected" onclick="toggleInterest(this)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="interest-card selected" onclick="toggleInterest(this)" data-interest="Business Analyst">
             <div class="interest-icon">💼</div>
             <div>
               <div class="interest-title">Business Analyst</div>
-              <div class="interest-sub">Analyzing data to drive business decisions</div>
+              <div class="interest-sub">Data-driven business decisions</div>
             </div>
             <div class="interest-check">✓</div>
           </div>
-          <div class="interest-card selected" onclick="toggleInterest(this)">
+          <div class="interest-card selected" onclick="toggleInterest(this)" data-interest="Data Analyst">
             <div class="interest-icon">📊</div>
             <div>
               <div class="interest-title">Data Analyst</div>
-              <div class="interest-sub">Working with data, visualization & insights</div>
+              <div class="interest-sub">Visualization & insights</div>
             </div>
             <div class="interest-check">✓</div>
           </div>
-          <div class="interest-card selected" onclick="toggleInterest(this)">
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Data Scientist">
+            <div class="interest-icon">🔬</div>
+            <div>
+              <div class="interest-title">Data Scientist</div>
+              <div class="interest-sub">ML models & predictive analytics</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="AI / ML Engineer">
+            <div class="interest-icon">🤖</div>
+            <div>
+              <div class="interest-title">AI / ML Engineer</div>
+              <div class="interest-sub">Building intelligent systems</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Software Engineer">
+            <div class="interest-icon">💻</div>
+            <div>
+              <div class="interest-title">Software Engineer</div>
+              <div class="interest-sub">Full-stack & backend development</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="UX / Product Designer">
+            <div class="interest-icon">🎨</div>
+            <div>
+              <div class="interest-title">UX / Product Designer</div>
+              <div class="interest-sub">User research, wireframes & UI</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Product Manager">
             <div class="interest-icon">🚀</div>
             <div>
-              <div class="interest-title">Product Analyst</div>
-              <div class="interest-sub">Analyzing product metrics & user behavior</div>
+              <div class="interest-title">Product Manager</div>
+              <div class="interest-sub">Strategy, roadmap & cross-functional</div>
             </div>
-            <div class="interest-check">✓</div>
+            <div class="interest-check"></div>
           </div>
-          <div class="interest-card" onclick="toggleInterest(this)">
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Product Analyst">
+            <div class="interest-icon">📱</div>
+            <div>
+              <div class="interest-title">Product Analyst</div>
+              <div class="interest-sub">Product metrics & user behavior</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Marketing Analyst">
             <div class="interest-icon">📈</div>
             <div>
               <div class="interest-title">Marketing Analyst</div>
-              <div class="interest-sub">Marketing data, campaigns & consumer insights</div>
+              <div class="interest-sub">Campaigns & consumer insights</div>
             </div>
             <div class="interest-check"></div>
           </div>
-          <div class="interest-card" onclick="toggleInterest(this)">
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Brand Manager">
+            <div class="interest-icon">🌟</div>
+            <div>
+              <div class="interest-title">Brand Manager</div>
+              <div class="interest-sub">Brand strategy & identity</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Digital Marketer">
+            <div class="interest-icon">📣</div>
+            <div>
+              <div class="interest-title">Digital Marketer</div>
+              <div class="interest-sub">SEO, ads & growth hacking</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Financial Analyst">
             <div class="interest-icon">🏦</div>
             <div>
               <div class="interest-title">Financial Analyst</div>
-              <div class="interest-sub">Financial modeling, forecasting & investment</div>
+              <div class="interest-sub">Financial modeling & investment</div>
             </div>
             <div class="interest-check"></div>
           </div>
-          <div class="interest-card" onclick="toggleInterest(this)">
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Investment Banker">
+            <div class="interest-icon">💰</div>
+            <div>
+              <div class="interest-title">Investment Banker</div>
+              <div class="interest-sub">M&A, IPOs & capital markets</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Management Consultant">
+            <div class="interest-icon">🤝</div>
+            <div>
+              <div class="interest-title">Management Consultant</div>
+              <div class="interest-sub">Strategy & business transformation</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Operations Analyst">
             <div class="interest-icon">⚙️</div>
             <div>
               <div class="interest-title">Operations Analyst</div>
@@ -367,19 +439,43 @@
             </div>
             <div class="interest-check"></div>
           </div>
-          <div class="interest-card" onclick="toggleInterest(this)">
-            <div class="interest-icon">🤝</div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Supply Chain Manager">
+            <div class="interest-icon">🚚</div>
             <div>
-              <div class="interest-title">Management Consultant</div>
-              <div class="interest-sub">Strategy consulting & business transformation</div>
+              <div class="interest-title">Supply Chain Manager</div>
+              <div class="interest-sub">Logistics, procurement & ops</div>
             </div>
             <div class="interest-check"></div>
           </div>
-          <div class="interest-card" onclick="toggleInterest(this)">
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="HR Analyst">
+            <div class="interest-icon">👥</div>
+            <div>
+              <div class="interest-title">HR Analyst</div>
+              <div class="interest-sub">People analytics & talent strategy</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Entrepreneur">
             <div class="interest-icon">💡</div>
             <div>
-              <div class="interest-title">Product Manager</div>
-              <div class="interest-sub">Product strategy, roadmap & cross-functional</div>
+              <div class="interest-title">Entrepreneur</div>
+              <div class="interest-sub">Startups, ventures & innovation</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Cybersecurity Analyst">
+            <div class="interest-icon">🔒</div>
+            <div>
+              <div class="interest-title">Cybersecurity Analyst</div>
+              <div class="interest-sub">Security, risk & compliance</div>
+            </div>
+            <div class="interest-check"></div>
+          </div>
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Research Analyst">
+            <div class="interest-icon">🔍</div>
+            <div>
+              <div class="interest-title">Research Analyst</div>
+              <div class="interest-sub">Market research & strategic insights</div>
             </div>
             <div class="interest-check"></div>
           </div>
@@ -554,20 +650,38 @@
   });
 
   function completeOnboarding() {
-    const fn = document.getElementById('ob_firstName').value || 'Adil';
-    const ln = document.getElementById('ob_lastName').value || 'Khan';
+    const fn = document.getElementById('ob_firstName').value || 'User';
+    const ln = document.getElementById('ob_lastName').value || '';
     const degree = document.getElementById('ob_degree')?.value || 'MBA';
     const spec = document.getElementById('ob_spec')?.value || 'General Management';
     const uni = document.getElementById('ob_university')?.value || 'Woxsen University';
+    const subjects = document.getElementById('ob_subjects')?.value || '';
+
+    // Collect selected career interests
+    const selectedInterests = [];
+    document.querySelectorAll('.interest-card.selected').forEach(card => {
+      const title = card.querySelector('.interest-title');
+      if (title) selectedInterests.push(title.textContent.trim());
+    });
+
+    // Collect selected skills from all chip grids
+    const selectedSkills = [];
+    document.querySelectorAll('.chip.selected').forEach(chip => {
+      selectedSkills.push(chip.textContent.trim());
+    });
 
     const user = userData.getCurrentUser();
     user.firstName = fn;
     user.lastName = ln;
     user.name = (fn + ' ' + ln).trim();
-    user.initials = ((fn[0] || 'A') + (ln[0] || 'K')).toUpperCase();
+    user.initials = ((fn[0] || 'U') + (ln[0] || '')).toUpperCase();
     user.degree = degree;
     user.specialization = spec;
     user.university = uni;
+    user.subjects = subjects;
+    user.interests = selectedInterests;
+    user.skills = selectedSkills;
+    user.onboardingComplete = true;
 
     userData.setCurrentUser(user);
 
