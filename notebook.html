@@ -255,13 +255,13 @@
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
               <div>
                 <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Current Source</div>
-                <div style="font-size:18px;font-weight:800;letter-spacing:-0.4px" id="currentSourceTitle">Business Analytics – Descriptive Analytics</div>
-                <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px">PDF · 2.4 MB · Uploaded today · 12 pages</div>
+                <div style="font-size:18px;font-weight:800;letter-spacing:-0.4px" id="currentSourceTitle">Select a source to begin</div>
+                <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px" id="currentSourceMeta">Choose a subject from the panel on the left</div>
               </div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div style="display:flex;gap:8px;flex-wrap:wrap" id="currentSourceBadges">
                 <span class="badge" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">12 flashcards</span>
                 <span class="badge" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">5 quiz Qs</span>
-                <span class="badge" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">AI Summary ✓</span>
+                <span class="badge" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">AI Summary &#10003;</span>
               </div>
             </div>
           </div>
@@ -302,29 +302,10 @@
               </div>
 
               <div style="display:flex;flex-direction:column;gap:8px" id="summaryPoints">
-                <div class="summary-point">
-                  <span class="summary-point-icon">▸</span>
-                  <span class="summary-point-text"><strong>Descriptive analytics</strong> summarizes historical data to understand what has happened in the past — it is the foundation of all analytics disciplines.</span>
-                </div>
-                <div class="summary-point">
-                  <span class="summary-point-icon">▸</span>
-                  <span class="summary-point-text">Common measures of central tendency include <strong>mean, median and mode</strong>, each appropriate for different data distributions.</span>
-                </div>
-                <div class="summary-point">
-                  <span class="summary-point-icon">▸</span>
-                  <span class="summary-point-text"><strong>Data visualization</strong> techniques — charts, dashboards, and heatmaps — are critical for identifying trends, patterns, and outliers in large datasets.</span>
-                </div>
-                <div class="summary-point">
-                  <span class="summary-point-icon">▸</span>
-                  <span class="summary-point-text"><strong>Frequency distributions</strong> and <strong>cross-tabulations</strong> help segment data by categories to reveal group-level insights.</span>
-                </div>
-                <div class="summary-point">
-                  <span class="summary-point-icon">▸</span>
-                  <span class="summary-point-text">Tools such as <strong>Excel, Power BI, and Tableau</strong> are industry-standard platforms for performing and presenting descriptive analytics.</span>
-                </div>
-                <div class="summary-point">
-                  <span class="summary-point-icon">▸</span>
-                  <span class="summary-point-text">Descriptive analytics answers the question <strong>"What happened?"</strong> — as opposed to diagnostic (why?), predictive (what will?), and prescriptive (what should?) analytics.</span>
+                <!-- Dynamically populated based on selected source -->
+                <div style="text-align:center;padding:24px;color:var(--gray-400)">
+                  <div style="font-size:28px;margin-bottom:8px">&#128218;</div>
+                  <div style="font-size:13.5px;font-weight:600">Select a source from the left panel to generate your AI summary</div>
                 </div>
               </div>
 
@@ -453,41 +434,445 @@
 <script>
 mountLayout('notebook', 'AI Notebook');
 
-const flashcards = [
-  { q: 'What is descriptive analytics?', a: 'A branch of analytics focused on summarizing historical data to understand what happened in the past.' },
-  { q: 'Name three measures of central tendency.', a: 'Mean (average), Median (middle value), and Mode (most frequent value).' },
-  { q: 'What is the difference between mean and median?', a: 'Mean is the arithmetic average of all values. Median is the middle value when data is sorted. Median is better for skewed data.' },
-  { q: 'What does data visualization help identify?', a: 'Trends, patterns, outliers, and anomalies in large datasets more quickly than raw numbers.' },
-  { q: 'Name three industry-standard descriptive analytics tools.', a: 'Microsoft Excel, Power BI, and Tableau are the most widely used tools.' },
-  { q: 'What question does descriptive analytics answer?', a: '"What happened?" — it looks backward at historical data.' },
-  { q: 'What is a frequency distribution?', a: 'A table or chart showing how often each value or range of values occurs in a dataset.' },
-  { q: 'What is a cross-tabulation (crosstab)?', a: 'A table that shows the relationship between two categorical variables by displaying their joint frequency distributions.' },
-  { q: 'How does descriptive analytics differ from predictive analytics?', a: 'Descriptive looks at what happened (past). Predictive forecasts what will happen (future).' },
-  { q: 'What is variance in descriptive analytics?', a: 'A measure of how spread out data points are from the mean. High variance means data is more dispersed.' },
-  { q: 'What is a KPI dashboard?', a: 'A visual display of key performance indicators using charts and metrics to quickly communicate business performance.' },
-  { q: 'What is the interquartile range (IQR)?', a: 'The range between the 25th and 75th percentile — used to measure the spread of the middle 50% of data.' },
-];
+// ---- User-Specific Sources & Content ----
+// A content library keyed by topic/subject
+const CONTENT_LIBRARY = {
+  'Business Analytics': {
+    ext: 'PDF', extBg: 'var(--error-light)', size: '2.4 MB', age: 'today',
+    subtitle: 'PDF · 2.4 MB · 12 pages',
+    summary: [
+      { text: '<strong>Descriptive analytics</strong> summarizes historical data to understand what has happened — it is the foundation of all analytics disciplines.' },
+      { text: 'Common measures include <strong>mean, median and mode</strong>, each appropriate for different data distributions.' },
+      { text: '<strong>Data visualization</strong> — charts, dashboards, heatmaps — are critical for identifying trends and outliers.' },
+      { text: '<strong>Frequency distributions</strong> and cross-tabulations help segment data by categories to reveal group-level insights.' },
+      { text: 'Tools such as <strong>Excel, Power BI, and Tableau</strong> are industry-standard platforms for descriptive analytics.' },
+      { text: 'Descriptive analytics answers <strong>"What happened?"</strong> — vs diagnostic (why?), predictive (what will?), prescriptive (what should?).' },
+    ],
+    flashcards: [
+      { q: 'What is descriptive analytics?', a: 'A branch of analytics focused on summarizing historical data to understand what happened in the past.' },
+      { q: 'Name three measures of central tendency.', a: 'Mean (average), Median (middle value), and Mode (most frequent value).' },
+      { q: 'What does data visualization help identify?', a: 'Trends, patterns, outliers, and anomalies in large datasets more quickly than raw numbers.' },
+      { q: 'Name three standard analytics tools.', a: 'Microsoft Excel, Power BI, and Tableau are the most widely used tools.' },
+      { q: 'What is a frequency distribution?', a: 'A table or chart showing how often each value or range of values occurs in a dataset.' },
+      { q: 'What is a KPI dashboard?', a: 'A visual display of key performance indicators using charts and metrics to quickly communicate business performance.' },
+    ],
+    quiz: [
+      { q: 'What type of analytics focuses on summarizing historical data?', options: ['Predictive Analytics', 'Descriptive Analytics', 'Prescriptive Analytics', 'Diagnostic Analytics'], correct: 1 },
+      { q: 'Which measure of central tendency is LEAST affected by outliers?', options: ['Mean', 'Variance', 'Median', 'Standard Deviation'], correct: 2 },
+      { q: 'Which tool is NOT typically used for descriptive analytics?', options: ['Microsoft Excel', 'Power BI', 'TensorFlow', 'Tableau'], correct: 2 },
+      { q: 'What question does descriptive analytics primarily answer?', options: ['What will happen?', 'Why did it happen?', 'What happened?', 'What should we do?'], correct: 2 },
+      { q: 'A dashboard showing monthly sales KPIs is an example of:', options: ['Predictive modeling', 'Machine learning', 'Descriptive analytics', 'Prescriptive analytics'], correct: 2 },
+    ],
+    keyPoints: [
+      { title: 'What is Descriptive Analytics?', desc: 'Summarizes historical data to understand past performance', icon: '📊', color: 'var(--brand-primary-light)' },
+      { title: 'Central Tendency Measures', desc: 'Mean, Median, Mode — each serves different data types', icon: '📐', color: 'var(--success-light)' },
+      { title: 'Data Visualization', desc: 'Charts, dashboards & heatmaps reveal hidden patterns', icon: '📈', color: 'var(--warning-light)' },
+      { title: 'Frequency Distributions', desc: 'Shows how often values occur in a dataset', icon: '🔢', color: 'var(--info-light)' },
+      { title: 'Analytics Tools', desc: 'Excel, Power BI, Tableau — industry standard platforms', icon: '🛠', color: '#f0fdf4' },
+      { title: 'The 4 Types of Analytics', desc: 'Descriptive → Diagnostic → Predictive → Prescriptive', icon: '🗺', color: '#fdf4ff' },
+    ],
+    applyText: 'You\'ve reviewed Business Analytics. Can you apply descriptive analytics to a real business scenario? AFTERCLASS will create a custom challenge and evaluate your response with AI.',
+    aiOpener: 'I\'ve loaded <strong>Business Analytics – Descriptive Analytics</strong>. Ask me anything — I can explain concepts, give real-world examples, quiz you on any section, or help you create a challenge!',
+    aiReplies: [
+      'Descriptive analytics is the foundation of all data-driven decision making. It answers "what happened?" using statistical summaries and visual tools like dashboards.',
+      'In a retail business, a manager uses descriptive analytics to see which products sold most last quarter, which regions underperformed, and what the average transaction value was.',
+      'Key exam points: (1) Definition of descriptive analytics, (2) Central tendency — mean, median, mode, (3) The 4 types of analytics, (4) Tools — Excel, Power BI, Tableau.',
+      'This connects directly to your career interests! Business Analysts and Data Analysts use descriptive analytics daily — creating dashboards, tracking KPIs, and summarizing data for stakeholders.',
+    ],
+  },
+  'Brand Management': {
+    ext: 'PPT', extBg: 'var(--warning-light)', size: '5.1 MB', age: '2 days ago',
+    subtitle: 'PPT · 5.1 MB · Week 3 Lecture',
+    summary: [
+      { text: '<strong>Brand equity</strong> is the commercial value derived from consumer perception of a brand name rather than the product itself.' },
+      { text: 'The <strong>Brand Identity Prism</strong> by Kapferer defines 6 facets: physique, personality, culture, relationship, reflection, and self-image.' },
+      { text: '<strong>Positioning</strong> is about occupying a distinct and valued place in the consumer\'s mind relative to competitors.' },
+      { text: 'Brand extensions leverage existing brand equity to launch new products — but risk diluting the core brand if mismanaged.' },
+      { text: '<strong>Co-branding</strong> and partnerships can amplify reach, but alignment of brand values is critical for success.' },
+      { text: 'FMCG brands invest heavily in <strong>emotional branding</strong> to build long-term loyalty beyond functional benefits.' },
+    ],
+    flashcards: [
+      { q: 'What is brand equity?', a: 'The commercial value derived from consumer perception of the brand name, not just the product.' },
+      { q: 'Name the 6 facets of Kapferer\'s Brand Identity Prism.', a: 'Physique, Personality, Culture, Relationship, Reflection, Self-Image.' },
+      { q: 'What is brand positioning?', a: 'Occupying a distinct and valued place in the consumer\'s mind relative to competitors.' },
+      { q: 'What risk does a brand extension carry?', a: 'It can dilute the core brand if the extension is too far from the original brand identity.' },
+      { q: 'What is co-branding?', a: 'A partnership where two brands collaborate on a product, leveraging each other\'s equity.' },
+      { q: 'What is emotional branding?', a: 'Building brand loyalty by connecting with consumers on an emotional level beyond functional benefits.' },
+    ],
+    quiz: [
+      { q: 'Brand equity primarily refers to:', options: ['Product quality', 'Consumer perception of the brand', 'Manufacturing cost', 'Distribution network'], correct: 1 },
+      { q: 'How many facets does Kapferer\'s Brand Identity Prism have?', options: ['4', '5', '6', '7'], correct: 2 },
+      { q: 'Which is NOT a facet of the Brand Identity Prism?', options: ['Personality', 'Culture', 'Positioning', 'Reflection'], correct: 2 },
+      { q: 'Brand extensions risk:', options: ['Increasing brand awareness', 'Diluting the core brand', 'Growing market share', 'Reducing costs'], correct: 1 },
+      { q: 'Emotional branding focuses on:', options: ['Price competition', 'Functional product benefits', 'Long-term loyalty through emotional connection', 'Distribution efficiency'], correct: 2 },
+    ],
+    keyPoints: [
+      { title: 'Brand Equity', desc: 'Value derived from consumer perception, not just the product', icon: '💎', color: 'var(--brand-primary-light)' },
+      { title: 'Brand Identity Prism', desc: 'Kapferer\'s 6-facet model for brand identity analysis', icon: '🔷', color: 'var(--warning-light)' },
+      { title: 'Positioning', desc: 'Owning a distinct place in the consumer\'s mind', icon: '🎯', color: 'var(--success-light)' },
+      { title: 'Brand Extension', desc: 'Leveraging existing equity to launch new products', icon: '🚀', color: '#fdf4ff' },
+      { title: 'Co-Branding', desc: 'Partnerships that amplify reach and equity', icon: '🤝', color: 'var(--info-light)' },
+      { title: 'Emotional Branding', desc: 'Building loyalty through emotional connection', icon: '❤️', color: '#fff1f2' },
+    ],
+    applyText: 'You\'ve reviewed Brand Management concepts. Can you conduct a brand audit or positioning analysis for a real company? AFTERCLASS will create a tailored challenge!',
+    aiOpener: 'I\'ve loaded <strong>Brand Management – Week 3 Lecture</strong>. Ask me anything about brand equity, positioning, Kapferer\'s prism, or brand strategy!',
+    aiReplies: [
+      'Brand equity is the value a brand name adds to a product beyond its functional attributes. Strong equity = premium pricing, customer loyalty, and market resilience.',
+      'Kapferer\'s Brand Identity Prism is a framework to build consistent brand identity. Think of Apple — Physique (sleek design), Personality (innovative), Culture (creativity), Relationship (empowerment), Reflection (creative professionals), Self-Image (I am creative).',
+      'Positioning exam tip: Use the concept of Point of Difference (POD) vs Point of Parity (POP). POD = what makes you unique. POP = what you must have to be in the category.',
+      'Brand Management connects to Brand Manager and Marketing Analyst career paths. Real-world BMs use these frameworks daily to audit brands, create campaigns, and justify budgets to stakeholders.',
+    ],
+  },
+  'Corporate Finance': {
+    ext: 'DOC', extBg: 'var(--success-light)', size: '1.1 MB', age: '3 days ago',
+    subtitle: 'DOC · 1.1 MB · Finance Notes',
+    summary: [
+      { text: '<strong>Time Value of Money (TVM)</strong> is the core principle that a rupee today is worth more than a rupee in the future due to its earning potential.' },
+      { text: '<strong>NPV (Net Present Value)</strong> calculates the present value of future cash flows minus the initial investment — positive NPV = value-creating project.' },
+      { text: '<strong>IRR (Internal Rate of Return)</strong> is the discount rate that makes NPV = 0. Projects with IRR > WACC should generally be accepted.' },
+      { text: 'The <strong>Capital Asset Pricing Model (CAPM)</strong> relates expected return to systematic risk (Beta): E(R) = Rf + β(Rm - Rf).' },
+      { text: '<strong>WACC</strong> (Weighted Average Cost of Capital) represents the blended cost of equity and debt, used as the discount rate for NPV.' },
+      { text: '<strong>Dividend policy</strong> theories include Modigliani-Miller (irrelevance theory) and the Bird-in-Hand theory (investors prefer current dividends).' },
+    ],
+    flashcards: [
+      { q: 'What is the Time Value of Money?', a: 'The principle that a rupee today is worth more than a rupee in the future due to its earning potential.' },
+      { q: 'What does a positive NPV indicate?', a: 'The project creates value — the present value of future cash flows exceeds the initial investment.' },
+      { q: 'What is IRR?', a: 'The Internal Rate of Return — the discount rate that makes NPV equal to zero.' },
+      { q: 'Write the CAPM formula.', a: 'E(R) = Rf + β(Rm - Rf) where Rf = risk-free rate, β = beta, Rm = market return.' },
+      { q: 'What is WACC?', a: 'Weighted Average Cost of Capital — the blended cost of equity and debt used as the NPV discount rate.' },
+      { q: 'What does Modigliani-Miller dividend theory state?', a: 'In a perfect market, dividend policy is irrelevant to firm value — it\'s only the investment decisions that matter.' },
+    ],
+    quiz: [
+      { q: 'What is the core principle of Time Value of Money?', options: ['Money loses value over time', 'Money today is worth more than the same amount in the future', 'Debt is always beneficial', 'Cash flows are constant'], correct: 1 },
+      { q: 'A project should generally be accepted when:', options: ['NPV is negative', 'NPV is zero', 'NPV is positive', 'IRR < WACC'], correct: 2 },
+      { q: 'WACC stands for:', options: ['Weighted Average Capital Cost', 'Weighted Average Cost of Capital', 'Weighted Accumulated Capital Cost', 'Wide Area Capital Cost'], correct: 1 },
+      { q: 'In the CAPM formula, Beta (β) represents:', options: ['Risk-free rate', 'Market return', 'Systematic risk', 'Total risk'], correct: 2 },
+      { q: 'Which theory states dividend policy is irrelevant to firm value?', options: ['Bird-in-Hand Theory', 'Modigliani-Miller Theory', 'Residual Theory', 'CAPM Theory'], correct: 1 },
+    ],
+    keyPoints: [
+      { title: 'Time Value of Money', desc: 'Core finance concept — money today > money tomorrow', icon: '⏰', color: 'var(--brand-primary-light)' },
+      { title: 'NPV Analysis', desc: 'Present value of future cash flows minus investment', icon: '📊', color: 'var(--success-light)' },
+      { title: 'IRR Decision Rule', desc: 'Accept when IRR > WACC (hurdle rate)', icon: '✅', color: 'var(--warning-light)' },
+      { title: 'CAPM Model', desc: 'E(R) = Rf + β(Rm - Rf) — risk vs return', icon: '📉', color: '#fdf4ff' },
+      { title: 'WACC', desc: 'Blended cost of equity & debt for discounting', icon: '⚖️', color: 'var(--info-light)' },
+      { title: 'Dividend Policy', desc: 'MM theory vs Bird-in-Hand — key debate', icon: '💰', color: '#fff1f2' },
+    ],
+    applyText: 'Ready to apply Corporate Finance? Create a real investment decision challenge — evaluate an NPV scenario or build a WACC model for a real company!',
+    aiOpener: 'I\'ve loaded <strong>Corporate Finance Notes</strong>. Ask me about TVM, NPV, IRR, CAPM, WACC, or dividend policy — I can walk through calculations too!',
+    aiReplies: [
+      'NPV is the gold standard for investment decisions. If NPV > 0, the project adds value. If IRR > WACC, the project clears the hurdle rate. Always use both together for a complete picture.',
+      'CAPM real-world example: If a company\'s beta is 1.5, the risk-free rate is 4%, and market return is 10%, expected return = 4% + 1.5(10%-4%) = 4% + 9% = 13%.',
+      'Key exam tip: Know when to use NPV vs IRR. NPV always gives the correct accept/reject decision. IRR can give multiple answers for non-conventional cash flows.',
+      'Finance connects to Financial Analyst and Investment Banker career paths. Analysts build DCF models daily — mastering TVM and NPV is non-negotiable for these roles.',
+    ],
+  },
+  'Managerial Economics': {
+    ext: 'PDF', extBg: 'var(--brand-primary-light)', size: '3.2 MB', age: '1 week ago',
+    subtitle: 'PDF · 3.2 MB · Economics Concepts',
+    summary: [
+      { text: '<strong>Demand analysis</strong> examines how consumers respond to changes in price, income, and other factors — foundational for pricing strategy.' },
+      { text: '<strong>Price elasticity of demand</strong> measures how sensitive quantity demanded is to a price change. |PED| > 1 = elastic; < 1 = inelastic.' },
+      { text: '<strong>Market structures</strong> — perfect competition, monopoly, oligopoly, monopolistic competition — determine firm pricing power.' },
+      { text: 'The <strong>cost-benefit analysis</strong> framework helps managers evaluate investment and resource allocation decisions.' },
+      { text: '<strong>Game theory</strong> concepts (Nash Equilibrium, Prisoner\'s Dilemma) explain strategic interactions between competing firms.' },
+      { text: '<strong>Break-even analysis</strong> determines the output level at which total revenue equals total cost — critical for new product decisions.' },
+    ],
+    flashcards: [
+      { q: 'What does price elasticity of demand measure?', a: 'How sensitive quantity demanded is to a change in price. PED = % change in Qd / % change in P.' },
+      { q: 'What is an elastic demand?', a: 'When |PED| > 1 — a small price change causes a proportionally larger change in quantity demanded.' },
+      { q: 'Name the 4 main market structures.', a: 'Perfect Competition, Monopolistic Competition, Oligopoly, and Monopoly.' },
+      { q: 'What is Nash Equilibrium?', a: 'A state in game theory where no player can benefit by unilaterally changing their strategy.' },
+      { q: 'What is break-even analysis?', a: 'A tool to find the output level where Total Revenue = Total Cost, i.e., profit is zero.' },
+      { q: 'What is the Prisoner\'s Dilemma?', a: 'A game theory scenario where two rational players may not cooperate even if cooperation benefits both.' },
+    ],
+    quiz: [
+      { q: 'When |PED| > 1, demand is said to be:', options: ['Inelastic', 'Unit elastic', 'Elastic', 'Perfectly inelastic'], correct: 2 },
+      { q: 'In which market structure does a single firm control the entire market?', options: ['Perfect competition', 'Oligopoly', 'Monopolistic competition', 'Monopoly'], correct: 3 },
+      { q: 'Nash Equilibrium is a concept from:', options: ['Marketing theory', 'Game theory', 'Demand theory', 'Supply chain management'], correct: 1 },
+      { q: 'Break-even point is where:', options: ['Revenue > Costs', 'Revenue < Costs', 'Revenue = Costs', 'Profit is maximized'], correct: 2 },
+      { q: 'A firm with pricing power operates in:', options: ['Perfect competition', 'Any market with competition', 'Imperfect competition (oligopoly/monopoly)', 'Free markets only'], correct: 2 },
+    ],
+    keyPoints: [
+      { title: 'Price Elasticity', desc: 'How demand responds to price changes — key for pricing strategy', icon: '📉', color: 'var(--brand-primary-light)' },
+      { title: 'Market Structures', desc: 'Perfect competition → Monopoly — determines pricing power', icon: '🏗️', color: 'var(--success-light)' },
+      { title: 'Game Theory', desc: 'Nash equilibrium & strategic firm interactions', icon: '♟️', color: 'var(--warning-light)' },
+      { title: 'Break-Even Analysis', desc: 'Find the output where TR = TC', icon: '⚖️', color: '#fdf4ff' },
+      { title: 'Demand Analysis', desc: 'Consumer behavior drivers — price, income, preferences', icon: '📊', color: 'var(--info-light)' },
+      { title: 'Cost-Benefit Framework', desc: 'Evaluate investments and resource allocation', icon: '💡', color: '#fff1f2' },
+    ],
+    applyText: 'You\'ve reviewed Managerial Economics. Try applying elasticity concepts or game theory to a real business scenario — AFTERCLASS will evaluate your analysis!',
+    aiOpener: 'I\'ve loaded <strong>Managerial Economics</strong> notes. Ask me about demand analysis, price elasticity, market structures, game theory, or break-even analysis!',
+    aiReplies: [
+      'Price elasticity of demand is crucial for pricing strategy. If demand is elastic (|PED|>1), lowering prices increases total revenue. If inelastic (|PED|<1), firms can raise prices without losing much volume.',
+      'Real-world example: Fuel demand is typically inelastic — people still buy fuel even when prices rise. Luxury goods have elastic demand — consumers delay purchases when prices increase.',
+      'Exam tip: Know the 4 market structures and their characteristics. Perfect competition = price taker; Monopoly = price maker; Oligopoly = interdependent pricing; Monopolistic = product differentiation.',
+      'This connects to Management Consulting and Operations Analyst roles — consultants use cost-benefit analysis and market structure analysis constantly in strategy projects.',
+    ],
+  },
+  'Data Science': {
+    ext: 'PDF', extBg: 'var(--brand-primary-light)', size: '4.8 MB', age: '2 days ago',
+    subtitle: 'PDF · 4.8 MB · Data Science Fundamentals',
+    summary: [
+      { text: '<strong>Machine Learning</strong> is a subset of AI that enables systems to learn from data without being explicitly programmed.' },
+      { text: '<strong>Supervised learning</strong> uses labeled data (e.g., regression, classification). <strong>Unsupervised learning</strong> finds patterns in unlabeled data (e.g., clustering).' },
+      { text: '<strong>Python</strong> with libraries like Pandas, NumPy, Scikit-learn, and Matplotlib is the primary language for data science workflows.' },
+      { text: 'The <strong>data science pipeline</strong>: Data Collection → Cleaning → EDA → Feature Engineering → Modeling → Evaluation → Deployment.' },
+      { text: '<strong>Overfitting</strong> occurs when a model learns the training data too well and fails to generalize. Regularization and cross-validation help prevent it.' },
+      { text: 'Model evaluation metrics: <strong>Accuracy, Precision, Recall, F1-Score</strong> for classification; <strong>RMSE, MAE, R²</strong> for regression.' },
+    ],
+    flashcards: [
+      { q: 'What is the difference between supervised and unsupervised learning?', a: 'Supervised uses labeled data; unsupervised finds patterns in unlabeled data.' },
+      { q: 'What is overfitting?', a: 'When a model learns the training data too well and performs poorly on new, unseen data.' },
+      { q: 'Name 3 Python libraries used in data science.', a: 'Pandas (data manipulation), NumPy (numerical computing), Scikit-learn (ML models).' },
+      { q: 'What is F1-Score?', a: 'The harmonic mean of Precision and Recall — useful when class imbalance exists.' },
+      { q: 'What is the purpose of cross-validation?', a: 'To estimate how well a model generalizes to unseen data by testing it on multiple subsets.' },
+      { q: 'What is RMSE?', a: 'Root Mean Square Error — measures the average magnitude of errors in regression predictions.' },
+    ],
+    quiz: [
+      { q: 'Machine learning is a subset of:', options: ['Statistics', 'Artificial Intelligence', 'Data Engineering', 'Business Analytics'], correct: 1 },
+      { q: 'Which is an example of supervised learning?', options: ['K-Means Clustering', 'PCA', 'Linear Regression', 'Anomaly Detection'], correct: 2 },
+      { q: 'Overfitting can be prevented by:', options: ['More training data only', 'Regularization and cross-validation', 'Using simpler datasets', 'Removing all features'], correct: 1 },
+      { q: 'Which metric is most useful when class imbalance is present?', options: ['Accuracy', 'RMSE', 'F1-Score', 'R²'], correct: 2 },
+      { q: 'Which Python library is used for data manipulation and analysis?', options: ['NumPy', 'Matplotlib', 'Pandas', 'Scikit-learn'], correct: 2 },
+    ],
+    keyPoints: [
+      { title: 'ML vs AI', desc: 'ML is a subset of AI — learns from data automatically', icon: '🤖', color: 'var(--brand-primary-light)' },
+      { title: 'Supervised Learning', desc: 'Labeled data → regression & classification', icon: '🏷️', color: 'var(--success-light)' },
+      { title: 'Python Ecosystem', desc: 'Pandas, NumPy, Scikit-learn, Matplotlib', icon: '🐍', color: 'var(--warning-light)' },
+      { title: 'Overfitting & Regularization', desc: 'Balance bias vs variance for generalization', icon: '⚖️', color: '#fdf4ff' },
+      { title: 'Model Evaluation', desc: 'Accuracy, F1, RMSE, R² — pick the right metric', icon: '📊', color: 'var(--info-light)' },
+      { title: 'Data Pipeline', desc: 'Collect → Clean → EDA → Model → Deploy', icon: '🔄', color: '#fff1f2' },
+    ],
+    applyText: 'Ready to apply Data Science? Build a real ML project — AFTERCLASS will challenge you with a real dataset and evaluate your approach!',
+    aiOpener: 'I\'ve loaded <strong>Data Science Fundamentals</strong>. Ask me about ML concepts, Python libraries, model evaluation, or anything data science!',
+    aiReplies: [
+      'Machine learning is all about learning patterns from data. Supervised learning needs labeled examples; unsupervised learning discovers hidden structure on its own.',
+      'Python data science workflow: use Pandas to clean data, NumPy for computation, Scikit-learn to train models, Matplotlib/Seaborn to visualize results.',
+      'Key exam tip: Know accuracy vs F1-score. Accuracy can mislead with imbalanced classes. F1 balances precision and recall — use it when both false positives and false negatives matter.',
+      'Data Science connects directly to your AI/ML Engineer and Data Scientist career interests. Focus on Python proficiency and ML fundamentals — they are the most in-demand skills.',
+    ],
+  },
+  'Software Engineering': {
+    ext: 'PDF', extBg: 'var(--success-light)', size: '3.6 MB', age: '4 days ago',
+    subtitle: 'PDF · 3.6 MB · SE Concepts',
+    summary: [
+      { text: '<strong>SDLC (Software Development Life Cycle)</strong> defines the process for planning, creating, testing, and deploying software systems.' },
+      { text: '<strong>Agile methodology</strong> emphasizes iterative development, collaboration, and responding to change — using sprints and daily standups.' },
+      { text: '<strong>Design patterns</strong> (e.g., MVC, Singleton, Observer) are reusable solutions to commonly occurring design problems.' },
+      { text: '<strong>RESTful APIs</strong> enable communication between services using HTTP methods (GET, POST, PUT, DELETE).' },
+      { text: '<strong>Version control</strong> with Git allows teams to track changes, collaborate, and revert to previous code states.' },
+      { text: '<strong>Testing types</strong>: Unit (individual functions), Integration (module interaction), System (end-to-end), UAT (user acceptance).' },
+    ],
+    flashcards: [
+      { q: 'What is the SDLC?', a: 'Software Development Life Cycle — the process for planning, creating, testing, and deploying software.' },
+      { q: 'What is Agile methodology?', a: 'An iterative approach to software development emphasizing collaboration, flexibility, and short delivery sprints.' },
+      { q: 'What is the MVC design pattern?', a: 'Model-View-Controller — separates application into data (Model), UI (View), and logic (Controller).' },
+      { q: 'What is a RESTful API?', a: 'An API using HTTP methods (GET, POST, PUT, DELETE) to enable communication between services.' },
+      { q: 'What is Git used for?', a: 'Version control — tracking code changes, enabling collaboration, and allowing rollback to previous states.' },
+      { q: 'What is unit testing?', a: 'Testing individual functions or components in isolation to verify they work correctly.' },
+    ],
+    quiz: [
+      { q: 'SDLC stands for:', options: ['Software Design and Life Cycle', 'Software Development Life Cycle', 'System Development and Launch Cycle', 'Software Deployment Launch Cycle'], correct: 1 },
+      { q: 'Agile development emphasizes:', options: ['Rigid planning', 'Waterfall sequences', 'Iterative sprints and collaboration', 'No documentation'], correct: 2 },
+      { q: 'MVC stands for:', options: ['Model-View-Controller', 'Method-Value-Class', 'Module-Version-Control', 'Multi-View-Component'], correct: 0 },
+      { q: 'Which HTTP method is used to UPDATE a resource in REST?', options: ['GET', 'POST', 'PUT', 'DELETE'], correct: 2 },
+      { q: 'Git is a tool for:', options: ['Database management', 'UI design', 'Version control', 'API testing'], correct: 2 },
+    ],
+    keyPoints: [
+      { title: 'SDLC', desc: 'Plan → Design → Develop → Test → Deploy → Maintain', icon: '🔄', color: 'var(--brand-primary-light)' },
+      { title: 'Agile & Scrum', desc: 'Iterative sprints, daily standups, retrospectives', icon: '⚡', color: 'var(--success-light)' },
+      { title: 'Design Patterns', desc: 'MVC, Singleton, Observer — reusable solutions', icon: '🏗️', color: 'var(--warning-light)' },
+      { title: 'REST APIs', desc: 'HTTP methods: GET, POST, PUT, DELETE', icon: '🔌', color: '#fdf4ff' },
+      { title: 'Git & Version Control', desc: 'Track changes, collaborate, rollback safely', icon: '📦', color: 'var(--info-light)' },
+      { title: 'Testing Types', desc: 'Unit → Integration → System → UAT', icon: '🧪', color: '#fff1f2' },
+    ],
+    applyText: 'Ready to apply Software Engineering concepts? Build a real feature or write a technical spec — AFTERCLASS will evaluate your engineering approach!',
+    aiOpener: 'I\'ve loaded <strong>Software Engineering</strong> notes. Ask me about SDLC, Agile, design patterns, REST APIs, or testing strategies!',
+    aiReplies: [
+      'Agile vs Waterfall: Agile is iterative with short sprints; Waterfall is sequential. Most modern tech companies use Agile — it allows faster delivery and adaptation to changing requirements.',
+      'REST API tip: GET retrieves data, POST creates, PUT updates (full replace), PATCH updates (partial), DELETE removes. Status codes: 200 (OK), 201 (Created), 404 (Not Found), 500 (Server Error).',
+      'Key exam: Know the SDLC phases — Requirements, Design, Implementation, Testing, Deployment, Maintenance. Agile doesn\'t eliminate these phases; it just does them iteratively.',
+      'Software Engineering connects directly to your Software Engineer career interest. Focus on system design, data structures, and API design — these are what top tech company interviews test.',
+    ],
+  },
+};
 
+// Fallback content for subjects not in the library
+function generateFallbackContent(subject) {
+  return {
+    ext: 'PDF', extBg: 'var(--gray-200)', size: '2.0 MB', age: 'recently',
+    subtitle: `PDF · Notes · ${subject}`,
+    summary: [{ text: `<strong>${subject}</strong> — Upload your lecture notes or textbook to generate a custom AI summary, flashcards, and quiz questions.` }],
+    flashcards: [
+      { q: `What are the core concepts of ${subject}?`, a: 'Upload your study material and AFTERCLASS AI will generate custom flashcards from your content.' },
+      { q: `How is ${subject} applied in the real world?`, a: 'Add your lecture slides or notes to get AI-powered real-world application examples.' },
+    ],
+    quiz: [
+      { q: `${subject} is best studied by:`, options: ['Memorizing definitions only', 'Understanding core concepts and applying them', 'Reading once before exams', 'Copying notes'], correct: 1 },
+    ],
+    keyPoints: [
+      { title: subject, desc: 'Upload your materials to generate AI key concepts', icon: '📚', color: 'var(--brand-primary-light)' },
+      { title: 'Upload Materials', desc: 'PDF, PPT, DOCX, TXT files supported', icon: '⬆️', color: 'var(--success-light)' },
+    ],
+    applyText: `Ready to apply ${subject}? Upload your materials and AFTERCLASS will create a custom challenge based on your content!`,
+    aiOpener: `I'm ready to help with <strong>${subject}</strong>. Upload your lecture notes or materials and I'll generate summaries, flashcards, and quizzes from your actual content!`,
+    aiReplies: [
+      `For ${subject}, I recommend uploading your lecture slides or textbook chapters so I can generate accurate summaries and quiz questions.`,
+      `Great question! Once you upload your ${subject} materials, I can give you detailed explanations, real-world examples, and exam prep tips.`,
+      `${subject} connects to several career paths. Upload your notes and I'll show you how this subject applies to your specific career interests.`,
+      `To get the most out of the AI notebook for ${subject}, try uploading different types of materials — lecture notes, case studies, and past exams work best.`,
+    ],
+  };
+}
+
+// ---- Build sources panel from user data ----
+let currentSourceData = null;
+let flashcards = [];
+let quizData = [];
 let currentCard = 0;
 let cardRatings = {};
+let quizAnswers = {};
+let aiReplyIdx = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const user = userData.getCurrentUser();
+  const sourcesList = document.getElementById('sourcesList');
+  const sourcesHeader = document.querySelector('.sources-header div');
+
+  // Gather subjects from user profile — subjects string or interests array
+  let subjects = [];
+  if (user) {
+    if (user.subjects) {
+      subjects = user.subjects.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    // Also add subjects mapped from interests
+    if (user.interests && user.interests.length > 0) {
+      const interestSubjectMap = {
+        'Data Analyst': 'Business Analytics', 'Business Analyst': 'Business Analytics',
+        'Data Scientist': 'Data Science', 'AI / ML Engineer': 'Data Science',
+        'Software Engineer': 'Software Engineering', 'Brand Manager': 'Brand Management',
+        'Digital Marketer': 'Brand Management', 'Financial Analyst': 'Corporate Finance',
+        'Investment Banker': 'Corporate Finance', 'Entrepreneur': 'Managerial Economics',
+        'Management Consultant': 'Managerial Economics',
+      };
+      user.interests.forEach(interest => {
+        const mapped = interestSubjectMap[interest];
+        if (mapped && !subjects.includes(mapped)) subjects.push(mapped);
+      });
+    }
+  }
+
+  // Fallback if no subjects found
+  if (subjects.length === 0) {
+    subjects = ['Business Analytics', 'Brand Management', 'Corporate Finance', 'Managerial Economics'];
+  }
+
+  // Deduplicate
+  subjects = [...new Set(subjects)].slice(0, 8); // max 8
+
+  // Update count in header
+  if (sourcesHeader) sourcesHeader.textContent = `📁 Sources (${subjects.length})`;
+
+  // File types and colors cycle
+  const extStyles = [
+    { ext: 'PDF', bg: 'var(--error-light)' },
+    { ext: 'PPT', bg: 'var(--warning-light)' },
+    { ext: 'DOC', bg: 'var(--success-light)' },
+    { ext: 'TXT', bg: 'var(--brand-primary-light)' },
+    { ext: 'PDF', bg: '#f0fdf4' },
+    { ext: 'DOC', bg: '#fdf4ff' },
+    { ext: 'PPT', bg: '#fff7ed' },
+    { ext: 'TXT', bg: '#eff6ff' },
+  ];
+  const ages = ['today', '2 days ago', '3 days ago', '1 week ago', '5 days ago', '1 day ago', '4 days ago', '2 weeks ago'];
+
+  sourcesList.innerHTML = '';
+  subjects.forEach((subject, i) => {
+    const lib = CONTENT_LIBRARY[subject];
+    const style = lib ? { ext: lib.ext, bg: lib.extBg } : extStyles[i % extStyles.length];
+    const age = lib ? lib.age : ages[i % ages.length];
+    const isFirst = i === 0;
+
+    const item = document.createElement('div');
+    item.className = 'source-item' + (isFirst ? ' active' : '');
+    item.onclick = function() { selectSource(this, subject); };
+    item.innerHTML = `
+      <div class="source-icon" style="background:${style.bg}">${style.ext}</div>
+      <div>
+        <div class="source-name">${subject} — Notes</div>
+        <div class="source-meta">${lib ? lib.size : '2.0 MB'} · ${age}</div>
+      </div>
+    `;
+    sourcesList.appendChild(item);
+
+    // Auto-load the first source
+    if (isFirst) loadSourceContent(subject);
+  });
+});
+
+function loadSourceContent(subject) {
+  const lib = CONTENT_LIBRARY[subject] || generateFallbackContent(subject);
+  currentSourceData = lib;
+  flashcards = [...lib.flashcards];
+  quizData = [...lib.quiz];
+  currentCard = 0;
+  cardRatings = {};
+  quizAnswers = {};
+  aiReplyIdx = 0;
+
+  // Update source header card
+  document.getElementById('currentSourceTitle').textContent = `${subject} — Notes`;
+  document.getElementById('currentSourceMeta').textContent = lib.subtitle;
+
+  // Update summary
+  document.getElementById('summarySubtitle').textContent = `Generated from ${subject} — Notes`;
+  const summaryEl = document.getElementById('summaryPoints');
+  summaryEl.innerHTML = lib.summary.map(p => `
+    <div class="summary-point">
+      <span class="summary-point-icon">&#9658;</span>
+      <span class="summary-point-text">${p.text}</span>
+    </div>
+  `).join('');
+
+  // Update apply box
+  document.getElementById('summaryApplyText').textContent = lib.applyText;
+
+  // Update flashcard display
+  document.getElementById('cardTotal').textContent = flashcards.length;
+  updateCardDisplay();
+
+  // Update quiz subtitle
+  const quizSub = document.querySelector('#tab-quiz .section-sub');
+  if (quizSub) quizSub.textContent = `${quizData.length} questions · ${subject}`;
+
+  // Reset quiz container
+  document.getElementById('quizContainer').innerHTML = '';
+  quizAnswers = {};
+
+  // Update AI welcome message
+  document.getElementById('aiWelcomeText').innerHTML = lib.aiOpener;
+
+  // Reset conversation except welcome
+  const conv = document.getElementById('aiConversation');
+  const welcomeMsg = document.getElementById('aiWelcomeMsg');
+  conv.innerHTML = '';
+  conv.appendChild(welcomeMsg);
+}
 
 function showTab(name) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  // Update tab buttons
   const tabs = document.querySelectorAll('.tab-btn');
   const tabNames = ['summary', 'flashcards', 'quiz', 'keypoints', 'ask'];
   tabs.forEach((btn, i) => btn.classList.toggle('active', tabNames[i] === name));
-
   if (name === 'flashcards') renderFlashcardList();
   if (name === 'quiz') renderQuiz();
   if (name === 'keypoints') renderKeyPoints();
 }
 
-function flipCard() {
-  document.getElementById('mainFlashcard').classList.toggle('flipped');
-}
+function flipCard() { document.getElementById('mainFlashcard').classList.toggle('flipped'); }
 function updateCardDisplay() {
+  if (!flashcards.length) return;
   const card = flashcards[currentCard];
   document.getElementById('cardQuestion').textContent = card.q;
   document.getElementById('cardAnswer').innerHTML = card.a;
@@ -511,15 +896,6 @@ function renderFlashcardList() {
     `).join('');
 }
 
-const quizData = [
-  { q: 'What type of analytics focuses on summarizing historical data?', options: ['Predictive Analytics', 'Descriptive Analytics', 'Prescriptive Analytics', 'Diagnostic Analytics'], correct: 1 },
-  { q: 'Which measure of central tendency is LEAST affected by outliers?', options: ['Mean', 'Variance', 'Median', 'Standard Deviation'], correct: 2 },
-  { q: 'Which tool is NOT typically used for descriptive analytics?', options: ['Microsoft Excel', 'Power BI', 'TensorFlow', 'Tableau'], correct: 2 },
-  { q: 'What question does descriptive analytics primarily answer?', options: ['What will happen?', 'Why did it happen?', 'What happened?', 'What should we do?'], correct: 2 },
-  { q: 'A dashboard showing monthly sales KPIs is an example of:', options: ['Predictive modeling', 'Machine learning', 'Descriptive analytics', 'Prescriptive analytics'], correct: 2 },
-];
-
-let quizAnswers = {};
 function renderQuiz() {
   const c = document.getElementById('quizContainer');
   c.innerHTML = quizData.map((q, qi) => `
@@ -548,22 +924,14 @@ function selectOption(qi, oi, correct) {
 function submitQuiz() {
   const answered = Object.keys(quizAnswers).length;
   if (answered < quizData.length) { showToast(`Please answer all ${quizData.length} questions first`, 'error'); return; }
-  const score = Object.entries(quizAnswers).filter(([qi, oi]) => oi === quizData[qi].correct).length;
+  const score = Object.entries(quizAnswers).filter(([qi, oi]) => Number(oi) === quizData[qi].correct).length;
   const pct = Math.round(score / quizData.length * 100);
   showToast(`Quiz complete! Score: ${score}/${quizData.length} (${pct}%)`, pct >= 70 ? 'success' : 'info');
 }
 
-const keyPoints = [
-  { title: 'What is Descriptive Analytics?', desc: 'Summarizes historical data to understand past performance', icon: '📊', color: 'var(--brand-primary-light)' },
-  { title: 'Central Tendency Measures', desc: 'Mean, Median, Mode — each serves different data types', icon: '📐', color: 'var(--success-light)' },
-  { title: 'Data Visualization', desc: 'Charts, dashboards & heatmaps reveal hidden patterns', icon: '📈', color: 'var(--warning-light)' },
-  { title: 'Frequency Distributions', desc: 'Shows how often values occur in a dataset', icon: '🔢', color: 'var(--info-light)' },
-  { title: 'Analytics Tools', desc: 'Excel, Power BI, Tableau — industry standard platforms', icon: '🛠', color: '#f0fdf4' },
-  { title: 'The 4 Types of Analytics', desc: 'Descriptive → Diagnostic → Predictive → Prescriptive', icon: '🗺', color: '#fdf4ff' },
-];
-
 function renderKeyPoints() {
-  document.getElementById('keyPointsGrid').innerHTML = keyPoints.map(k => `
+  const kp = currentSourceData ? currentSourceData.keyPoints : [];
+  document.getElementById('keyPointsGrid').innerHTML = kp.map(k => `
     <div style="background:${k.color};border-radius:12px;padding:16px;border:1px solid rgba(0,0,0,0.06)">
       <div style="font-size:24px;margin-bottom:8px">${k.icon}</div>
       <div style="font-size:13.5px;font-weight:700;color:var(--gray-900);margin-bottom:4px">${k.title}</div>
@@ -571,14 +939,6 @@ function renderKeyPoints() {
     </div>
   `).join('');
 }
-
-const aiReplies = [
-  'Based on the lecture material, descriptive analytics is the foundation of all data-driven decision making. It answers "what happened?" using statistical summaries and visual tools.',
-  'Great question! In a real business, a retail manager might use descriptive analytics to understand which products sold the most last quarter, which regions underperformed, and what the average transaction value was.',
-  'Key exam points: (1) Definition of descriptive analytics, (2) Central tendency — mean, median, mode, (3) Types of analytics — descriptive, diagnostic, predictive, prescriptive, (4) Tools — Excel, Power BI, Tableau.',
-  'This connects directly to your Business Analyst career interest! BAs use descriptive analytics daily — creating dashboards, tracking KPIs, and summarizing data for stakeholders. Strengthening Power BI will make this practical.',
-];
-let aiReplyIdx = 0;
 
 function quickAsk(q) { document.getElementById('aiAskInput').value = q; askAIAboutMaterial(); }
 
@@ -598,29 +958,35 @@ function askAIAboutMaterial() {
   typing.innerHTML = '<div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div> AI is reading the material...';
   conv.appendChild(typing);
   input.value = '';
+  conv.scrollTop = conv.scrollHeight;
 
+  const replies = currentSourceData ? currentSourceData.aiReplies : ['Upload your study material and I will provide detailed answers based on your content!'];
   setTimeout(() => {
     typing.remove();
     const reply = document.createElement('div');
     reply.className = 'ai-box';
-    reply.innerHTML = `<div class="ai-box-header">✦ AFTERCLASS AI</div><div class="ai-box-content">${aiReplies[aiReplyIdx % aiReplies.length]}</div>`;
+    reply.innerHTML = `<div class="ai-box-header">&#10022; AFTERCLASS AI</div><div class="ai-box-content">${replies[aiReplyIdx % replies.length]}</div>`;
     conv.appendChild(reply);
     aiReplyIdx++;
     conv.scrollTop = conv.scrollHeight;
   }, 1400);
-  conv.scrollTop = conv.scrollHeight;
 }
 
-function selectSource(el, name) {
+function selectSource(el, subject) {
   document.querySelectorAll('.source-item').forEach(s => s.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('currentSourceTitle').textContent = name;
-  showToast('Source loaded: ' + name, 'success');
+  loadSourceContent(subject);
+  showToast('Source loaded: ' + subject, 'success');
+  showTab('summary');
 }
 
 function handleFileUpload(input) {
   const files = Array.from(input.files);
   files.forEach(f => showToast(`Uploaded: ${f.name} — AI processing...`, 'info'));
+  setTimeout(() => showToast('AI Summary generated! Open to view.', 'success'), 2000);
+}
+
+function showAIAsk() { showTab('ask'); }ded: ${f.name} — AI processing...`, 'info'));
   setTimeout(() => showToast('AI Summary generated! Open to view.', 'success'), 2000);
 }
 
