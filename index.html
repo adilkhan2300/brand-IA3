@@ -130,24 +130,6 @@
       margin-bottom: 32px;
     }
     .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-    .hero-trust {
-      margin-top: 36px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .hero-trust-text { font-size: 13px; color: var(--gray-400); }
-    .hero-trust-avatars { display: flex; }
-    .hero-trust-avatar {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      border: 2px solid white;
-      margin-left: -8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; color: white;
-    }
-    .hero-trust-avatar:first-child { margin-left: 0; }
 
     /* ---- Dashboard Mockup ---- */
     .hero-visual {
@@ -338,25 +320,6 @@
       cursor: pointer;
     }
 
-    /* ---- Stats Bar ---- */
-    .stats-bar {
-      background: var(--brand-primary);
-      padding: 40px 5%;
-    }
-    .stats-bar-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-    @media (max-width: 768px) {
-      .stats-bar-inner { grid-template-columns: repeat(2, 1fr); }
-    }
-    .stat-item { text-align: center; color: white; }
-    .stat-num { font-size: 40px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
-    .stat-unit { font-size: 22px; font-weight: 700; }
-    .stat-text { font-size: 13px; opacity: 0.75; margin-top: 6px; font-weight: 500; }
 
     /* ---- Testimonials ---- */
     .testimonials-grid {
@@ -455,16 +418,7 @@
         Explore Dashboard →
       </a>
     </div>
-    <div class="hero-trust">
-      <div class="hero-trust-avatars">
-        <div class="hero-trust-avatar" style="background:#e74c3c">AK</div>
-        <div class="hero-trust-avatar" style="background:#2ecc71">SR</div>
-        <div class="hero-trust-avatar" style="background:#3498db">MJ</div>
-        <div class="hero-trust-avatar" style="background:#9b59b6">LP</div>
-        <div class="hero-trust-avatar" style="background:#f39c12">RT</div>
-      </div>
-      <div class="hero-trust-text">Joined by <strong style="color:var(--gray-700)">2,400+</strong> students this semester</div>
-    </div>
+
   </div>
 
   <div class="hero-visual">
@@ -527,27 +481,6 @@
   </div>
 </section>
 
-<!-- Stats Bar -->
-<div class="stats-bar">
-  <div class="stats-bar-inner">
-    <div class="stat-item">
-      <div class="stat-num"><span data-count="2400">0</span>+</div>
-      <div class="stat-text">Active Students</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num"><span data-count="12000">0</span>+</div>
-      <div class="stat-text">Challenges Completed</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num"><span data-count="8500">0</span>+</div>
-      <div class="stat-text">Portfolio Projects</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num"><span data-count="94">0</span>%</div>
-      <div class="stat-text">Interview Confidence Increase</div>
-    </div>
-  </div>
-</div>
 
 <!-- Journey Section -->
 <section class="section" id="journey">
@@ -807,27 +740,7 @@
     nav.classList.toggle('scrolled', window.scrollY > 20);
   });
 
-  // Counter animation on scroll
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const el = entry.target;
-        const target = parseInt(el.dataset.count);
-        const duration = 2000;
-        const start = Date.now();
-        const tick = () => {
-          const elapsed = Date.now() - start;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          el.textContent = Math.round(target * eased).toLocaleString();
-          if (progress < 1) requestAnimationFrame(tick);
-        };
-        tick();
-        observer.unobserve(el);
-      }
-    });
-  });
-  document.querySelectorAll('[data-count]').forEach(el => observer.observe(el));
+
 </script>
 </body>
 </html>
