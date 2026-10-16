@@ -473,11 +473,20 @@ const userData = {
       localStorage.setItem('ac_users', JSON.stringify(PRESET_USERS));
       return PRESET_USERS;
     }
-    return JSON.parse(stored);
+    try {
+      return JSON.parse(stored);
+    } catch (e) {
+      console.error('Failed to parse stored users:', e);
+      return PRESET_USERS;
+    }
   },
   
   saveUsers: function(usersMap) {
-    localStorage.setItem('ac_users', JSON.stringify(usersMap));
+    try {
+      localStorage.setItem('ac_users', JSON.stringify(usersMap));
+    } catch (e) {
+      console.error('Failed to persist users:', e);
+    }
   },
 
   getCurrentUser: function() {
@@ -486,11 +495,17 @@ const userData = {
     if (currentId && users[currentId]) {
       return users[currentId];
     }
-    // Default fallback to Adil Khan
+    // If logged in flag is set but current user ID was missing or invalid, default to first user or preset
+    if (authManager.isLoggedIn()) {
+      const keys = Object.keys(users);
+      if (keys.length > 0) return users[keys[0]];
+    }
+    // Safe default for demo/public view without corrupting states
     return users['user_adil'] || PRESET_USERS['user_adil'];
   },
 
   setCurrentUser: function(userObj) {
+    if (!userObj || !userObj.id) return;
     const users = this.getUsers();
     users[userObj.id] = userObj;
     this.saveUsers(users);
@@ -499,59 +514,205 @@ const userData = {
     localStorage.setItem('ac_logged_in', 'true');
   },
 
-  createBlankProfile: function() {
-    const blankId = 'user_new_' + Date.now();
-    const blankUser = {
-      id: blankId,
-      name: 'New Student',
-      firstName: 'New',
-      lastName: 'Student',
-      email: 'student@university.edu',
-      authProvider: 'Email',
-      persona: 'new',
-      initials: 'NS',
-      university: 'Select University',
-      degree: 'Select Degree',
-      specialization: 'Not Specified',
-      year: '1st Year',
-      careerInterests: [],
-      targetRole: 'Student',
-      skills: [],
-      subjects: [
-        { name: 'Foundation Studies', progress: 10, color: 'var(--brand-primary)' }
-      ],
-      readinessScore: 20,
-      learningProgress: 10,
+  initCleanUser: function(data = {}) {
+    const timestamp = Date.now();
+    const randStr = Math.random().toString(36).substring(2, 7);
+    const newId = `user_${timestamp}_${randStr}`;
+
+    const fName = (data.firstName || 'Student').trim();
+    const lName = (data.lastName || '').trim();
+    const fullName = (fName + ' ' + lName).trim();
+    const initials = ((fName[0] || 'S') + (lName[0] || '')).toUpperCase();
+
+    return {
+      id: newId,
+      name: fullName,
+      firstName: fName,
+      lastName: lName,
+      email: data.email || `student_${timestamp}@university.edu`,
+      authProvider: data.authProvider || 'Email',
+      persona: 'custom',
+      initials: initials,
+      university: data.university || '',
+      degree: data.degree || '',
+      specialization: data.specialization || '',
+      year: data.year || '1st Year',
+      careerInterests: data.careerInterests || [],
+      targetRole: data.targetRole || '',
+      skills: data.skills || [],
+      subjects: data.subjects || [],
+      // Pure, uncompromised fresh metrics for every new user
+      readinessScore: 0,
+      learningProgress: 0,
       projects: 0,
-      tasksRemaining: 1,
-      streak: 1,
-      focusMinutes: 15,
+      tasksRemaining: 0,
+      streak: 0,
+      focusMinutes: 0,
+      onboardingComplete: false,
+      tutorialComplete: false,
+      tutorialProgress: 0,
+      createdAt: new Date().toISOString(),
+      tasks: [],
+      recentActivity: [],
+      notes: [],
+      portfolioItems: [],
       dashboardData: {
-        greetingSub: "Welcome to AFTERCLASS AI! Set up your profile to personalize your dashboard.",
+        greetingSub: `Welcome to AFTERCLASS AI, ${fName}! Let's build your learning-to-career journey.`,
         recTitle: "Complete your onboarding setup to unlock AI study tools",
         recLink: "onboarding.html",
         recBadge: "GET STARTED",
         journeyStage: 1,
-        journeyStageName: "Onboarding",
-        aiInsight: "Welcome! Complete your profile so AFTERCLASS AI can tailor course notes, challenges, and career matching for your specific degree.",
-        readinessBreakdown: [
-          { label: 'Knowledge', val: 20, color: 'var(--brand-primary)' },
-          { label: 'Practical Skills', val: 15, color: 'var(--brand-accent)' },
-          { label: 'Portfolio', val: 0, color: 'var(--success)' },
-          { label: 'CV Match', val: 30, color: 'var(--warning)' },
-          { label: 'Interview Prep', val: 10, color: '#ec4899' }
-        ],
-        recentActivity: [
-          { icon: '✨', title: 'Account Created', sub: 'Welcome to AFTERCLASS AI!', time: 'Just now', bg: 'var(--brand-primary-light)' }
-        ],
-        upcomingTasks: [
-          { title: 'Complete Onboarding Survey', date: 'Today', badge: 'Required', badgeClass: 'badge-error', dotColor: 'var(--error)' }
-        ]
+        journeyStageName: "Onboard",
+        aiInsight: `Hi ${fName}! Welcome to your personal workspace. Once you add your course subjects and upload lecture notes, I'll generate personalized insights, interactive flashcards, quizzes, and career skill gap analysis.`,
+        readinessBreakdown: [],
+        recentActivity: [],
+        upcomingTasks: []
       }
     };
+  },
+
+  updateUser: function(userId, updates = {}) {
+    const users = this.getUsers();
+    if (users[userId]) {
+      users[userId] = { ...users[userId], ...updates };
+      this.saveUsers(users);
+      return users[userId];
+    }
+    return null;
+  },
+
+  createBlankProfile: function() {
+    const blankUser = this.initCleanUser({
+      firstName: 'New',
+      lastName: 'Student',
+      email: `student_${Date.now()}@university.edu`,
+      authProvider: 'Email'
+    });
     this.setCurrentUser(blankUser);
-    showToast('Blank profile created! Directing to onboarding...', 'success');
-    setTimeout(() => { window.location.href = 'onboarding.html'; }, 800);
+    showToast('Clean workspace initialized! Directing to onboarding...', 'success');
+    setTimeout(() => { window.location.href = 'onboarding.html'; }, 700);
+  },
+
+  // Scoped user tasks
+  getTasks: function(userId) {
+    const user = this.getUsers()[userId] || this.getCurrentUser();
+    return user.tasks || [];
+  },
+
+  addTask: function(userId, taskObj) {
+    const users = this.getUsers();
+    const user = users[userId];
+    if (!user) return null;
+
+    if (!user.tasks) user.tasks = [];
+    const newTask = {
+      id: 'task_' + Date.now(),
+      title: taskObj.title || 'New Task',
+      subject: taskObj.subject || 'General',
+      priority: taskObj.priority || 'medium',
+      date: taskObj.date || 'Today',
+      time: taskObj.time || '30 min',
+      completed: false,
+      createdAt: new Date().toISOString()
+    };
+    user.tasks.unshift(newTask);
+    user.tasksRemaining = user.tasks.filter(t => !t.completed).length;
+
+    // Update upcomingTasks on dashboardData
+    if (!user.dashboardData) user.dashboardData = {};
+    user.dashboardData.upcomingTasks = user.tasks.filter(t => !t.completed).slice(0, 3).map(t => ({
+      title: t.title,
+      date: t.date,
+      badge: t.priority.toUpperCase(),
+      badgeClass: t.priority === 'high' ? 'badge-error' : (t.priority === 'medium' ? 'badge-warning' : 'badge-primary'),
+      dotColor: t.priority === 'high' ? 'var(--error)' : (t.priority === 'medium' ? 'var(--warning)' : 'var(--brand-primary)')
+    }));
+
+    this.saveUsers(users);
+    return newTask;
+  },
+
+  toggleTask: function(userId, taskId) {
+    const users = this.getUsers();
+    const user = users[userId];
+    if (!user || !user.tasks) return;
+
+    const task = user.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.completed = !task.completed;
+      user.tasksRemaining = user.tasks.filter(t => !t.completed).length;
+
+      if (task.completed) {
+        this.addActivity(userId, {
+          icon: '✓',
+          title: `Completed Task: ${task.title}`,
+          sub: `${task.subject} · Priority ${task.priority}`,
+          time: 'Just now',
+          bg: 'var(--success-light)'
+        });
+      }
+
+      if (!user.dashboardData) user.dashboardData = {};
+      user.dashboardData.upcomingTasks = user.tasks.filter(t => !t.completed).slice(0, 3).map(t => ({
+        title: t.title,
+        date: t.date,
+        badge: t.priority.toUpperCase(),
+        badgeClass: t.priority === 'high' ? 'badge-error' : (t.priority === 'medium' ? 'badge-warning' : 'badge-primary'),
+        dotColor: t.priority === 'high' ? 'var(--error)' : (t.priority === 'medium' ? 'var(--warning)' : 'var(--brand-primary)')
+      }));
+
+      this.saveUsers(users);
+    }
+  },
+
+  deleteTask: function(userId, taskId) {
+    const users = this.getUsers();
+    const user = users[userId];
+    if (!user || !user.tasks) return;
+
+    user.tasks = user.tasks.filter(t => t.id !== taskId);
+    user.tasksRemaining = user.tasks.filter(t => !t.completed).length;
+    if (!user.dashboardData) user.dashboardData = {};
+    user.dashboardData.upcomingTasks = user.tasks.filter(t => !t.completed).slice(0, 3).map(t => ({
+      title: t.title,
+      date: t.date,
+      badge: t.priority.toUpperCase(),
+      badgeClass: t.priority === 'high' ? 'badge-error' : 'badge-warning',
+      dotColor: t.priority === 'high' ? 'var(--error)' : 'var(--brand-primary)'
+    }));
+    this.saveUsers(users);
+  },
+
+  addActivity: function(userId, activityItem) {
+    const users = this.getUsers();
+    const user = users[userId];
+    if (!user) return;
+
+    if (!user.recentActivity) user.recentActivity = [];
+    user.recentActivity.unshift(activityItem);
+    if (user.recentActivity.length > 20) user.recentActivity.pop();
+
+    if (!user.dashboardData) user.dashboardData = {};
+    user.dashboardData.recentActivity = user.recentActivity.slice(0, 5);
+    this.saveUsers(users);
+  },
+
+  saveFocusSession: function(userId, minutes, subject) {
+    const users = this.getUsers();
+    const user = users[userId];
+    if (!user) return;
+
+    user.focusMinutes = (user.focusMinutes || 0) + minutes;
+    if (user.streak === 0) user.streak = 1;
+    this.saveUsers(users);
+
+    this.addActivity(userId, {
+      icon: '⏱',
+      title: `Focus Session: ${subject || 'Deep Study'}`,
+      sub: `${minutes} minutes completed`,
+      time: 'Just now',
+      bg: 'var(--warning-light)'
+    });
   }
 };
 
@@ -563,156 +724,75 @@ const authManager = {
 
   signIn: function(email, password, redirectUrl = 'dashboard.html') {
     const users = userData.getUsers();
-    let matchedUser = Object.values(users).find(u => u.email.toLowerCase() === email.toLowerCase());
+    const normalizedEmail = (email || '').trim().toLowerCase();
+    let matchedUser = Object.values(users).find(u => (u.email || '').toLowerCase() === normalizedEmail);
 
     if (!matchedUser) {
-      // Create user on the fly for demo flexibility
-      const nameParts = email.split('@')[0].split('.');
+      // Create user on the fly for demo flexibility with clean state
+      const nameParts = (email || '').split('@')[0].split('.');
       const fName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'Student';
       const lName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : '';
-      const fullName = (fName + ' ' + lName).trim();
-      const initials = (fName[0] + (lName[0] || 'S')).toUpperCase();
-      const newId = 'user_' + Date.now();
 
-      matchedUser = {
-        id: newId,
-        name: fullName,
+      matchedUser = userData.initCleanUser({
         firstName: fName,
         lastName: lName,
         email: email,
-        authProvider: 'Email',
-        persona: 'custom',
-        initials: initials,
-        university: 'University',
-        degree: 'Degree Program',
-        specialization: 'General',
-        year: '1st Year',
-        careerInterests: ['Career Advancement'],
-        targetRole: 'Student',
-        skills: ['Analysis', 'Problem Solving'],
-        subjects: [
-          { name: 'Core Foundations', progress: 40, color: 'var(--brand-primary)' }
-        ],
-        readinessScore: 50,
-        learningProgress: 35,
-        projects: 2,
-        tasksRemaining: 2,
-        streak: 1,
-        focusMinutes: 30,
-        dashboardData: {
-          greetingSub: `Welcome back, ${fName}! Ready to build your skills today?`,
-          recTitle: "Explore AI Notebook & summarize your first lecture",
-          recLink: "notebook.html",
-          recBadge: "STUDY AI",
-          journeyStage: 2,
-          journeyStageName: "Learn",
-          aiInsight: `Hi ${fName}! Upload your syllabus or class notes to generate AI summaries and custom flashcards.`,
-          readinessBreakdown: [
-            { label: 'Knowledge', val: 50, color: 'var(--brand-primary)' },
-            { label: 'Skills', val: 40, color: 'var(--brand-accent)' },
-            { label: 'Portfolio', val: 30, color: 'var(--success)' },
-            { label: 'CV Match', val: 60, color: 'var(--warning)' }
-          ],
-          recentActivity: [
-            { icon: '🔑', title: 'Signed In', sub: `Logged in via email (${email})`, time: 'Just now', bg: 'var(--brand-primary-light)' }
-          ],
-          upcomingTasks: [
-            { title: 'Upload first lecture notes', date: 'Today', badge: 'Action', badgeClass: 'badge-primary', dotColor: 'var(--brand-primary)' }
-          ]
-        }
-      };
+        authProvider: 'Email'
+      });
+      // New account routes to onboarding first
+      redirectUrl = 'onboarding.html';
     }
 
     userData.setCurrentUser(matchedUser);
     showToast(`Welcome back, ${matchedUser.name}!`, 'success');
     setTimeout(() => { window.location.href = redirectUrl; }, 800);
+    return matchedUser;
   },
 
   signUp: function(data, redirectUrl = 'onboarding.html') {
     const users = userData.getUsers();
-    const existing = Object.values(users).find(u => u.email.toLowerCase() === data.email.toLowerCase());
+    const normalizedEmail = (data.email || '').trim().toLowerCase();
+    const existing = Object.values(users).find(u => (u.email || '').toLowerCase() === normalizedEmail);
     
     if (existing) {
-      userData.setCurrentUser(existing);
-      showToast(`Account already exists. Logged in as ${existing.name}!`, 'success');
-      setTimeout(() => { window.location.href = redirectUrl; }, 800);
-      return;
+      showToast(`Account already exists with this email!`, 'info');
+      return null;
     }
 
-    const newId = 'user_' + Date.now();
-    const fName = data.firstName || 'Student';
-    const lName = data.lastName || '';
-    const fullName = (fName + ' ' + lName).trim();
-    const initials = (fName[0] + (lName[0] || 'S')).toUpperCase();
-
-    const newUser = {
-      id: newId,
-      name: fullName,
-      firstName: fName,
-      lastName: lName,
+    // Initialize completely clean workspace for every new user
+    const newUser = userData.initCleanUser({
+      firstName: data.firstName,
+      lastName: data.lastName,
       email: data.email,
       authProvider: data.authProvider || 'Email',
-      persona: 'custom',
-      initials: initials,
-      university: data.university || 'Woxsen University',
-      degree: data.degree || 'Degree Program',
-      specialization: data.specialization || 'General',
-      year: '1st Year',
-      careerInterests: data.careerInterests || ['Business Analyst'],
-      targetRole: data.targetRole || 'Business Analyst',
-      skills: ['Problem Solving', 'Data Analysis'],
-      subjects: [
-        { name: 'Core Foundations', progress: 30, color: 'var(--brand-primary)' }
-      ],
-      readinessScore: 45,
-      learningProgress: 25,
-      projects: 1,
-      tasksRemaining: 2,
-      streak: 1,
-      focusMinutes: 20,
-      dashboardData: {
-        greetingSub: `Welcome to AFTERCLASS AI, ${fName}! Let's customize your career journey.`,
-        recTitle: "Complete Onboarding to customize your AI dashboard",
-        recLink: "onboarding.html",
-        recBadge: "ONBOARDING",
-        journeyStage: 1,
-        journeyStageName: "Onboarding",
-        aiInsight: `Account created via ${data.authProvider || 'Email'}. Complete your profile to get personalized AI challenges!`,
-        readinessBreakdown: [
-          { label: 'Knowledge', val: 45, color: 'var(--brand-primary)' },
-          { label: 'Skills', val: 35, color: 'var(--brand-accent)' },
-          { label: 'Portfolio', val: 20, color: 'var(--success)' },
-          { label: 'CV Match', val: 50, color: 'var(--warning)' }
-        ],
-        recentActivity: [
-          { icon: '✨', title: 'Signed Up', sub: `Account created via ${data.authProvider || 'Email'}`, time: 'Just now', bg: 'var(--brand-primary-light)' }
-        ],
-        upcomingTasks: [
-          { title: 'Set up target role preferences', date: 'Today', badge: 'Urgent', badgeClass: 'badge-error', dotColor: 'var(--error)' }
-        ]
-      }
-    };
+      university: data.university,
+      degree: data.degree,
+      specialization: data.specialization
+    });
 
     userData.setCurrentUser(newUser);
-    showToast(`Account created for ${fullName}!`, 'success');
+    showToast(`Account created for ${newUser.name}! Starting setup...`, 'success');
     setTimeout(() => { window.location.href = redirectUrl; }, 800);
+    return newUser;
   },
 
   signOut: function() {
-    localStorage.setItem('ac_logged_in', 'false');
+    localStorage.removeItem('ac_logged_in');
+    localStorage.removeItem('ac_current_user_id');
+    sessionStorage.removeItem('ac_current_user_id');
     showToast('Signed out of AFTERCLASS AI', 'info');
-    setTimeout(() => { window.location.href = 'login.html'; }, 800);
+    setTimeout(() => { window.location.href = 'login.html'; }, 600);
   },
 
   switchPersona: function(id, redirectUrl = null) {
     const users = userData.getUsers();
     if (users[id]) {
       userData.setCurrentUser(users[id]);
-      showToast(`Switched view to profile: ${users[id].name} (${users[id].degree})`, 'success');
+      showToast(`Switched view to profile: ${users[id].name} (${users[id].degree || 'Student'})`, 'success');
       setTimeout(() => {
         if (redirectUrl) window.location.href = redirectUrl;
         else window.location.reload();
-      }, 500);
+      }, 400);
     }
   },
 
@@ -739,7 +819,6 @@ const authManager = {
       animation: fadeIn 0.2s ease;
     `;
 
-    const users = userData.getUsers();
     const defaultAccounts = [
       { name: 'Adil Khan', email: 'adil@woxsen.edu.in', sub: 'MBA · Woxsen University (Business & Analytics)', id: 'user_adil', avatar: 'AK', color: '#1a56db' },
       { name: 'Priya Sharma', email: 'priya.tech@gmail.com', sub: 'B.Tech · IIT Hyderabad (Computer Science & AI)', id: 'user_priya', avatar: 'PS', color: '#0ea5e9' },
@@ -835,6 +914,271 @@ const authManager = {
       email: email,
       authProvider: 'Google'
     }, redirectUrl);
+  }
+};
+
+// ============================================================
+// INTERACTIVE GUIDED TUTORIAL SYSTEM
+// ============================================================
+const appTutorial = {
+  currentStep: 0,
+  steps: [
+    {
+      type: 'modal',
+      title: "Welcome to your new workspace! 👋",
+      subtitle: "Let's explore how to use your AI-powered learning-to-career platform.",
+      desc: "AFTERCLASS AI helps you transform classroom learning into real-world proof of work, verifiable skill scores, dynamic student portfolios, and targeted career matches.",
+      bullets: [
+        "📓 AI Notebook: Turn lecture notes into bullet summaries, flashcards & quizzes",
+        "⚡ Apply & Build: Real-world business & tech challenges with automated AI evaluation",
+        "◈ Portfolio & CV: Turn verified scores into ATS-ready proof of work",
+        "🎯 Career Match: Spot skill gaps for your dream internships and roles"
+      ],
+      isWelcome: true
+    },
+    {
+      target: '#headerAvatar, .header-avatar, .sidebar-user',
+      title: "Your Student Profile & Settings",
+      desc: "This is your personal workspace. Manage your degree, university, specialization, and target career roles. Your profile customizes all AI insights and challenge recommendations across the platform.",
+      tip: "Click your avatar or Profile in the sidebar anytime to update your details."
+    },
+    {
+      target: 'a[data-page="notebook"], .sidebar-link[data-page="notebook"]',
+      title: "AI Notebook, Focus & Tasks",
+      desc: "Upload your class syllabi, lecture slides, or study notes. AFTERCLASS AI instantly generates bullet summaries, study flashcards, and practice quizzes. Use the Focus timer for deep work sessions and track your assignments in Tasks.",
+      tip: "Your study hours and quiz scores feed directly into your Career Readiness metrics."
+    },
+    {
+      target: '#dashRingWrapper, .greeting-score, .greeting-section',
+      title: "Career Readiness & Dashboard",
+      desc: "Your live Career Readiness Score benchmarks your preparation across Knowledge, Practical Skills, Portfolio, and CV Match. As a new user, your workspace begins clean at 0% and grows with every study session and challenge you complete.",
+      tip: "No fake stats — every percentage point is earned through verified proof."
+    },
+    {
+      target: 'a[data-page="apply"], .sidebar-link[data-page="apply"]',
+      title: "Apply Concepts & Build Proof",
+      desc: "Theory meets industry reality. Solve real-world case challenges in Business Analytics, Tech, or Design. AI evaluates your submissions, highlights gaps, and adds passing challenges directly to your Portfolio.",
+      tip: "Turn classroom theory into tangible projects recruiters actually care about."
+    },
+    {
+      target: '#aiFab, .ai-fab',
+      title: "Career Tools & 24/7 AI Assistant",
+      desc: "Analyze job descriptions to uncover exact skill gaps, tailor your CV for ATS screening, and practice mock interviews. Whenever you're stuck, click the floating ✦ AI button to ask questions.",
+      tip: "Ask 'What should I study today?' or 'Find gaps in my CV' anytime!"
+    },
+    {
+      type: 'modal',
+      title: "You're All Set! 🎉",
+      subtitle: "Your personal workspace is ready for action.",
+      desc: "Start by completing your profile setup, uploading your first course notes in the AI Notebook, or exploring real-world challenges.",
+      isFinish: true
+    }
+  ],
+
+  start: function(force = false) {
+    const user = userData.getCurrentUser();
+    if (!force && user && user.tutorialComplete) return;
+    this.currentStep = 0;
+    this.render();
+  },
+
+  replay: function() {
+    this.currentStep = 0;
+    this.render();
+  },
+
+  next: function() {
+    if (this.currentStep < this.steps.length - 1) {
+      this.currentStep++;
+      this.render();
+    } else {
+      this.finish();
+    }
+  },
+
+  prev: function() {
+    if (this.currentStep > 0) {
+      this.currentStep--;
+      this.render();
+    }
+  },
+
+  skip: function() {
+    this.cleanup();
+    const user = userData.getCurrentUser();
+    if (user && user.id) {
+      userData.updateUser(user.id, { tutorialComplete: true });
+    }
+    showToast('Tutorial skipped. You can replay it anytime using 🎓 Tutorial in the top bar!', 'info');
+  },
+
+  finish: function() {
+    this.cleanup();
+    const user = userData.getCurrentUser();
+    if (user && user.id) {
+      userData.updateUser(user.id, { tutorialComplete: true });
+    }
+    showToast('Tutorial completed! Welcome to AFTERCLASS AI 🚀', 'success');
+  },
+
+  cleanup: function() {
+    document.querySelectorAll('.tutorial-welcome-modal, .tutorial-backdrop, .tutorial-spotlight-box, .tutorial-popover').forEach(el => el.remove());
+    if (this._handleKey) {
+      document.removeEventListener('keydown', this._handleKey);
+      this._handleKey = null;
+    }
+  },
+
+  render: function() {
+    this.cleanup();
+    const step = this.steps[this.currentStep];
+    if (!step) return;
+
+    this._handleKey = (e) => {
+      if (e.key === 'Escape') this.skip();
+      else if (e.key === 'ArrowRight' || e.key === 'Enter') this.next();
+      else if (e.key === 'ArrowLeft') this.prev();
+    };
+    document.addEventListener('keydown', this._handleKey);
+
+    if (step.type === 'modal') {
+      this.renderModal(step);
+    } else {
+      this.renderSpotlight(step);
+    }
+  },
+
+  renderModal: function(step) {
+    const user = userData.getCurrentUser();
+    const isWelcome = step.isWelcome;
+    const modal = document.createElement('div');
+    modal.className = 'tutorial-welcome-modal';
+    modal.innerHTML = `
+      <div class="tutorial-welcome-card">
+        <div class="tutorial-welcome-banner">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--brand-accent);margin-bottom:6px">
+            ${isWelcome ? '✦ FIRST-TIME WORKSPACE SETUP' : '✦ SETUP COMPLETE'}
+          </div>
+          <h2 style="font-size:24px;font-weight:800;letter-spacing:-0.5px;margin:0 0 6px">
+            ${step.title.replace('[First Name]', (user && user.firstName) ? user.firstName : 'Student')}
+          </h2>
+          <p style="font-size:14px;color:rgba(255,255,255,0.7);margin:0">
+            ${step.subtitle}
+          </p>
+        </div>
+        <div class="tutorial-welcome-body">
+          <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin:0">
+            ${step.desc}
+          </p>
+
+          ${step.bullets ? `
+            <div class="tutorial-feature-list">
+              ${step.bullets.map(b => `
+                <div class="tutorial-feature-item">
+                  <span>${b.slice(0, 2)}</span>
+                  <div>${b.slice(3)}</div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px">
+            ${isWelcome ? `
+              <button class="btn btn-ghost" onclick="appTutorial.skip()" style="color:var(--gray-500)">
+                Skip for Now
+              </button>
+              <button class="btn btn-primary btn-lg" onclick="appTutorial.next()" style="gap:8px">
+                Start Guided Tour →
+              </button>
+            ` : `
+              <button class="btn btn-secondary" onclick="appTutorial.finish()">
+                Explore Dashboard
+              </button>
+              <div style="display:flex;gap:8px">
+                <a href="notebook.html" class="btn btn-outline" onclick="appTutorial.finish()">📓 Open Notebook</a>
+                <a href="profile.html" class="btn btn-primary" onclick="appTutorial.finish()">◉ View Profile</a>
+              </div>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  },
+
+  renderSpotlight: function(step) {
+    const targetEl = document.querySelector(step.target);
+    const rect = targetEl ? targetEl.getBoundingClientRect() : { top: 120, left: 120, width: 220, height: 60 };
+
+    // Backdrop
+    const backdrop = document.createElement('div');
+    backdrop.className = 'tutorial-backdrop active';
+    backdrop.onclick = () => this.next();
+    document.body.appendChild(backdrop);
+
+    // Spotlight cutout box
+    const spotlight = document.createElement('div');
+    spotlight.className = 'tutorial-spotlight-box';
+    const pad = 6;
+    spotlight.style.top = Math.max(0, rect.top - pad) + 'px';
+    spotlight.style.left = Math.max(0, rect.left - pad) + 'px';
+    spotlight.style.width = (rect.width + pad * 2) + 'px';
+    spotlight.style.height = (rect.height + pad * 2) + 'px';
+    document.body.appendChild(spotlight);
+
+    // Popover
+    const popover = document.createElement('div');
+    popover.className = 'tutorial-popover';
+
+    const dotsHtml = this.steps.map((s, idx) => `
+      <div class="tutorial-dot ${idx === this.currentStep ? 'active' : (idx < this.currentStep ? 'done' : '')}"></div>
+    `).join('');
+
+    popover.innerHTML = `
+      <div class="tutorial-header">
+        <span class="tutorial-step-badge">Step ${this.currentStep} of ${this.steps.length - 2}</span>
+        <button class="tutorial-close-btn" onclick="appTutorial.skip()" title="Skip Tutorial">✕</button>
+      </div>
+      <div class="tutorial-title">${step.title}</div>
+      <div class="tutorial-desc">${step.desc}</div>
+      ${step.tip ? `<div class="tutorial-tip">💡 <div>${step.tip}</div></div>` : ''}
+      <div class="tutorial-footer">
+        <div class="tutorial-dots">${dotsHtml}</div>
+        <div class="tutorial-actions">
+          <button class="btn btn-ghost btn-sm" onclick="appTutorial.prev()" ${this.currentStep <= 1 ? 'style="display:none"' : ''}>← Back</button>
+          <button class="btn btn-primary btn-sm" onclick="appTutorial.next()">
+            ${this.currentStep === this.steps.length - 2 ? 'Finish Tour ✓' : 'Next →'}
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(popover);
+
+    // Calculate positioning with collision detection
+    const pRect = popover.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let pTop = rect.bottom + 14;
+    let pLeft = rect.left;
+
+    if (pTop + pRect.height > vh - 20) {
+      pTop = Math.max(20, rect.top - pRect.height - 14);
+    }
+    if (pLeft + pRect.width > vw - 20) {
+      pLeft = Math.max(20, vw - pRect.width - 20);
+    }
+    if (vw < 500) {
+      pLeft = (vw - pRect.width) / 2;
+    }
+
+    popover.style.top = Math.max(10, pTop) + 'px';
+    popover.style.left = Math.max(10, pLeft) + 'px';
+
+    if (targetEl && targetEl.scrollIntoView) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   }
 };
 

@@ -5,7 +5,9 @@
 function renderSidebar(activePage = '') {
   const user = (typeof userData !== 'undefined' && userData.getCurrentUser) 
     ? userData.getCurrentUser() 
-    : { initials: 'AK', name: 'Adil Khan', degree: 'MBA', university: 'Woxsen University' };
+    : { initials: 'ST', name: 'Student', degree: 'Degree', university: 'University', tasksRemaining: 0 };
+
+  const taskCount = user.tasksRemaining !== undefined ? user.tasksRemaining : (user.tasks ? user.tasks.filter(t => !t.completed).length : 0);
 
   return `
   <nav class="sidebar" id="sidebar">
@@ -32,7 +34,7 @@ function renderSidebar(activePage = '') {
       </a>
       <a class="sidebar-link ${activePage==='tasks'?'active':''}" href="tasks.html" data-page="tasks">
         <span class="sidebar-link-icon">✓</span> Tasks
-        <span class="sidebar-badge">${user.tasksRemaining || 3}</span>
+        <span class="sidebar-badge">${taskCount}</span>
       </a>
 
       <div class="sidebar-section-label">Apply & Build</div>
@@ -69,10 +71,10 @@ function renderSidebar(activePage = '') {
     <div class="sidebar-footer">
       <div class="sidebar-user" style="display:flex;align-items:center;justify-content:space-between;width:100%">
         <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="window.location.href='profile.html'">
-          <div class="sidebar-user-avatar">${user.initials || 'AK'}</div>
+          <div class="sidebar-user-avatar">${user.initials || 'ST'}</div>
           <div style="overflow:hidden">
             <div class="sidebar-user-name" style="text-overflow:ellipsis;white-space:nowrap;overflow:hidden">${user.name || 'Student'}</div>
-            <div class="sidebar-user-role" style="text-overflow:ellipsis;white-space:nowrap;overflow:hidden">${user.degree || 'Degree'} · ${user.specialization || user.university || 'University'}</div>
+            <div class="sidebar-user-role" style="text-overflow:ellipsis;white-space:nowrap;overflow:hidden">${user.degree || 'Student'} · ${user.specialization || user.university || 'University'}</div>
           </div>
         </div>
         <button onclick="if(confirm('Sign out of AFTERCLASS AI?')) authManager.signOut()" style="background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:16px;padding:4px" data-tooltip="Sign Out">↳</button>
@@ -86,7 +88,24 @@ function renderSidebar(activePage = '') {
 function renderHeader(title = '') {
   const user = (typeof userData !== 'undefined' && userData.getCurrentUser) 
     ? userData.getCurrentUser() 
-    : { initials: 'AK', name: 'Adil Khan', id: 'user_adil' };
+    : { initials: 'ST', name: 'Student', id: 'guest' };
+
+  // Generate dynamic options for all available users
+  let userOptionsHtml = '';
+  if (typeof userData !== 'undefined' && userData.getUsers) {
+    const allUsers = userData.getUsers();
+    userOptionsHtml = Object.values(allUsers).map(u => {
+      const isSelected = u.id === user.id ? 'selected' : '';
+      const displayLabel = `${u.firstName || u.name} (${u.degree || u.persona || 'Custom'})`;
+      return `<option value="${u.id}" ${isSelected}>${displayLabel}</option>`;
+    }).join('');
+  } else {
+    userOptionsHtml = `
+      <option value="user_adil" selected>Adil (MBA · Business)</option>
+      <option value="user_priya">Priya (Tech & AI)</option>
+      <option value="user_sam">Sam (UI/UX Design)</option>
+    `;
+  }
 
   return `
   <header class="top-header">
@@ -98,20 +117,21 @@ function renderHeader(title = '') {
     </div>
 
     <div style="display:flex; align-items:center; gap:8px; background:var(--gray-100); padding:4px 10px; border-radius:8px; border:1px solid var(--gray-200); font-size:12px; margin-left:auto">
-      <span style="color:var(--gray-500); font-weight:600">👤 Switch Dashboard:</span>
+      <span style="color:var(--gray-500); font-weight:600">👤 Switch Workspace:</span>
       <select onchange="authManager.switchPersona(this.value)" style="background:none; border:none; font-weight:700; color:var(--brand-primary); font-size:12px; cursor:pointer; outline:none">
-        <option value="user_adil" ${user.id==='user_adil'?'selected':''}>Adil (MBA · Business)</option>
-        <option value="user_priya" ${user.id==='user_priya'?'selected':''}>Priya (Tech & AI)</option>
-        <option value="user_sam" ${user.id==='user_sam'?'selected':''}>Sam (UI/UX Design)</option>
+        ${userOptionsHtml}
       </select>
     </div>
 
     <div class="header-actions">
+      <button class="btn btn-outline btn-sm" onclick="if(typeof appTutorial !== 'undefined'){ appTutorial.replay(); } else { window.location.href='dashboard.html?tutorial=true'; }" style="font-size:12px;padding:4px 10px;gap:5px;border-color:var(--gray-300)" data-tooltip="Replay Guided Tour">
+        🎓 Tutorial
+      </button>
       <button class="header-btn" data-tooltip="Notifications" onclick="showToast('No new notifications','info')">
         🔔
         <span class="header-btn-badge"></span>
       </button>
-      <div class="header-avatar" onclick="window.location.href='profile.html'" data-tooltip="Profile">${user.initials || 'AK'}</div>
+      <div class="header-avatar" id="headerAvatar" onclick="window.location.href='profile.html'" data-tooltip="Profile">${user.initials || 'ST'}</div>
       <button class="btn btn-ghost btn-sm" onclick="if(confirm('Sign out of AFTERCLASS AI?')) authManager.signOut()" style="font-size:12.5px;color:var(--gray-600);padding:4px 8px" data-tooltip="Sign Out">Sign Out ↳</button>
     </div>
   </header>
