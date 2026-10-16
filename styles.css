@@ -1150,3 +1150,256 @@ ul, ol { list-style: none; }
   top: -20px;
 }
 .journey-connector.filled { background: var(--brand-primary); }
+
+/* ============================================================
+   EMPTY STATES (Beginner-Friendly Dashboard & Modules)
+   ============================================================ */
+.empty-state-card {
+  padding: 32px 24px;
+  text-align: center;
+  background: var(--gray-50);
+  border: 1.5px dashed var(--gray-200);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-base);
+}
+.empty-state-card:hover {
+  background: white;
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-sm);
+}
+.empty-state-icon {
+  font-size: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.empty-state-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-800);
+}
+.empty-state-desc {
+  font-size: 13px;
+  color: var(--gray-500);
+  max-width: 360px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   INTERACTIVE GUIDED TUTORIAL COMPONENT
+   ============================================================ */
+.tutorial-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(10, 15, 30, 0.72);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.tutorial-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Cutout spotlight on active element */
+.tutorial-spotlight-box {
+  position: fixed;
+  z-index: 9999;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 9999px rgba(10, 15, 30, 0.72), 0 0 24px rgba(26, 86, 219, 0.6);
+  border: 2px solid var(--brand-accent);
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+/* Tutorial Popover Card */
+.tutorial-popover {
+  position: fixed;
+  z-index: 10000;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--gray-200);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: popoverEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: top 0.3s ease, left 0.3s ease, transform 0.3s ease;
+}
+
+@keyframes popoverEnter {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tutorial-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tutorial-step-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--brand-primary);
+  background: var(--brand-primary-light);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+.tutorial-close-btn {
+  background: none;
+  border: none;
+  color: var(--gray-400);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color var(--transition-fast);
+}
+.tutorial-close-btn:hover { color: var(--gray-700); background: var(--gray-100); }
+
+.tutorial-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gray-900);
+  letter-spacing: -0.4px;
+  line-height: 1.3;
+}
+.tutorial-desc {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+.tutorial-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--brand-accent-light);
+  border-left: 3px solid var(--brand-accent);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--gray-700);
+}
+
+.tutorial-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gray-100);
+}
+.tutorial-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.tutorial-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gray-200);
+  transition: all var(--transition-fast);
+}
+.tutorial-dot.active {
+  width: 18px;
+  border-radius: 4px;
+  background: var(--brand-primary);
+}
+.tutorial-dot.done {
+  background: var(--success);
+}
+
+.tutorial-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Modal Welcome Dialog */
+.tutorial-welcome-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(10, 15, 30, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+}
+.tutorial-welcome-card {
+  background: white;
+  border-radius: 24px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--gray-200);
+  overflow: hidden;
+  position: relative;
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tutorial-welcome-banner {
+  background: linear-gradient(135deg, var(--gray-950) 0%, #1e3a5f 100%);
+  padding: 32px 32px 28px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.tutorial-welcome-banner::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(26,86,219,0.4), transparent 70%);
+}
+.tutorial-welcome-body {
+  padding: 28px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.tutorial-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--gray-50);
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+}
+.tutorial-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--gray-700);
+}
+.tutorial-feature-item span {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
