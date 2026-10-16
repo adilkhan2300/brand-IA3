@@ -120,120 +120,28 @@
           <!-- Filter Tabs -->
           <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
             <div class="tab-nav">
-              <button class="tab-btn active" onclick="filterTasks('all',this)">All (7)</button>
-              <button class="tab-btn" onclick="filterTasks('pending',this)">Pending (3)</button>
-              <button class="tab-btn" onclick="filterTasks('done',this)">Done (4)</button>
+              <button class="tab-btn active" id="filterTabAll" onclick="filterTasks('all',this)">All (0)</button>
+              <button class="tab-btn" id="filterTabPending" onclick="filterTasks('pending',this)">Pending (0)</button>
+              <button class="tab-btn" id="filterTabDone" onclick="filterTasks('done',this)">Done (0)</button>
             </div>
-            <select class="form-select" style="height:36px;width:auto;font-size:13px" onchange="sortTasks(this.value)">
+            <select class="form-select" id="taskSortSelect" style="height:36px;width:auto;font-size:13px" onchange="sortTasks(this.value)">
               <option value="ai">✦ AI Priority</option>
-              <option value="deadline">Deadline</option>
+              <option value="deadline">Due Date</option>
               <option value="subject">Subject</option>
             </select>
           </div>
 
           <!-- AI Priority Banner -->
-          <div class="ai-box" style="margin-bottom:16px">
+          <div class="ai-box" style="margin-bottom:16px" id="tasksAiBox">
             <div class="ai-box-header">✦ AI Task Priority</div>
-            <div class="ai-box-content">Based on your deadlines and career goals, I've prioritized your tasks. Start with the <strong>Business Analytics Assignment</strong> — it's due tomorrow and connects to your top career match.</div>
+            <div class="ai-box-content" id="tasksAiContent">
+              Add your upcoming coursework, assignments, and study goals to get AI-powered prioritization and deadline reminders.
+            </div>
           </div>
 
           <!-- Task Items -->
           <div id="taskList">
-
-            <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin-bottom:6px">🔴 High Priority</div>
-
-            <div class="task-item priority-high" id="task1">
-              <div class="task-checkbox" id="chk1" onclick="toggleTask(1)"></div>
-              <div style="flex:1;min-width:0">
-                <div class="task-title">Complete Business Analytics Assignment</div>
-                <div class="task-meta">
-                  <span class="badge badge-error">Due Tomorrow</span>
-                  <span class="badge badge-gray">Business Analytics</span>
-                  <span style="font-size:12px;color:var(--gray-400)">⏱ ~90 min</span>
-                </div>
-              </div>
-              <div class="task-actions">
-                <button class="task-action-btn" onclick="window.location.href='focus.html'" data-tooltip="Start Focus Session">⏱</button>
-                <button class="task-action-btn" onclick="deleteTask(1)" data-tooltip="Delete">🗑</button>
-              </div>
-            </div>
-
-            <div class="task-item priority-high" id="task2">
-              <div class="task-checkbox" id="chk2" onclick="toggleTask(2)"></div>
-              <div style="flex:1;min-width:0">
-                <div class="task-title">Revise for Corporate Finance mid-term</div>
-                <div class="task-meta">
-                  <span class="badge badge-error">Due in 2 days</span>
-                  <span class="badge badge-gray">Corporate Finance</span>
-                  <span style="font-size:12px;color:var(--gray-400)">⏱ ~60 min</span>
-                </div>
-              </div>
-              <div class="task-actions">
-                <button class="task-action-btn" onclick="window.location.href='focus.html'">⏱</button>
-                <button class="task-action-btn" onclick="deleteTask(2)">🗑</button>
-              </div>
-            </div>
-
-            <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin:12px 0 6px">🟡 Medium Priority</div>
-
-            <div class="task-item priority-medium" id="task3">
-              <div class="task-checkbox" id="chk3" onclick="toggleTask(3)"></div>
-              <div style="flex:1;min-width:0">
-                <div class="task-title">Prepare Brand Management presentation</div>
-                <div class="task-meta">
-                  <span class="badge badge-warning">In 3 days</span>
-                  <span class="badge badge-gray">Brand Management</span>
-                  <span style="font-size:12px;color:var(--gray-400)">⏱ ~2 hrs</span>
-                </div>
-              </div>
-              <div class="task-actions">
-                <button class="task-action-btn" onclick="window.location.href='focus.html'">⏱</button>
-                <button class="task-action-btn" onclick="deleteTask(3)">🗑</button>
-              </div>
-            </div>
-
-            <div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin:12px 0 6px">🟢 Completed</div>
-
-            <div class="task-item priority-low completed" id="task4">
-              <div class="task-checkbox checked" id="chk4" onclick="toggleTask(4)">✓</div>
-              <div style="flex:1">
-                <div class="task-title">Upload Business Analytics lecture notes</div>
-                <div class="task-meta">
-                  <span class="badge badge-success">Completed</span>
-                  <span class="badge badge-gray">Business Analytics</span>
-                </div>
-              </div>
-            </div>
-            <div class="task-item priority-low completed" id="task5">
-              <div class="task-checkbox checked" id="chk5" onclick="toggleTask(5)">✓</div>
-              <div style="flex:1">
-                <div class="task-title">Complete Porter's Five Forces challenge</div>
-                <div class="task-meta">
-                  <span class="badge badge-success">Completed</span>
-                  <span class="badge badge-gray">Strategy</span>
-                </div>
-              </div>
-            </div>
-            <div class="task-item priority-low completed" id="task6">
-              <div class="task-checkbox checked" id="chk6" onclick="toggleTask(6)">✓</div>
-              <div style="flex:1">
-                <div class="task-title">Review flashcards — Descriptive Analytics</div>
-                <div class="task-meta">
-                  <span class="badge badge-success">Completed</span>
-                  <span class="badge badge-gray">Business Analytics</span>
-                </div>
-              </div>
-            </div>
-            <div class="task-item priority-low completed" id="task7">
-              <div class="task-checkbox checked" id="chk7" onclick="toggleTask(7)">✓</div>
-              <div style="flex:1">
-                <div class="task-title">Analyze Business Analyst Intern job description</div>
-                <div class="task-meta">
-                  <span class="badge badge-success">Completed</span>
-                  <span class="badge badge-gray">Career</span>
-                </div>
-              </div>
-            </div>
+            <!-- Dynamically rendered -->
           </div>
         </div>
 
@@ -427,41 +335,174 @@
 <script>
 mountLayout('tasks', 'Tasks');
 
-function toggleTask(id) {
-  const item = document.getElementById('task' + id);
-  const chk = document.getElementById('chk' + id);
-  const isCompleted = item.classList.contains('completed');
-  item.classList.toggle('completed');
-  if (!isCompleted) {
-    chk.classList.add('checked');
-    chk.textContent = '✓';
-    showToast('Task completed! Great work 🎉', 'success');
-  } else {
-    chk.classList.remove('checked');
-    chk.textContent = '';
-    showToast('Task marked as pending', 'info');
+let currentFilter = 'all';
+
+function getActiveTasks() {
+  const user = userData.getCurrentUser();
+  if (!user) return [];
+
+  // Seed preset tasks for Adil Khan if empty
+  if (user.id === 'user_adil' && (!user.tasks || user.tasks.length === 0)) {
+    user.tasks = [
+      { id: 'task_ad1', title: 'Complete Business Analytics Assignment', subject: 'Business Analytics', priority: 'high', date: 'Tomorrow', time: '~90 min', completed: false },
+      { id: 'task_ad2', title: 'Revise for Corporate Finance mid-term', subject: 'Corporate Finance', priority: 'high', date: 'In 2 days', time: '~60 min', completed: false },
+      { id: 'task_ad3', title: 'Prepare Brand Management presentation', subject: 'Brand Management', priority: 'medium', date: 'In 3 days', time: '~2 hrs', completed: false },
+      { id: 'task_ad4', title: 'Upload Business Analytics lecture notes', subject: 'Business Analytics', priority: 'low', date: 'Yesterday', time: '~15 min', completed: true },
+      { id: 'task_ad5', title: "Complete Porter's Five Forces challenge", subject: 'Strategy', priority: 'low', date: 'Yesterday', time: '~45 min', completed: true },
+      { id: 'task_ad6', title: 'Review flashcards — Descriptive Analytics', subject: 'Business Analytics', priority: 'low', date: '2 days ago', time: '~20 min', completed: true },
+      { id: 'task_ad7', title: 'Analyze Business Analyst Intern job description', subject: 'Career', priority: 'low', date: '3 days ago', time: '~30 min', completed: true }
+    ];
+    user.tasksRemaining = 3;
+    userData.setCurrentUser(user);
   }
+
+  return user.tasks || [];
+}
+
+function renderTasks(filter = currentFilter) {
+  currentFilter = filter;
+  const user = userData.getCurrentUser();
+  const tasks = getActiveTasks();
+  const listEl = document.getElementById('taskList');
+
+  const pendingTasks = tasks.filter(t => !t.completed);
+  const doneTasks = tasks.filter(t => t.completed);
+
+  // Update tabs count
+  const allBtn = document.getElementById('filterTabAll');
+  const pendingBtn = document.getElementById('filterTabPending');
+  const doneBtn = document.getElementById('filterTabDone');
+  if (allBtn) allBtn.textContent = `All (${tasks.length})`;
+  if (pendingBtn) pendingBtn.textContent = `Pending (${pendingTasks.length})`;
+  if (doneBtn) doneBtn.textContent = `Done (${doneTasks.length})`;
+
+  // Update subtitle
+  const subtitle = document.querySelector('.page-subtitle');
+  if (subtitle) {
+    subtitle.textContent = `${pendingTasks.length} tasks remaining · AI prioritized for your day`;
+  }
+
+  // Update AI Priority Box
+  const aiBox = document.getElementById('tasksAiContent');
+  if (aiBox) {
+    if (pendingTasks.length > 0) {
+      const topTask = pendingTasks.find(t => t.priority === 'high') || pendingTasks[0];
+      aiBox.innerHTML = `Based on your deadlines and career goals, your top priority is <strong>${topTask.title}</strong> (${topTask.subject} · ${topTask.date}).`;
+    } else {
+      aiBox.innerHTML = `Great work! You have no pending tasks right now. Add new assignments or take a focus session to keep building your career readiness.`;
+    }
+  }
+
+  // Filter items
+  let displayTasks = tasks;
+  if (filter === 'pending') displayTasks = pendingTasks;
+  else if (filter === 'done') displayTasks = doneTasks;
+
+  if (displayTasks.length === 0) {
+    listEl.innerHTML = `
+      <div class="empty-state-card" style="padding:48px 24px;margin-top:16px">
+        <div class="empty-state-icon">✓</div>
+        <div class="empty-state-title">No tasks found</div>
+        <div class="empty-state-desc">
+          ${filter === 'done' ? 'You haven\'t completed any tasks in this filter yet.' : 'Keep track of coursework, projects, and interview prep by adding your first task.'}
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddTask()">+ Add Your First Task</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Group by priority
+  const highGroup = displayTasks.filter(t => t.priority === 'high' && !t.completed);
+  const medGroup = displayTasks.filter(t => t.priority === 'medium' && !t.completed);
+  const lowGroup = displayTasks.filter(t => t.priority === 'low' && !t.completed);
+  const completedGroup = displayTasks.filter(t => t.completed);
+
+  let html = '';
+
+  const renderTaskItem = (t) => `
+    <div class="task-item priority-${t.priority} ${t.completed ? 'completed' : ''}" id="task_${t.id}">
+      <div class="task-checkbox ${t.completed ? 'checked' : ''}" onclick="toggleTask('${t.id}')">
+        ${t.completed ? '✓' : ''}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="task-title">${t.title}</div>
+        <div class="task-meta">
+          <span class="badge ${t.completed ? 'badge-success' : (t.priority === 'high' ? 'badge-error' : (t.priority === 'medium' ? 'badge-warning' : 'badge-primary'))}">
+            ${t.completed ? 'Completed' : (t.date || 'Today')}
+          </span>
+          <span class="badge badge-gray">${t.subject}</span>
+          ${t.time ? `<span style="font-size:12px;color:var(--gray-400)">⏱ ${t.time}</span>` : ''}
+        </div>
+      </div>
+      <div class="task-actions">
+        ${!t.completed ? `<button class="task-action-btn" onclick="window.location.href='focus.html'" data-tooltip="Start Focus Session">⏱</button>` : ''}
+        <button class="task-action-btn" onclick="deleteTask('${t.id}')" data-tooltip="Delete">🗑</button>
+      </div>
+    </div>
+  `;
+
+  if (highGroup.length > 0) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin-bottom:6px">🔴 High Priority</div>`;
+    html += highGroup.map(renderTaskItem).join('');
+  }
+
+  if (medGroup.length > 0) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin:12px 0 6px">🟡 Medium Priority</div>`;
+    html += medGroup.map(renderTaskItem).join('');
+  }
+
+  if (lowGroup.length > 0) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin:12px 0 6px">🔵 Standard Priority</div>`;
+    html += lowGroup.map(renderTaskItem).join('');
+  }
+
+  if (completedGroup.length > 0) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.8px;padding:0 4px;margin:14px 0 6px">🟢 Completed</div>`;
+    html += completedGroup.map(renderTaskItem).join('');
+  }
+
+  listEl.innerHTML = html;
+}
+
+function toggleTask(id) {
+  const user = userData.getCurrentUser();
+  if (!user) return;
+  userData.toggleTask(user.id, id);
+  renderTasks(currentFilter);
+  showToast('Task updated!', 'success');
 }
 
 function deleteTask(id) {
-  const item = document.getElementById('task' + id);
-  item.style.animation = 'slideOutRight 0.3s ease forwards';
-  setTimeout(() => item.remove(), 300);
+  const user = userData.getCurrentUser();
+  if (!user) return;
+  userData.deleteTask(user.id, id);
+  renderTasks(currentFilter);
   showToast('Task removed', 'info');
 }
 
 function filterTasks(filter, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const items = document.querySelectorAll('.task-item');
-  items.forEach(item => {
-    if (filter === 'all') item.style.display = '';
-    else if (filter === 'pending') item.style.display = item.classList.contains('completed') ? 'none' : '';
-    else item.style.display = item.classList.contains('completed') ? '' : 'none';
-  });
+  if (btn) btn.classList.add('active');
+  renderTasks(filter);
 }
 
-function sortTasks(by) { showToast('Sorted by ' + by, 'info'); }
+function sortTasks(by) {
+  const user = userData.getCurrentUser();
+  if (!user || !user.tasks) return;
+  if (by === 'deadline') {
+    user.tasks.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  } else if (by === 'subject') {
+    user.tasks.sort((a, b) => (a.subject || '').localeCompare(b.subject || ''));
+  } else {
+    // AI Priority (high -> medium -> low)
+    const pWeight = { high: 3, medium: 2, low: 1 };
+    user.tasks.sort((a, b) => (pWeight[b.priority] || 0) - (pWeight[a.priority] || 0));
+  }
+  userData.saveUsers(userData.getUsers());
+  renderTasks(currentFilter);
+  showToast('Sorted by ' + by, 'info');
+}
 
 function openPlanModal() { document.getElementById('planModal').classList.add('open'); }
 function closePlanModal() { document.getElementById('planModal').classList.remove('open'); }
@@ -472,29 +513,37 @@ function generatePlan() {
 
 function openAddTask() { document.getElementById('addTaskModal').classList.add('open'); }
 function closeAddTask() { document.getElementById('addTaskModal').classList.remove('open'); }
+
 function addTask() {
   const name = document.getElementById('newTaskName').value.trim();
   if (!name) { showToast('Please enter a task name', 'error'); return; }
   const priority = document.getElementById('newTaskPriority').value;
   const subj = document.getElementById('newTaskSubject').value;
-  
-  const list = document.getElementById('taskList');
-  const newTask = document.createElement('div');
-  newTask.className = `task-item priority-${priority}`;
-  newTask.innerHTML = `
-    <div class="task-checkbox" onclick="this.classList.toggle('checked');this.textContent=this.classList.contains('checked')?'✓':''"></div>
-    <div style="flex:1">
-      <div class="task-title">${name}</div>
-      <div class="task-meta">
-        <span class="badge badge-${priority==='high'?'error':priority==='medium'?'warning':'success'}">${priority}</span>
-        <span class="badge badge-gray">${subj}</span>
-      </div>
-    </div>
-  `;
-  list.insertBefore(newTask, list.querySelector('[style*="Completed"]') || null);
+  const dateInput = document.getElementById('newTaskDate').value;
+  const time = document.getElementById('newTaskTime').value;
+
+  const dateStr = dateInput ? new Date(dateInput).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Today';
+
+  const user = userData.getCurrentUser();
+  if (!user) return;
+
+  userData.addTask(user.id, {
+    title: name,
+    subject: subj,
+    priority: priority,
+    date: dateStr,
+    time: time
+  });
+
+  document.getElementById('newTaskName').value = '';
   closeAddTask();
-  showToast('Task added!', 'success');
+  renderTasks(currentFilter);
+  showToast('Task added to your workspace!', 'success');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderTasks('all');
+});
 </script>
 </body>
 </html>
