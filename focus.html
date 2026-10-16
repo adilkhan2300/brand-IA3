@@ -175,7 +175,7 @@
           </div>
           <div>
             <span style="font-size:22px">🔥</span>
-            <span style="font-size:18px;font-weight:800;color:var(--gray-900)"> 5</span>
+            <span id="focusStreakVal" style="font-size:18px;font-weight:800;color:var(--gray-900)">0</span>
             <span style="font-size:13px;color:var(--gray-400)"> day streak</span>
           </div>
         </div>
@@ -196,7 +196,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">What will you work on?</label>
-              <input type="text" class="form-input" id="focusTask" value="Complete Descriptive Analytics Assignment" placeholder="Describe your task..." />
+              <input type="text" class="form-input" id="focusTask" placeholder="e.g., Complete reading, practice case study..." />
             </div>
             <div class="form-group">
               <label class="form-label">Session Duration</label>
@@ -310,54 +310,9 @@
         <div class="card">
           <div class="card-header">
             <div class="section-title">Recent Sessions</div>
-            <span class="badge badge-success">This week: 3h 42m</span>
+            <span class="badge badge-success" id="focusWeekTotal">Total: 0m</span>
           </div>
-          <div>
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100)">
-              <div style="width:40px;height:40px;background:var(--brand-primary-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⏱</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:13.5px;font-weight:600;color:var(--gray-800)">Business Analytics</div>
-                <div style="font-size:12px;color:var(--gray-400);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Descriptive Analytics notes</div>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <div style="font-size:15px;font-weight:800;color:var(--brand-primary)">42m</div>
-                <div style="font-size:11px;color:var(--gray-400)">Today</div>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100)">
-              <div style="width:40px;height:40px;background:var(--brand-primary-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⏱</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:13.5px;font-weight:600;color:var(--gray-800)">Brand Management</div>
-                <div style="font-size:12px;color:var(--gray-400);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Week 3 presentation prep</div>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <div style="font-size:15px;font-weight:800;color:var(--brand-primary)">45m</div>
-                <div style="font-size:11px;color:var(--gray-400)">Yesterday</div>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100)">
-              <div style="width:40px;height:40px;background:var(--brand-primary-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⏱</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:13.5px;font-weight:600;color:var(--gray-800)">Corporate Finance</div>
-                <div style="font-size:12px;color:var(--gray-400);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Capital budgeting review</div>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <div style="font-size:15px;font-weight:800;color:var(--brand-primary)">35m</div>
-                <div style="font-size:11px;color:var(--gray-400)">2 days ago</div>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100)">
-              <div style="width:40px;height:40px;background:var(--brand-primary-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⏱</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:13.5px;font-weight:600;color:var(--gray-800)">Business Analytics</div>
-                <div style="font-size:12px;color:var(--gray-400);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Power BI dashboard practice</div>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <div style="font-size:15px;font-weight:800;color:var(--brand-primary)">60m</div>
-                <div style="font-size:11px;color:var(--gray-400)">3 days ago</div>
-              </div>
-            </div>
-          </div>
+          <div id="focusHistoryList"></div>
         </div>
 
       </div>
@@ -381,6 +336,63 @@ let timerInterval = null;
 let totalFocused = 0;
 
 const CIRCUMFERENCE = 2 * Math.PI * 98; // r=98
+
+function initFocusPage() {
+  const user = userData.getCurrentUser();
+  if (!user) return;
+
+  // Streak
+  const streakEl = document.getElementById('focusStreakVal');
+  if (streakEl) streakEl.textContent = user.streak || 0;
+
+  // Enrolled subjects
+  const subjectSelect = document.getElementById('focusSubject');
+  if (subjectSelect && user.subjects && user.subjects.length > 0) {
+    subjectSelect.innerHTML = user.subjects.map(s => {
+      const name = typeof s === 'string' ? s : (s.name || s.title || 'Course');
+      return `<option value="${name}">${name}</option>`;
+    }).join('');
+  }
+
+  // Populate focus history
+  const historyList = document.getElementById('focusHistoryList');
+  const weekBadge = document.getElementById('focusWeekTotal');
+  const userSessions = (user.recentActivity || []).filter(a => a.category === 'Focus' || a.icon === '⏱');
+
+  if (weekBadge) {
+    const mins = user.focusMinutes || 0;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    weekBadge.textContent = h > 0 ? `Total: ${h}h ${m}m` : `Total: ${m}m`;
+  }
+
+  if (historyList) {
+    if (userSessions.length === 0) {
+      historyList.innerHTML = `
+        <div class="empty-state-card" style="padding: 28px 16px;">
+          <div class="empty-state-icon" style="font-size: 32px; margin-bottom: 8px;">⏱</div>
+          <div class="empty-state-title" style="font-size: 15px;">No focus sessions yet</div>
+          <div class="empty-state-text" style="font-size: 13px; max-width: 320px; margin: 0 auto 12px;">
+            Start a focus session above to log your deep work hours, maintain study streaks, and level up your skills.
+          </div>
+        </div>
+      `;
+    } else {
+      historyList.innerHTML = userSessions.slice(0, 6).map(s => `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100)">
+          <div style="width:40px;height:40px;background:var(--brand-primary-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⏱</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13.5px;font-weight:600;color:var(--gray-800)">${s.title}</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.sub || 'Deep Study Session'}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:11px;color:var(--gray-400)">${s.time || 'Recently'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+}
 
 function setDuration(mins, btn) {
   duration = parseInt(mins) * 60;
@@ -477,15 +489,22 @@ function sessionComplete() {
   document.getElementById('timerMainBtn').textContent = '▶';
   document.getElementById('timerStatusLabel').textContent = 'Session Complete!';
   document.getElementById('postSession').classList.add('show');
-  const mins = Math.floor(totalFocused / 60);
+  const mins = Math.max(1, Math.floor(totalFocused / 60));
   const secs = totalFocused % 60;
-  document.getElementById('aiSessionSummary').innerHTML = `You completed <strong>${mins} minutes ${secs > 0 ? secs + ' seconds' : ''}</strong> of focused study on <strong>${document.getElementById('timerSubjectLabel').textContent}</strong>. ${mins >= 30 ? 'Excellent session! You covered significant material.' : 'Great start! Consider a longer session next time to build depth.'}`;
-  showToast('🎉 Session saved! +' + Math.floor(totalFocused/60) + ' focus minutes', 'success');
+  const subject = document.getElementById('timerSubjectLabel').textContent || 'Deep Study';
+  document.getElementById('aiSessionSummary').innerHTML = `You completed <strong>${mins} minute${mins !== 1 ? 's' : ''} ${secs > 0 ? secs + ' seconds' : ''}</strong> of focused study on <strong>${subject}</strong>. ${mins >= 30 ? 'Excellent session! You covered significant material.' : 'Great start! Consider a longer session next time to build depth.'}`;
+  showToast('🎉 Session saved! +' + mins + ' focus minutes', 'success');
 }
 
 function saveSession() {
+  const user = userData.getCurrentUser();
+  const mins = Math.max(1, Math.floor(totalFocused / 60));
+  const subject = document.getElementById('timerSubjectLabel').textContent || 'Deep Study';
+  if (user && user.id) {
+    userData.saveFocusSession(user.id, mins, subject);
+  }
   showToast('Session saved to your progress log!', 'success');
-  setTimeout(() => window.location.href = 'dashboard.html', 1500);
+  setTimeout(() => window.location.href = 'dashboard.html', 1200);
 }
 
 function resetToSetup() {
@@ -494,7 +513,10 @@ function resetToSetup() {
   document.getElementById('sessionStats').classList.add('hidden');
   document.getElementById('postSession').classList.remove('show');
   resetTimer();
+  initFocusPage();
 }
+
+document.addEventListener('DOMContentLoaded', initFocusPage);
 </script>
 </body>
 </html>

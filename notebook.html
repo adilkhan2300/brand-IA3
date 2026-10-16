@@ -739,11 +739,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const sourcesList = document.getElementById('sourcesList');
   const sourcesHeader = document.querySelector('.sources-header div');
 
-  // Gather subjects from user profile — subjects string or interests array
+  // Gather subjects from user profile — subjects array/string or interests array
   let subjects = [];
   if (user) {
     if (user.subjects) {
-      subjects = user.subjects.split(',').map(s => s.trim()).filter(Boolean);
+      if (typeof user.subjects === 'string') {
+        subjects = user.subjects.split(',').map(s => s.trim()).filter(Boolean);
+      } else if (Array.isArray(user.subjects)) {
+        subjects = user.subjects.map(s => typeof s === 'string' ? s : (s.name || s.title || '')).filter(Boolean);
+      }
     }
     // Also add subjects mapped from interests
     if (user.interests && user.interests.length > 0) {
@@ -983,10 +987,6 @@ function selectSource(el, subject) {
 function handleFileUpload(input) {
   const files = Array.from(input.files);
   files.forEach(f => showToast(`Uploaded: ${f.name} — AI processing...`, 'info'));
-  setTimeout(() => showToast('AI Summary generated! Open to view.', 'success'), 2000);
-}
-
-function showAIAsk() { showTab('ask'); }ded: ${f.name} — AI processing...`, 'info'));
   setTimeout(() => showToast('AI Summary generated! Open to view.', 'success'), 2000);
 }
 
