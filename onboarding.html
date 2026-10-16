@@ -229,23 +229,23 @@
 
       <!-- Step 1: Basic Info -->
       <div class="step-panel active" id="step1">
-        <div class="step-title">Let's personalize your experience 👋</div>
-        <div class="step-desc">Tell us a bit about yourself to set up your AI-powered profile.</div>
+        <div class="step-title">Let's personalize your workspace 👋</div>
+        <div class="step-desc">Tell us a bit about yourself to set up your AI-powered student profile.</div>
 
         <div style="display:flex;flex-direction:column;gap:16px">
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">First Name</label>
-              <input type="text" class="form-input" id="ob_firstName" value="Adil" placeholder="First name" />
+              <label class="form-label">First Name *</label>
+              <input type="text" class="form-input" id="ob_firstName" placeholder="e.g. Alex" required />
             </div>
             <div class="form-group">
-              <label class="form-label">Last Name</label>
-              <input type="text" class="form-input" id="ob_lastName" value="Khan" placeholder="Last name" />
+              <label class="form-label">Last Name *</label>
+              <input type="text" class="form-input" id="ob_lastName" placeholder="e.g. Morgan" required />
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">Phone (Optional)</label>
-            <input type="tel" class="form-input" id="ob_phone" placeholder="+91 98765 43210" />
+            <input type="tel" class="form-input" id="ob_phone" placeholder="+1 (555) 000-0000" />
           </div>
           <div class="form-group">
             <label class="form-label">Experience Level</label>
@@ -265,31 +265,33 @@
 
       <!-- Step 2: Education -->
       <div class="step-panel" id="step2">
-        <div class="step-title">Your education 🎓</div>
-        <div class="step-desc">Help AFTERCLASS understand your academic background.</div>
+        <div class="step-title">Your education & courses 🎓</div>
+        <div class="step-desc">Help AFTERCLASS AI tailor course notes and quizzes to your degree.</div>
 
         <div style="display:flex;flex-direction:column;gap:16px">
           <div class="form-group">
-            <label class="form-label">University / Institution</label>
-            <input type="text" class="form-input" id="ob_university" value="Woxsen University" placeholder="University name" />
+            <label class="form-label">University / Institution *</label>
+            <input type="text" class="form-input" id="ob_university" placeholder="e.g. Stanford University, IIT, NYU..." required />
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Degree</label>
+              <label class="form-label">Degree *</label>
               <select class="form-select" id="ob_degree">
-                <option value="MBA" selected>MBA</option>
+                <option value="MBA">MBA</option>
+                <option value="B.Tech">B.Tech / B.E.</option>
                 <option value="BBA">BBA</option>
-                <option value="BTech">B.Tech</option>
-                <option value="BCA">BCA</option>
-                <option value="BCom">B.Com</option>
-                <option value="Other">Other</option>
+                <option value="B.Des">B.Des (Design)</option>
+                <option value="BCA">BCA / MCA</option>
+                <option value="B.Com">B.Com</option>
+                <option value="MS">M.S. / M.Tech</option>
+                <option value="Other">Other Degree</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Year</label>
+              <label class="form-label">Academic Year</label>
               <select class="form-select" id="ob_year">
-                <option>1st Year</option>
-                <option selected>2nd Year</option>
+                <option selected>1st Year</option>
+                <option>2nd Year</option>
                 <option>3rd Year</option>
                 <option>4th Year</option>
                 <option>Final Year</option>
@@ -298,11 +300,11 @@
           </div>
           <div class="form-group">
             <label class="form-label">Specialization / Major</label>
-            <input type="text" class="form-input" id="ob_spec" value="General Management" placeholder="e.g. General Management, Computer Science" />
+            <input type="text" class="form-input" id="ob_spec" placeholder="e.g. Business Analytics, Computer Science, Interaction Design" />
           </div>
           <div class="form-group">
-            <label class="form-label">Current Subjects (comma separated)</label>
-            <input type="text" class="form-input" id="ob_subjects" value="Business Analytics, Brand Management, Corporate Finance, Managerial Economics" placeholder="e.g. Marketing, Finance, Data Science" />
+            <label class="form-label">Current Course Subjects (comma separated)</label>
+            <input type="text" class="form-input" id="ob_subjects" placeholder="e.g. Data Analytics, Financial Modeling, Marketing Strategy" />
           </div>
         </div>
 
@@ -316,24 +318,24 @@
       <!-- Step 3: Career Interests -->
       <div class="step-panel" id="step3">
         <div class="step-title">What are your career interests? 🎯</div>
-        <div class="step-desc">Select all the career paths you're interested in exploring. Choose as many as you like!</div>
+        <div class="step-desc">Select all career paths you want AFTERCLASS to optimize for. Choose one or more:</div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="interest-card selected" onclick="toggleInterest(this)" data-interest="Business Analyst">
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Business Analyst">
             <div class="interest-icon">💼</div>
             <div>
               <div class="interest-title">Business Analyst</div>
               <div class="interest-sub">Data-driven business decisions</div>
             </div>
-            <div class="interest-check">✓</div>
+            <div class="interest-check"></div>
           </div>
-          <div class="interest-card selected" onclick="toggleInterest(this)" data-interest="Data Analyst">
+          <div class="interest-card" onclick="toggleInterest(this)" data-interest="Data Analyst">
             <div class="interest-icon">📊</div>
             <div>
               <div class="interest-title">Data Analyst</div>
               <div class="interest-sub">Visualization & insights</div>
             </div>
-            <div class="interest-check">✓</div>
+            <div class="interest-check"></div>
           </div>
           <div class="interest-card" onclick="toggleInterest(this)" data-interest="Data Scientist">
             <div class="interest-icon">🔬</div>
@@ -490,89 +492,116 @@
 
       <!-- Step 4: Current Skills -->
       <div class="step-panel" id="step4">
-        <div class="step-title">What skills do you have? ⚡</div>
-        <div class="step-desc">Select all skills you currently have. Be honest — this helps AFTERCLASS identify your gaps.</div>
+        <div class="step-title">What skills do you currently have? ⚡</div>
+        <div class="step-desc">Select any skills you're familiar with. New to everything? No worries — AFTERCLASS AI will help you build them step by step.</div>
 
         <div class="form-group" style="margin-bottom:16px">
           <label class="form-label">Category</label>
-          <div class="tab-nav" style="margin-top:4px">
-            <button class="tab-btn active">Analytics</button>
-            <button class="tab-btn">Tech</button>
-            <button class="tab-btn">Business</button>
-            <button class="tab-btn">Soft Skills</button>
+          <div class="tab-nav" style="margin-top:4px" id="skillCategoryTabs">
+            <button type="button" class="tab-btn active" onclick="switchSkillCategory('analytics', this)">Analytics</button>
+            <button type="button" class="tab-btn" onclick="switchSkillCategory('tech', this)">Tech & AI</button>
+            <button type="button" class="tab-btn" onclick="switchSkillCategory('business', this)">Business</button>
+            <button type="button" class="tab-btn" onclick="switchSkillCategory('design', this)">Design</button>
+            <button type="button" class="tab-btn" onclick="switchSkillCategory('soft', this)">Soft Skills</button>
           </div>
         </div>
 
         <div id="skillsGrid">
-          <div class="chip-grid" id="analyticsSkills">
-            <div class="chip selected" onclick="this.classList.toggle('selected')">Excel</div>
-            <div class="chip selected" onclick="this.classList.toggle('selected')">Power BI</div>
+          <div class="chip-grid skill-category-group" id="skills-analytics">
+            <div class="chip" onclick="this.classList.toggle('selected')">Excel</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Power BI</div>
             <div class="chip" onclick="this.classList.toggle('selected')">Tableau</div>
-            <div class="chip selected" onclick="this.classList.toggle('selected')">SQL</div>
-            <div class="chip selected" onclick="this.classList.toggle('selected')">Python</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">SQL</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Python</div>
             <div class="chip" onclick="this.classList.toggle('selected')">R</div>
-            <div class="chip" onclick="this.classList.toggle('selected')">SPSS</div>
-            <div class="chip" onclick="this.classList.toggle('selected')">Google Analytics</div>
             <div class="chip" onclick="this.classList.toggle('selected')">Data Visualization</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Financial Modeling</div>
+          </div>
+          <div class="chip-grid skill-category-group" id="skills-tech" style="display:none">
+            <div class="chip" onclick="this.classList.toggle('selected')">Python</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">JavaScript</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">SQL</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Git</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Docker</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">FastAPI</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Machine Learning</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">PyTorch</div>
+          </div>
+          <div class="chip-grid skill-category-group" id="skills-business" style="display:none">
+            <div class="chip" onclick="this.classList.toggle('selected')">Business Strategy</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Market Research</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Financial Analysis</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Brand Management</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Operations Strategy</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Project Management</div>
+          </div>
+          <div class="chip-grid skill-category-group" id="skills-design" style="display:none">
+            <div class="chip" onclick="this.classList.toggle('selected')">Figma</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">User Research</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Wireframing</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Design Systems</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Usability Testing</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">HTML/CSS</div>
+          </div>
+          <div class="chip-grid skill-category-group" id="skills-soft" style="display:none">
+            <div class="chip" onclick="this.classList.toggle('selected')">Critical Thinking</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Public Speaking</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Problem Solving</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Team Leadership</div>
+            <div class="chip" onclick="this.classList.toggle('selected')">Stakeholder Communication</div>
           </div>
         </div>
 
         <div style="margin-top:20px">
           <label class="form-label">Add custom skill</label>
           <div style="display:flex;gap:8px;margin-top:6px">
-            <input type="text" class="form-input" id="customSkill" placeholder="e.g. Figma, Notion..." style="flex:1" />
-            <button class="btn btn-outline" onclick="addCustomSkill()">+ Add</button>
+            <input type="text" class="form-input" id="customSkill" placeholder="e.g. Notion, React, SEO..." style="flex:1" />
+            <button type="button" class="btn btn-outline" onclick="addCustomSkill()">+ Add</button>
           </div>
         </div>
 
         <div class="step-nav">
           <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
           <div class="step-nav-text">Step 4 of 5</div>
-          <button class="btn btn-primary" onclick="goToStep(5)">Next →</button>
+          <button class="btn btn-primary" onclick="goToStep(5)">Review & Finish →</button>
         </div>
       </div>
 
       <!-- Step 5: Preview -->
       <div class="step-panel" id="step5">
         <div class="step-title">Your AFTERCLASS profile is ready! 🎉</div>
-        <div class="step-desc">Here's what we'll use to personalize your entire experience.</div>
+        <div class="step-desc">Here's a preview of your personalized workspace setup before launch.</div>
 
         <div class="profile-preview">
-          <div class="preview-avatar" id="previewAvatar">AK</div>
-          <div class="preview-name" id="previewName">Adil Khan</div>
-          <div class="preview-role" id="previewRole">MBA · General Management · Woxsen University</div>
+          <div class="preview-avatar" id="previewAvatar">ST</div>
+          <div class="preview-name" id="previewName">Student Name</div>
+          <div class="preview-role" id="previewRole">Degree · Specialization · University</div>
           <div class="preview-tags" id="previewTags">
-            <span class="preview-tag">Business Analyst</span>
-            <span class="preview-tag">Data Analyst</span>
-            <span class="preview-tag">Product Analyst</span>
-            <span class="preview-tag">Excel</span>
-            <span class="preview-tag">Power BI</span>
-            <span class="preview-tag">Python</span>
-            <span class="preview-tag">SQL</span>
+            <!-- Rendered dynamically -->
           </div>
         </div>
 
         <div class="ai-box" style="margin-top:20px">
           <div class="ai-box-header">✦ AI First Look</div>
           <div class="ai-box-content" id="aiFirstLook">
-            Based on your MBA background and interest in Business Analytics, you're a strong match for <strong>Business Analyst</strong> roles. Your key strengths are Excel and Power BI. I've noticed SQL is a common requirement — let's plan to strengthen that together.
+            Personalizing your AFTERCLASS AI experience based on your background and target career path...
           </div>
         </div>
 
         <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200)">
-            <div style="font-size:13.5px;font-weight:600;color:var(--gray-700)">📊 Career Readiness Score</div>
-            <div style="font-size:20px;font-weight:800;color:var(--brand-primary)">72%</div>
+            <div style="font-size:13.5px;font-weight:600;color:var(--gray-700)">📊 Initial Career Readiness Score</div>
+            <div style="font-size:20px;font-weight:800;color:var(--brand-primary)" id="previewScore">15%</div>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--gray-50);border-radius:var(--radius-md);border:1px solid var(--gray-200)">
-            <div style="font-size:13.5px;font-weight:600;color:var(--gray-700)">🎯 Best Match Role</div>
-            <div style="font-size:14px;font-weight:700;color:var(--success)">Business Analyst · 86%</div>
+            <div style="font-size:13.5px;font-weight:600;color:var(--gray-700)">🎯 Primary Target Role</div>
+            <div style="font-size:14px;font-weight:700;color:var(--success)" id="previewMatchRole">Career Explorer</div>
           </div>
         </div>
 
         <div class="step-nav">
           <button class="btn btn-secondary" onclick="goToStep(4)">← Back</button>
-          <button class="btn btn-primary btn-lg" onclick="completeOnboarding()">
+          <button class="btn btn-primary btn-lg" id="btnLaunchDashboard" onclick="completeOnboarding()">
             🚀 Launch My Dashboard
           </button>
         </div>
@@ -589,8 +618,30 @@
   const totalSteps = 5;
 
   function goToStep(n) {
+    // Validation before advancing
+    if (n > currentStep) {
+      if (currentStep === 1) {
+        const fn = (document.getElementById('ob_firstName').value || '').trim();
+        const ln = (document.getElementById('ob_lastName').value || '').trim();
+        if (!fn) {
+          showToast('Please enter your first name', 'error');
+          document.getElementById('ob_firstName').focus();
+          return;
+        }
+      } else if (currentStep === 2) {
+        const uni = (document.getElementById('ob_university').value || '').trim();
+        if (!uni) {
+          showToast('Please enter your university or institution name', 'error');
+          document.getElementById('ob_university').focus();
+          return;
+        }
+      }
+    }
+
+    // Save draft state safely
+    saveDraft();
+
     document.getElementById('step' + currentStep).classList.remove('active');
-    // Update circles
     const sc = document.getElementById('sc' + currentStep);
     sc.classList.remove('active');
     sc.classList.add('done');
@@ -608,9 +659,12 @@
     sl2.classList.add('active');
 
     // Fill connectors
-    for (let i = 1; i < n; i++) {
+    for (let i = 1; i <= totalSteps; i++) {
       const conn = document.getElementById('conn' + i);
-      if (conn) conn.classList.add('filled');
+      if (conn) {
+        if (i < n) conn.classList.add('filled');
+        else conn.classList.remove('filled');
+      }
     }
 
     // Update preview on step 5
@@ -622,7 +676,17 @@
   function toggleInterest(card) {
     card.classList.toggle('selected');
     const check = card.querySelector('.interest-check');
-    check.textContent = card.classList.contains('selected') ? '✓' : '';
+    if (check) {
+      check.textContent = card.classList.contains('selected') ? '✓' : '';
+    }
+  }
+
+  function switchSkillCategory(category, btn) {
+    document.querySelectorAll('#skillCategoryTabs .tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.skill-category-group').forEach(group => group.style.display = 'none');
+    const activeGroup = document.getElementById('skills-' + category);
+    if (activeGroup) activeGroup.style.display = 'flex';
   }
 
   function addCustomSkill() {
@@ -633,9 +697,89 @@
     chip.className = 'chip selected';
     chip.textContent = val;
     chip.onclick = function() { this.classList.toggle('selected'); };
-    document.getElementById('analyticsSkills').appendChild(chip);
+    const firstGroup = document.querySelector('.skill-category-group');
+    if (firstGroup) firstGroup.appendChild(chip);
     input.value = '';
-    showToast(val + ' added!', 'success');
+    showToast(`Skill added: ${val}`, 'success');
+  }
+
+  function saveDraft() {
+    const user = userData.getCurrentUser();
+    if (!user) return;
+    const fn = (document.getElementById('ob_firstName')?.value || '').trim();
+    const ln = (document.getElementById('ob_lastName')?.value || '').trim();
+    const uni = (document.getElementById('ob_university')?.value || '').trim();
+    const degree = document.getElementById('ob_degree')?.value || user.degree;
+    const spec = (document.getElementById('ob_spec')?.value || '').trim();
+    const subjects = (document.getElementById('ob_subjects')?.value || '').trim();
+
+    if (fn) user.firstName = fn;
+    if (ln) user.lastName = ln;
+    if (fn || ln) user.name = (fn + ' ' + ln).trim();
+    if (uni) user.university = uni;
+    if (degree) user.degree = degree;
+    if (spec) user.specialization = spec;
+
+    userData.setCurrentUser(user);
+  }
+
+  function updatePreview() {
+    const fn = (document.getElementById('ob_firstName')?.value || 'Student').trim();
+    const ln = (document.getElementById('ob_lastName')?.value || '').trim();
+    const fullName = (fn + ' ' + ln).trim();
+    const initials = ((fn[0] || 'S') + (ln[0] || '')).toUpperCase();
+    const degree = document.getElementById('ob_degree')?.value || 'Degree';
+    const spec = (document.getElementById('ob_spec')?.value || 'General').trim();
+    const uni = (document.getElementById('ob_university')?.value || 'University').trim();
+
+    // Collect selected interests
+    const selectedInterests = [];
+    document.querySelectorAll('.interest-card.selected').forEach(card => {
+      const title = card.querySelector('.interest-title');
+      if (title) selectedInterests.push(title.textContent.trim());
+    });
+
+    // Collect selected skills
+    const selectedSkills = [];
+    document.querySelectorAll('.chip.selected').forEach(chip => {
+      selectedSkills.push(chip.textContent.replace('✓', '').trim());
+    });
+
+    // Populate preview elements
+    const avatarEl = document.getElementById('previewAvatar');
+    if (avatarEl) avatarEl.textContent = initials;
+
+    const nameEl = document.getElementById('previewName');
+    if (nameEl) nameEl.textContent = fullName;
+
+    const roleEl = document.getElementById('previewRole');
+    if (roleEl) roleEl.textContent = `${degree} · ${spec} · ${uni}`;
+
+    const tagsEl = document.getElementById('previewTags');
+    if (tagsEl) {
+      const allTags = [...selectedInterests, ...selectedSkills];
+      if (allTags.length > 0) {
+        tagsEl.innerHTML = allTags.map(t => `<span class="preview-tag">${t}</span>`).join('');
+      } else {
+        tagsEl.innerHTML = `<span class="preview-tag" style="background:var(--gray-200);color:var(--gray-600)">General Learner</span>`;
+      }
+    }
+
+    // Baseline calculation
+    const baseScore = Math.min(30, 10 + (selectedSkills.length * 2) + (selectedInterests.length * 3));
+    const scoreEl = document.getElementById('previewScore');
+    if (scoreEl) scoreEl.textContent = `${baseScore}%`;
+
+    const primaryTarget = selectedInterests[0] || 'Career Explorer';
+    const matchEl = document.getElementById('previewMatchRole');
+    if (matchEl) matchEl.textContent = `${primaryTarget} · Baseline Setup`;
+
+    const aiLookEl = document.getElementById('aiFirstLook');
+    if (aiLookEl) {
+      aiLookEl.innerHTML = `
+        Welcome, <strong>${fn}</strong>! Based on your <strong>${degree}</strong> studies at <strong>${uni}</strong> and interest in <strong>${primaryTarget}</strong>, AFTERCLASS AI is ready to tailor your notes, study challenges, and career matching. Start by uploading notes or taking a practice challenge to build your score from <strong>${baseScore}%</strong>.
+      `;
+    }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -646,16 +790,22 @@
       if (user.degree && document.getElementById('ob_degree')) document.getElementById('ob_degree').value = user.degree;
       if (user.specialization && document.getElementById('ob_spec')) document.getElementById('ob_spec').value = user.specialization;
       if (user.university && document.getElementById('ob_university')) document.getElementById('ob_university').value = user.university;
+      if (user.subjects && Array.isArray(user.subjects) && user.subjects.length > 0 && document.getElementById('ob_subjects')) {
+        document.getElementById('ob_subjects').value = user.subjects.map(s => typeof s === 'string' ? s : s.name).join(', ');
+      }
     }
   });
 
   function completeOnboarding() {
-    const fn = document.getElementById('ob_firstName').value || 'User';
-    const ln = document.getElementById('ob_lastName').value || '';
-    const degree = document.getElementById('ob_degree')?.value || 'MBA';
-    const spec = document.getElementById('ob_spec')?.value || 'General Management';
-    const uni = document.getElementById('ob_university')?.value || 'Woxsen University';
-    const subjects = document.getElementById('ob_subjects')?.value || '';
+    const fn = (document.getElementById('ob_firstName')?.value || 'Student').trim();
+    const ln = (document.getElementById('ob_lastName')?.value || '').trim();
+    const fullName = (fn + ' ' + ln).trim();
+    const initials = ((fn[0] || 'S') + (ln[0] || '')).toUpperCase();
+    const degree = document.getElementById('ob_degree')?.value || 'Degree';
+    const spec = (document.getElementById('ob_spec')?.value || 'General').trim();
+    const uni = (document.getElementById('ob_university')?.value || 'University').trim();
+    const year = document.getElementById('ob_year')?.value || '1st Year';
+    const rawSubjects = (document.getElementById('ob_subjects')?.value || '').trim();
 
     // Collect selected career interests
     const selectedInterests = [];
@@ -664,32 +814,70 @@
       if (title) selectedInterests.push(title.textContent.trim());
     });
 
-    // Collect selected skills from all chip grids
+    // Collect selected skills
     const selectedSkills = [];
     document.querySelectorAll('.chip.selected').forEach(chip => {
-      selectedSkills.push(chip.textContent.trim());
+      selectedSkills.push(chip.textContent.replace('✓', '').trim());
     });
+
+    // Format subjects
+    const subjectColors = ['var(--brand-primary)', 'var(--brand-accent)', 'var(--warning)', 'var(--success)', '#8b5cf6'];
+    const subjectList = rawSubjects ? rawSubjects.split(',').map(s => s.trim()).filter(Boolean).map((name, i) => ({
+      name,
+      progress: 0,
+      color: subjectColors[i % subjectColors.length]
+    })) : [];
+
+    const calculatedReadiness = Math.min(30, 10 + (selectedSkills.length * 2) + (selectedInterests.length * 3));
 
     const user = userData.getCurrentUser();
     user.firstName = fn;
     user.lastName = ln;
-    user.name = (fn + ' ' + ln).trim();
-    user.initials = ((fn[0] || 'U') + (ln[0] || '')).toUpperCase();
+    user.name = fullName;
+    user.initials = initials;
     user.degree = degree;
     user.specialization = spec;
     user.university = uni;
-    user.subjects = subjects;
-    user.interests = selectedInterests;
+    user.year = year;
+    user.careerInterests = selectedInterests;
+    user.targetRole = selectedInterests[0] || 'Student';
     user.skills = selectedSkills;
+    user.subjects = subjectList;
+    user.readinessScore = calculatedReadiness;
+    user.learningProgress = 0;
+    user.projects = 0;
+    user.tasksRemaining = 0;
+    user.focusMinutes = 0;
+    user.streak = 1;
     user.onboardingComplete = true;
+    user.tutorialComplete = false; // Launch guided tour on first dashboard visit
+
+    if (!user.dashboardData) user.dashboardData = {};
+    user.dashboardData.greetingSub = `Let's turn your ${degree} coursework into verified career proof.`;
+    user.dashboardData.recTitle = "Explore AI Notebook & summarize your first lecture";
+    user.dashboardData.recLink = "notebook.html";
+    user.dashboardData.recBadge = "LEARN";
+    user.dashboardData.journeyStage = 1;
+    user.dashboardData.journeyStageName = "Learn";
+    user.dashboardData.aiInsight = `Hi ${fn}! Your profile is set up for <strong>${user.targetRole}</strong>. Start by uploading lecture notes in the AI Notebook or completing a focus session.`;
+
+    // Add first onboarding activity record
+    userData.addActivity(user.id, {
+      icon: '✨',
+      title: 'Profile Setup Completed',
+      sub: `${degree} · ${uni}`,
+      time: 'Just now',
+      bg: 'var(--brand-primary-light)'
+    });
 
     userData.setCurrentUser(user);
 
-    const btn = event.target;
-    btn.innerHTML = '<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite"></div> Setting up…';
+    const btn = document.getElementById('btnLaunchDashboard') || event.target;
+    btn.innerHTML = '<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite"></div> Initializing Workspace…';
     btn.disabled = true;
-    showToast('Profile created! Welcome to AFTERCLASS AI 🎉', 'success');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+
+    showToast('Profile setup complete! Welcome to AFTERCLASS AI 🎉', 'success');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
   }
 </script>
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
